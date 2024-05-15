@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="602dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivAplicacion"
+            android:layout_width="120dp"
+            android:layout_height="113dp"
+            android:layout_marginLeft="105dp"
+            app:srcCompat="@drawable/moneda" />
+
+        <TextView
+            android:id="@+id/tvNombreAplicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="35dp"
+            android:gravity="center"
+            android:text="@string/NombreAplicaionLogin"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:text="@string/tvLogin"
+            android:textSize="25dp" />
+
+        <TextView
+            android:id="@+id/tvLoginMensaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/LoginMensaje" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Correo"
+            app:endIconMode="clear_text">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Contraseña"
+            app:endIconMode="password_toggle"
+            tools:ignore="MissingConstraints">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvContrasenia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnInicioSecion"
+            android:layout_width="207dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginVertical="20dp"
+            android:text="@string/btnloginInicioSecion" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp">
+
+            <TextView
+                android:id="@+id/tvRecuperarCuenta"
+                android:layout_width="160dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:height="30dp"
+                android:onClick="recuperarCuenta"
+                android:text="@string/tvLoginRecupCuenta"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/tvRegistrate"
+                android:layout_width="14dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:height="30dp"
+                android:onClick="registrate"
+                android:text="@string/tvLoginRegistrar"
+                android:textSize="16dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">FinanzasPersonales</string>
+
+    <string name="NombreAplicaionLogin">Finanzas Personales</string>
+    <string name="tvLogin">Inicio de Secion</string>
+    <string name="LoginMensaje">¡Hola! Qué gusto verte de nuevo.</string>
+    <string name="btnloginInicioSecion">Iniciar sesión</string>
+    <string name="tvLoginRecupCuenta">¿Has olvidado tu contraseña?</string>
+    <string name="tvLoginRegistrar">Registrate</string>
+
+    <string name="tvRegistro">Registrate</string>
+    <string name="tvRegistroTerminos">Estoy de acuerdo con los términos, servicios y Politicas de provacidad.</string>
+    <string name="btnRegistro">Continuar</string>
+    <string name="tvRegistroPregunta">¿Tienes una cuenta?</string>
+    <string name="tvRegistroLogin">Iniciar sesión</string>
+
+    <string name="tvRCuenta">Recuperar cuenta</string>
+    <string name="btnRcuenta">Recuperar</string>
+    <string name="tvRCuentaPregunta">¿Recordaste tu cuenta?</string>
+    <string name="tvRCuentaLogin">Iniciar sesión</string>
+</resources>
