@@ -1,10 +1,16 @@
 package com.example.finanzaspersonales
 
+import android.graphics.Insets.add
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,17 +23,9 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class GastosFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var RecyclerViewHistorial: RecyclerView
+    private val historialGasto = mutableListOf<EntidadGastos>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,17 +35,35 @@ class GastosFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_gastos, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        RecyclerViewHistorial = view.findViewById(R.id.rvListaGastos)
+
+        val categorias = listOf("Comida", "Transporte", "Entretenimiento", "Compras", "Salud", "asd", "qwe")
+        val valores = listOf(50.0f, 30.5f, 20.0f, 40.0f, 15.0f, 56.0f, 67.7f)
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        // Generar datos ficticios para cada categoría
+        for (i in 0 until categorias.size) {
+            val entidad = EntidadGastos()
+            entidad.nombreCategoria = categorias[i]
+
+            val currentDate = Date()
+            val fechaFormateada = sdf.format(currentDate)
+            entidad.fechaGasto = fechaFormateada
+
+            entidad.valorGasto = valores[i]
+            historialGasto.add(entidad)
+        }
+
+        val adaptadorPersonalizado = adaptadorGastos(requireContext(), historialGasto)
+
+        RecyclerViewHistorial.layoutManager = LinearLayoutManager(requireContext())
+        RecyclerViewHistorial.adapter = adaptadorPersonalizado
+    }
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GastosFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
         fun newInstance(param1: String, param2: String) =
             GastosFragment().apply {
                 arguments = Bundle().apply {
