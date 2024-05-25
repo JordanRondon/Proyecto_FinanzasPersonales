@@ -39,7 +39,6 @@ class Home : AppCompatActivity() {
 
         setupWithNavController(bottomNavigation, navController)
 
-
         setupActionBar()
         setupNavigationDrawer()
     }

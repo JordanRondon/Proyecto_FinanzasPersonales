@@ -24,9 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/piel"
-                android:elevation="5dp"
-                app:navigationIcon="@drawable/ic_menu"
-                app:navigationIconTint="@android:color/black" />
+                app:navigationIcon="@drawable/ic_menu" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

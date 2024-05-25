@@ -30,212 +30,224 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_trans"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_conteiner"
                     android:layout_width="match_parent"
-                    android:layout_height="86dp"
-                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="35dp"
                     android:layout_marginTop="80dp"
                     android:layout_marginEnd="35dp"
-                    app:cardCornerRadius="10dp"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="15dp"
-                        android:src="@drawable/ic_launcher_background" />
+                <!--                <androidx.cardview.widget.CardView-->
+                <!--                    android:id="@+id/card_trans"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="86dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginStart="35dp"-->
+                <!--                    android:layout_marginTop="80dp"-->
+                <!--                    android:layout_marginEnd="35dp"-->
+                <!--                    app:cardCornerRadius="10dp"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toTopOf="parent">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="90dp"
-                        android:layout_marginTop="30dp"
-                        android:text="Transporte"
-                        android:textColor="?attr/android:textColor"
-                        android:textSize="16sp" />
+                <!--                    <ImageView-->
+                <!--                        android:layout_width="60dp"-->
+                <!--                        android:layout_height="60dp"-->
+                <!--                        android:layout_marginStart="20dp"-->
+                <!--                        android:layout_marginTop="15dp"-->
+                <!--                        android:src="@drawable/ic_launcher_background" />-->
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="240dp"
-                        android:layout_marginTop="30dp"
-                        android:orientation="horizontal">
+                <!--                    <TextView-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="90dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:text="Transporte"-->
+                <!--                        android:textColor="?attr/android:textColor"-->
+                <!--                        android:textSize="16sp" />-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="S/."
-                            android:textColor="?attr/android:textColor" />
+                <!--                    <LinearLayout-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="240dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:orientation="horizontal">-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text="30"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                            android:textColor="?attr/android:textColor"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:text="S/."-->
+                <!--                            android:textColor="?attr/android:textColor" />-->
 
-                </androidx.cardview.widget.CardView>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_marginStart="5dp"-->
+                <!--                            android:text="30"-->
+                <!--                            android:textAppearance="@style/TextAppearance.AppCompat.Large"-->
+                <!--                            android:textColor="?attr/android:textColor"-->
+                <!--                            android:textSize="16sp" />-->
+                <!--                    </LinearLayout>-->
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_serv"
-                    android:layout_width="match_parent"
-                    android:layout_height="86dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="35dp"
-                    app:cardCornerRadius="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_trans">
+                <!--                </androidx.cardview.widget.CardView>-->
 
-                    <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="15dp"
-                        android:src="@drawable/ic_launcher_background" />
+                <!--                <androidx.cardview.widget.CardView-->
+                <!--                    android:id="@+id/card_serv"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="86dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginStart="35dp"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:layout_marginEnd="35dp"-->
+                <!--                    app:cardCornerRadius="10dp"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/card_trans">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="90dp"
-                        android:layout_marginTop="30dp"
-                        android:text="Servicios"
-                        android:textSize="16sp" />
+                <!--                    <ImageView-->
+                <!--                        android:layout_width="60dp"-->
+                <!--                        android:layout_height="60dp"-->
+                <!--                        android:layout_marginStart="20dp"-->
+                <!--                        android:layout_marginTop="15dp"-->
+                <!--                        android:src="@drawable/ic_launcher_background" />-->
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="240dp"
-                        android:layout_marginTop="30dp"
-                        android:orientation="horizontal">
+                <!--                    <TextView-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="90dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:text="Servicios"-->
+                <!--                        android:textSize="16sp" />-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="S/." />
+                <!--                    <LinearLayout-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="240dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:orientation="horizontal">-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text="180"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:text="S/." />-->
 
-                </androidx.cardview.widget.CardView>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_marginStart="5dp"-->
+                <!--                            android:text="180"-->
+                <!--                            android:textAppearance="@style/TextAppearance.AppCompat.Large"-->
+                <!--                            android:textSize="16sp" />-->
+                <!--                    </LinearLayout>-->
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_entret"
-                    android:layout_width="match_parent"
-                    android:layout_height="86dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="35dp"
-                    app:cardCornerRadius="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_serv">
+                <!--                </androidx.cardview.widget.CardView>-->
 
-                    <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="15dp"
-                        android:src="@drawable/ic_launcher_background" />
+                <!--                <androidx.cardview.widget.CardView-->
+                <!--                    android:id="@+id/card_entret"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="86dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginStart="35dp"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:layout_marginEnd="35dp"-->
+                <!--                    app:cardCornerRadius="10dp"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/card_serv">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="90dp"
-                        android:layout_marginTop="30dp"
-                        android:text="Entretenimiento"
-                        android:textSize="16sp" />
+                <!--                    <ImageView-->
+                <!--                        android:layout_width="60dp"-->
+                <!--                        android:layout_height="60dp"-->
+                <!--                        android:layout_marginStart="20dp"-->
+                <!--                        android:layout_marginTop="15dp"-->
+                <!--                        android:src="@drawable/ic_launcher_background" />-->
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="240dp"
-                        android:layout_marginTop="30dp"
-                        android:orientation="horizontal">
+                <!--                    <TextView-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="90dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:text="Entretenimiento"-->
+                <!--                        android:textSize="16sp" />-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="S/." />
+                <!--                    <LinearLayout-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="240dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:orientation="horizontal">-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text="100"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:text="S/." />-->
 
-                </androidx.cardview.widget.CardView>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_marginStart="5dp"-->
+                <!--                            android:text="100"-->
+                <!--                            android:textAppearance="@style/TextAppearance.AppCompat.Large"-->
+                <!--                            android:textSize="16sp" />-->
+                <!--                    </LinearLayout>-->
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_ali"
-                    android:layout_width="match_parent"
-                    android:layout_height="86dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="35dp"
-                    app:cardCornerRadius="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_entret">
+                <!--                </androidx.cardview.widget.CardView>-->
 
-                    <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="15dp"
-                        android:src="@drawable/ic_launcher_background" />
+                <!--                <androidx.cardview.widget.CardView-->
+                <!--                    android:id="@+id/card_ali"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="86dp"-->
+                <!--                    android:layout_gravity="center"-->
+                <!--                    android:layout_marginStart="35dp"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:layout_marginEnd="35dp"-->
+                <!--                    app:cardCornerRadius="10dp"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/card_entret">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="90dp"
-                        android:layout_marginTop="30dp"
-                        android:text="Alimentacion"
-                        android:textSize="16sp" />
+                <!--                    <ImageView-->
+                <!--                        android:layout_width="60dp"-->
+                <!--                        android:layout_height="60dp"-->
+                <!--                        android:layout_marginStart="20dp"-->
+                <!--                        android:layout_marginTop="15dp"-->
+                <!--                        android:src="@drawable/ic_launcher_background" />-->
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="240dp"
-                        android:layout_marginTop="30dp"
-                        android:orientation="horizontal">
+                <!--                    <TextView-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="90dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:text="Alimentacion"-->
+                <!--                        android:textSize="16sp" />-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="S/." />
+                <!--                    <LinearLayout-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="240dp"-->
+                <!--                        android:layout_marginTop="30dp"-->
+                <!--                        android:orientation="horizontal">-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:text="90"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:text="S/." />-->
 
-                </androidx.cardview.widget.CardView>
+                <!--                        <TextView-->
+                <!--                            android:layout_width="wrap_content"-->
+                <!--                            android:layout_height="wrap_content"-->
+                <!--                            android:layout_marginStart="5dp"-->
+                <!--                            android:text="90"-->
+                <!--                            android:textAppearance="@style/TextAppearance.AppCompat.Large"-->
+                <!--                            android:textSize="16sp" />-->
+                <!--                    </LinearLayout>-->
+
+                <!--                </androidx.cardview.widget.CardView>-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
@@ -246,10 +258,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            app:tint="@color/black"
             android:contentDescription="Añadir Gastos"
             app:backgroundTint="@color/piel"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_add"
+            app:tint="@color/black" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
