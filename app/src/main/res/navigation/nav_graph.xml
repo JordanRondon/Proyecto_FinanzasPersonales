@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/gastos">
+
+    <fragment
+        android:id="@+id/gastos"
+        android:name="com.example.finanzaspersonales.Fragments.Gastos"
+        android:label="fragment_gastos"
+        tools:layout="@layout/fragment_gastos" />
+    <fragment
+        android:id="@+id/presupuestos"
+        android:name="com.example.finanzaspersonales.Fragments.Presupuestos"
+        android:label="fragment_presupuestos"
+        tools:layout="@layout/fragment_presupuestos" />
+    <fragment
+        android:id="@+id/ahorro"
+        android:name="com.example.finanzaspersonales.Fragments.Ahorro"
+        android:label="fragment_ahorro"
+        tools:layout="@layout/fragment_ahorro" />
+    <fragment
+        android:id="@+id/recordatorio"
+        android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
+        android:label="fragment_recordatorio"
+        tools:layout="@layout/fragment_recordatorio" />
+</navigation>

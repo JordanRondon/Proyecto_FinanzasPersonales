@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group_primary">
+        <item
+            android:id="@+id/agregar_item"
+            android:checkable="true"
+            android:icon="@drawable/ic_home"
+            android:title="Inicio" />
+        <item
+            android:id="@+id/editar_item"
+            android:checkable="true"
+            android:icon="@drawable/ic_history"
+            android:title="Historial" />
+        <item
+            android:id="@+id/eliminar_item"
+            android:checkable="true"
+            android:icon="@drawable/ic_category"
+            android:title="Categorias" />
+    </group>
+
+    <group android:id="@+id/group_secondary">
+        <item
+            android:id="@+id/cerrar_sesion_item"
+            android:checkable="true"
+            android:icon="@drawable/ic_logout"
+            android:title="Cerrar Sesión" />
+    </group>
+</menu>
