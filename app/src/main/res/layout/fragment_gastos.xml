@@ -1,41 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GastosFragment">
+    tools:context=".Fragments.Gastos">
 
-    <!-- TODO: Update blank fragment layout -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout2"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:hint="Buscar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:startIconDrawable="@drawable/search_24dp">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tvBuscarGasto"
+        <ScrollView
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="25dp"
+                    android:text="Gastos"
+                    android:textColor="?attr/android:textColor"
+                    android:textSize="25sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_conteiner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="35dp"
+                    android:layout_marginTop="80dp"
+                    android:layout_marginEnd="35dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textAutoComplete" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:contentDescription="Añadir Gastos"
+            app:backgroundTint="@color/piel"
+            app:srcCompat="@drawable/ic_add"
+            app:tint="@color/black" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvListaGastos"
-        android:layout_width="410dp"
-        android:layout_height="483dp"
-        android:layout_marginTop="43dp"
-        android:layout_marginEnd="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

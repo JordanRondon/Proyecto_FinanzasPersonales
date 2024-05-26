@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/gastos"
+        android:enabled="true"
+        android:icon="@drawable/ic_wallet"
+        android:title="Gastos" />
+    <item
+        android:id="@+id/presupuestos"
+        android:enabled="true"
+        android:icon="@drawable/ic_request"
+        android:title="Presupuestos" />
+    <item
+        android:id="@+id/ahorro"
+        android:enabled="true"
+        android:icon="@drawable/ic_savings"
+        android:title="Ahorro" />
+    <item
+        android:id="@+id/recordatorio"
+        android:enabled="true"
+        android:icon="@drawable/ic_remember"
+        android:title="Recordatorios" />
+</menu>

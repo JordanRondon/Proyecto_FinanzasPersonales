@@ -18,9 +18,9 @@
     <string name="btnRcuenta">Recuperar</string>
     <string name="tvRCuentaPregunta">¿Recordaste tu cuenta?</string>
     <string name="tvRCuentaLogin">Iniciar sesión</string>
-
     <string name="btnHistorialGastos">Gastos</string>
     <string name="btnHistorialGrafico">Grafico</string>
+  
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
