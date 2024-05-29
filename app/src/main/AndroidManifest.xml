@@ -16,7 +16,7 @@
             android:name=".HistorialActivity"
             android:exported="false" />
         <activity
-            android:name=".Presupuesto_Main_Activity"
+            android:name=".Home"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Home"
+            android:name=".Presupuesto_Main_Activity"
             android:exported="false" />
         <activity
             android:name=".RecuperarCuentaActivity"
