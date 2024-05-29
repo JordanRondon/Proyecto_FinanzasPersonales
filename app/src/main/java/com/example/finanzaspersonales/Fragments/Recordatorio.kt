@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
+import android.widget.EditText
+import android.widget.Toast
+import android.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +43,8 @@ class Recordatorio : Fragment() {
         RecyclerViewRecordatorio.adapter = adapter
 
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val FechaElegida = "$dayOfMonth/${month+1}/$year"
-            mostrarRecordatorios(FechaElegida)
+            fechaSeleccionada = "$dayOfMonth/${month+1}/$year"
+            mostrarRecordatorios(fechaSeleccionada!!)
         }
         fbAgregarRecordatorio.setOnClickListener {
             if (fechaSeleccionada != null) {
@@ -62,5 +65,32 @@ class Recordatorio : Fragment() {
     private fun mostrarRecordatorios(fecha: String){
         val recordatoriosFiltrados = listaRecordatorio.filter { it.fecha == fecha}
         adapter.actualizarLista(recordatoriosFiltrados)
+    }
+
+    private fun mostrarDialogoAgregarRecordatorio(fecha:String){
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Agregar Recordatorio")
+
+        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialogo_agregar_recordatorio,null)
+        val inputDescripcion = view.findViewById<EditText>(R.id.etDescripcion)
+
+        builder.setView(view)
+
+        builder.setPositiveButton("Agregar"){dialog, _ ->
+            val descripcion = inputDescripcion.text.toString()
+            if(descripcion.isNotEmpty()){
+                val recordatorio = Recordatorio(fecha,descripcion)
+                listaRecordatorio.add(recordatorio)
+                mostrarRecordatorios(fecha)
+                Toast.makeText(requireContext(), "Recordatorio agregado", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }else {
+                Toast.makeText(requireContext(), "Por favor, ingrese una descripción", Toast.LENGTH_SHORT).show()
+            }
+        }
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
     }
 }

@@ -23,7 +23,6 @@
         <activity
             android:name=".HistorialActivity"
             android:exported="false">
-
         </activity>
         <activity
             android:name=".Presupuesto_Main_Activity"
