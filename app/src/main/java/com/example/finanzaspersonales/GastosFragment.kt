@@ -38,7 +38,7 @@ class GastosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        RecyclerViewHistorial = view.findViewById(R.id.rvListaGastos)
+        RecyclerViewHistorial = view.findViewById(R.id.recycle_conteiner)
 
         val categorias = listOf("Comida", "Transporte", "Entretenimiento", "Compras", "Salud", "asd", "qwe")
         val valores = listOf(50.0f, 30.5f, 20.0f, 40.0f, 15.0f, 56.0f, 67.7f)
