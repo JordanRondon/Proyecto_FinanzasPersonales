@@ -52,8 +52,7 @@
             app:itemTextColor="@color/selector_text_color"
             app:labelVisibilityMode="auto"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/bottom_navigation_menu"
-            tools:layout_editor_absoluteX="0dp" />
+            app:menu="@menu/bottom_navigation_menu" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

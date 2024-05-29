@@ -21,8 +21,8 @@
         android:label="fragment_ahorro"
         tools:layout="@layout/fragment_ahorro" />
     <fragment
-        android:id="@+id/recordatorio"
-        android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
+        android:id="@+id/notificaciones"
+        android:name="com.example.finanzaspersonales.Fragments.Notificaciones"
         android:label="fragment_recordatorio"
-        tools:layout="@layout/fragment_recordatorio" />
+        tools:layout="@layout/fragment_notificaciones" />
 </navigation>
