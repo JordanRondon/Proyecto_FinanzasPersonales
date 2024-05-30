@@ -25,4 +25,9 @@
         android:name="com.example.finanzaspersonales.Fragments.Notificaciones"
         android:label="fragment_recordatorio"
         tools:layout="@layout/fragment_notificaciones" />
+    <fragment
+        android:id="@+id/recordatorio"
+        android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
+        android:label="fragment_recordatorio"
+        tools:layout="@layout/fragment_recordatorio" />
 </navigation>
