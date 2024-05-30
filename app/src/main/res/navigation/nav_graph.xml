@@ -21,10 +21,18 @@
         android:label="fragment_ahorro"
         tools:layout="@layout/fragment_ahorro" />
     <fragment
+        android:id="@+id/recordatorio"
+        android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
+        android:label="fragment_recordatorio"
+        tools:layout="@layout/fragment_recordatorio" />
+    <fragment
         android:id="@+id/notificaciones"
         android:name="com.example.finanzaspersonales.Fragments.Notificaciones"
         android:label="fragment_recordatorio"
         tools:layout="@layout/fragment_notificaciones" />
+    <action
+        android:id="@+id/action_notificaciones"
+        app:destination="@+id/notificaciones" />
     <fragment
 
         android:id="@+id/categoria"
@@ -49,5 +57,4 @@
         android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
         android:label="fragment_recordatorio"
         tools:layout="@layout/fragment_recordatorio" />
-
 </navigation>
