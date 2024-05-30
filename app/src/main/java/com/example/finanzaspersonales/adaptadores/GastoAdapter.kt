@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finanzaspersonales.entidades.EntidadGasto
 
-class adaptadorGastos(
+class GastoAdapter(
     private val context: Context,
-    private val historalGastos: List<EntidadGastos>
-): RecyclerView.Adapter<adaptadorGastos.ViewHolder>() {
+    private val historalGastos: List<EntidadGasto>
+): RecyclerView.Adapter<GastoAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvCategoria: TextView = view.findViewById(R.id.tvCategoria)

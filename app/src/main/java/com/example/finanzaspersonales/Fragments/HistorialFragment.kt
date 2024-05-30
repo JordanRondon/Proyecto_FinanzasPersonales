@@ -41,5 +41,9 @@ class HistorialFragment : Fragment() {
                 }
             }
         }
+
+        if (savedInstanceState == null) {
+            toggleGroup.check(R.id.btnGastos)
+        }
     }
 }
