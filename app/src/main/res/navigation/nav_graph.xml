@@ -53,8 +53,12 @@
         app:destination="@+id/categoria"/>
     <action android:id="@+id/action_inicio"
         app:destination="@+id/gastos"/>
-        android:id="@+id/recordatorio"
-        android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
-        android:label="fragment_recordatorio"
-        tools:layout="@layout/fragment_recordatorio" />
+    <fragment
+        android:id="@+id/historialFragment"
+        android:name="com.example.finanzaspersonales.Fragments.HistorialFragment"
+        android:label="fragment_historial"
+        tools:layout="@layout/fragment_historial" />
+
+    <action android:id="@+id/action_historialGastos"
+        app:destination="@+id/historialFragment"/>
 </navigation>

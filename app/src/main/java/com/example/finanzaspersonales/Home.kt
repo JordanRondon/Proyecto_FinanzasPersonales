@@ -67,12 +67,15 @@ class Home : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.agregar_item -> {
+                R.id.inicio_item -> {
                     navController.navigate(R.id.action_inicio)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
-                R.id.editar_item -> print("----------EDITAR ITEM ")
-                R.id.eliminar_item -> {
+                R.id.historial_item -> {
+                    navController.navigate(R.id.action_historialGastos)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                }
+                R.id.categoria_item -> {
                     navController.navigate(R.id.action_nueva_categoria)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
