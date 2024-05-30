@@ -10,9 +10,9 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finanzaspersonales.Categoria
+import com.example.finanzaspersonales.Clases.Categoria
 import com.example.finanzaspersonales.CategoriaAdapter
-import com.example.finanzaspersonales.Presupuesto
+import com.example.finanzaspersonales.Clases.Presupuesto
 import com.example.finanzaspersonales.PresupuestoAdapter
 import com.example.finanzaspersonales.R
 
