@@ -3,13 +3,16 @@ package com.example.finanzaspersonales
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import com.example.finanzaspersonales.Fragments.Categoria
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -63,9 +66,16 @@ class Home : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.agregar_item,
-                R.id.editar_item,
-                R.id.eliminar_item -> Log.d("NavigationDrawer", "Item selected: ${it.title}")
+
+                R.id.agregar_item -> {
+                    navController.navigate(R.id.action_inicio)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                }
+                R.id.editar_item -> print("----------EDITAR ITEM ")
+                R.id.eliminar_item -> {
+                    navController.navigate(R.id.action_nueva_categoria)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                }
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
@@ -79,6 +89,12 @@ class Home : AppCompatActivity() {
             super.onOptionsItemSelected(item)
         }
     }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+           .replace(R.id.fragment_container, fragment)
+            .commit()
+   }
 }
 
 //        setupBottomNavigation()
@@ -98,9 +114,5 @@ class Home : AppCompatActivity() {
 //        }
 //    }
 //
-//    private fun replaceFragment(fragment: Fragment) {
-//        supportFragmentManager.beginTransaction()
-//            .replace(R.id.fragment_container, fragment)
-//            .commit()
-//    }
+//
 

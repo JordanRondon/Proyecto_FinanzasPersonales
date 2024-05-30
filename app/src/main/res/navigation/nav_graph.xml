@@ -25,4 +25,24 @@
         android:name="com.example.finanzaspersonales.Fragments.Notificaciones"
         android:label="fragment_recordatorio"
         tools:layout="@layout/fragment_notificaciones" />
+    <fragment
+        android:id="@+id/categoria"
+        android:name="com.example.finanzaspersonales.Fragments.Categoria"
+        android:label="fragment_categoria"
+        tools:layout="@layout/fragment_categoria" >
+        <action
+            android:id="@+id/action_categoria_to_nuevaCategoria"
+            app:destination="@id/nuevaCategoria" />
+    </fragment>
+    <fragment
+        android:id="@+id/nuevaCategoria"
+        android:name="com.example.finanzaspersonales.Fragments.NuevaCategoria"
+        android:label="fragment_nueva_categoria"
+        tools:layout="@layout/fragment_nueva_categoria" />
+
+    <action android:id="@+id/action_nueva_categoria"
+        app:destination="@+id/categoria"/>
+    <action android:id="@+id/action_inicio"
+        app:destination="@+id/gastos"/>
+
 </navigation>

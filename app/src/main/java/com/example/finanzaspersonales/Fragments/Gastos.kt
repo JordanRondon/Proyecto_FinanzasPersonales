@@ -59,5 +59,6 @@ class Gastos : Fragment() {
         }.addOnFailureListener {
             Toast.makeText(context, "Algo salio mal", Toast.LENGTH_SHORT).show()
         }
+
     }
 }

@@ -1,4 +1,4 @@
-package com.example.finanzaspersonales
+package com.example.finanzaspersonales.Clases
 
 data class Categoria(val nombre: String, val icono: Int)
 

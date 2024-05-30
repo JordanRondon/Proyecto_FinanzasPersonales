@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.finanzaspersonales.Clases.Categoria
+
 class CategoriaAdapter(context: Context, private val resource: Int, private val items: List<Categoria>) :
     ArrayAdapter<Categoria>(context, resource, items) {
 
