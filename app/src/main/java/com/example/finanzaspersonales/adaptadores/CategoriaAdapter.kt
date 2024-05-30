@@ -6,9 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.R
-import com.example.finanzaspersonales.entidades.Categoria
 
-class CategoriaAdapter(arrayListCategoria: ArrayList<Categoria>) :
+class CategoriaAdapter(arrayListCategoria: ArrayList<com.example.finanzaspersonales.entidades.Categoria>) :
     RecyclerView.Adapter<CategoriaAdapter.ViewHolder>() {
 
     private val listCategoria = arrayListCategoria
