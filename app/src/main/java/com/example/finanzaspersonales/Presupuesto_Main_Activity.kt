@@ -1,7 +1,6 @@
 package com.example.finanzaspersonales
 
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
@@ -11,6 +10,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finanzaspersonales.Clases.Categoria
+import com.example.finanzaspersonales.Clases.Presupuesto
 
 class Presupuesto_Main_Activity : AppCompatActivity() {
 

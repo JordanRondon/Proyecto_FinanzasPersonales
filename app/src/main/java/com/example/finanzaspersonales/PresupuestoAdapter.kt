@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finanzaspersonales.Clases.Presupuesto
 
 class PresupuestoAdapter(private val presupuestos: List<Presupuesto>) : RecyclerView.Adapter<PresupuestoAdapter.PresupuestoViewHolder>() {
 

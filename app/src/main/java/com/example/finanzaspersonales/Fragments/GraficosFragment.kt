@@ -165,13 +165,4 @@ class GraficosFragment : Fragment() {
             return diaSemana.getOrNull(value.toInt()) ?: value.toString()
         }
     }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GraficosFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
 }
