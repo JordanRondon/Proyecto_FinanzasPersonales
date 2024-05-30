@@ -32,13 +32,13 @@ class GastosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gastos, container, false)
+        return inflater.inflate(R.layout.fragment_historial_gastos, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        RecyclerViewHistorial = view.findViewById(R.id.recycle_conteiner)
+        RecyclerViewHistorial = view.findViewById(R.id.rvListaGastos)
 
         val categorias = listOf("Comida", "Transporte", "Entretenimiento", "Compras", "Salud", "asd", "qwe")
         val valores = listOf(50.0f, 30.5f, 20.0f, 40.0f, 15.0f, 56.0f, 67.7f)

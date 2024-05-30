@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.Recordatorio">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -21,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                tools:layout_editor_absoluteX="0dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RVrecordatorios"
@@ -40,7 +39,8 @@
                 android:contentDescription="Añadir Recordatorios"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:backgroundTint="@color/piel"/>
+                app:backgroundTint="@color/piel"
+                app:tint="@color/black"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
