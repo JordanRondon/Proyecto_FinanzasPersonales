@@ -3,6 +3,7 @@ package com.example.finanzaspersonales
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -24,7 +25,6 @@ class Home : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -38,6 +38,7 @@ class Home : AppCompatActivity() {
         navController = navHostFragment.navController
 
         setupWithNavController(bottomNavigation, navController)
+
 
         setupActionBar()
         setupNavigationDrawer()
@@ -63,13 +64,23 @@ class Home : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.agregar_item,
-                R.id.editar_item,
-                R.id.eliminar_item -> Log.d("NavigationDrawer", "Item selected: ${it.title}")
+                R.id.inicio_item -> Log.d("NavigationDrawer", "Item selected: ${it.title}")
+                R.id.historial_item -> Log.d("NavigationDrawer", "Item selected: ${it.title}")
+                R.id.categoria_item -> Log.d("NavigationDrawer", "Item selected: ${it.title}")
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+        val header = navigationView.getHeaderView(0)
+        val btnNotificacion = header.findViewById<ImageView>(R.id.btnNotificacion)
+
+        btnNotificacion.setOnClickListener {
+            navController.navigate(R.id.action_notificaciones)
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
