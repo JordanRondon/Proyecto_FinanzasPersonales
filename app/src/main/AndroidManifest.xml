@@ -12,9 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinanzasPersonales"
         tools:targetApi="31">
-
         <activity
-            android:name=".MainActivity"
+            android:name=".Home"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +31,7 @@
             android:name=".RegistroActivity"
             android:exported="false" />
         <activity
-            android:name=".Home"
+            android:name=".MainActivity"
             android:exported="false" />
     </application>
 

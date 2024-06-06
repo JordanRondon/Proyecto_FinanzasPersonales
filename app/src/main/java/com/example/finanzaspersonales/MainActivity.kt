@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -62,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             if (it.exists()) {
                 //for (ds: DataSnapshot in it.children) {
                     val getCorreo = it.child("correo").value.toString()
-                    val getContrasenia = it.child("password").value.toString()
+                    val getContrasenia = it.child("contraseña").value.toString()
 
                     if (getCorreo == correo && getContrasenia == contra) {
                         Toast.makeText(this, "BIENVENIDO", Toast.LENGTH_SHORT).show()
