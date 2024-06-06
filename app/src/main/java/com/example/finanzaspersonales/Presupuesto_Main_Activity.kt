@@ -22,18 +22,17 @@ class Presupuesto_Main_Activity : AppCompatActivity() {
         setContentView(R.layout.activity_presupuesto_main)
 
         val categorias = listOf(
-            Categoria("AGUA", R.drawable.agua_icono),
-            Categoria("COMIDA", R.drawable.comida_icono),
-            Categoria("LUZ", R.drawable.luz_icono),
-
+            Categoria("AGUA", "","agua_icono"),
+            Categoria("COMIDA", "","comida_icono"),
+            Categoria("LUZ", "","luz_icono")
         )
-        val pre1 = Presupuesto("Presupuesto luz casa 1", "Detalles", R.drawable.luz_icono)
-        val pre2 = Presupuesto("Presupuesto comida semanal", "Detalles", R.drawable.comida_icono)
-        val pre3 = Presupuesto("Presupuesto agua casa 2", "Detalles", R.drawable.agua_icono)
-        val pre4 = Presupuesto("Presupuesto comida familia 2", "Detalles", R.drawable.comida_icono)
-        val pre5 = Presupuesto("Presupuesto luz casa 2", "Detalles", R.drawable.luz_icono)
-        val pre6 = Presupuesto("Presupuesto comida familia 2", "Detalles", R.drawable.comida_icono)
-        val pre7 = Presupuesto("Presupuesto luz casa 1", "Detalles", R.drawable.luz_icono)
+        val pre1 = Presupuesto("Presupuesto luz casa 1", "Detalles", "luz_icono")
+        val pre2 = Presupuesto("Presupuesto comida semanal", "Detalles", "comida_icono")
+        val pre3 = Presupuesto("Presupuesto agua casa 2", "Detalles", "agua_icono")
+        val pre4 = Presupuesto("Presupuesto comida familia 2", "Detalles", "comida_icono")
+        val pre5 = Presupuesto("Presupuesto luz casa 2", "Detalles", "luz_icono")
+        val pre6 = Presupuesto("Presupuesto comida familia 2", "Detalles", "comida_icono")
+        val pre7 = Presupuesto("Presupuesto luz casa 1", "Detalles", "luz_icono")
         presupuestos.add(pre1)
         presupuestos.add(pre2)
         presupuestos.add(pre3)
@@ -43,7 +42,7 @@ class Presupuesto_Main_Activity : AppCompatActivity() {
         presupuestos.add(pre7)
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = PresupuestoAdapter(presupuestos)
+        //recyclerView.adapter = PresupuestoAdapter(presupuestos)
         val spinner = findViewById<Spinner>(R.id.spinner)
         val adapter = CategoriaAdapter(this, R.layout.presupuesto_items_spinner, categorias)
         spinner.adapter = adapter
@@ -52,7 +51,7 @@ class Presupuesto_Main_Activity : AppCompatActivity() {
             val nombrePresupuesto = findViewById<EditText>(R.id.editTextText).text.toString()
             val categoriaSeleccionada = spinner.selectedItem as Categoria
 
-            val nuevoPresupuesto = Presupuesto(nombrePresupuesto, "Detalles", categoriaSeleccionada.icono)
+            val nuevoPresupuesto = Presupuesto(nombrePresupuesto, "Detalles", categoriaSeleccionada.URLicono)
             presupuestos.add(nuevoPresupuesto)
             recyclerView.adapter?.notifyItemInserted(presupuestos.size - 1)
             findViewById<EditText>(R.id.editTextText).setText("")

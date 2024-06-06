@@ -94,6 +94,7 @@
                     <RadioGroup
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:id="@+id/radiogrouppresupuesto"
                         android:orientation="horizontal">
 
                         <RadioButton
@@ -106,7 +107,7 @@
                             android:textSize="13sp" />
 
                         <RadioButton
-                            android:id="@+id/radioButton2"
+                            android:id="@+id/radioButton1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:text="Semanal"
@@ -124,7 +125,7 @@
 
                 <Spinner
                     android:id="@+id/spinner"
-                    android:layout_width="151dp"
+                    android:layout_width="215dp"
                     android:layout_height="45dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/presupuesto_spinner_estilo"
