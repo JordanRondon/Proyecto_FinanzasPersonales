@@ -59,7 +59,6 @@ class Register : Fragment() {
     }
 
     private fun register() {
-
         val email = tvCorreoRegistro.text.toString()
         val password = tvContraseniaRegistro.text.toString()
 
@@ -77,9 +76,16 @@ class Register : Fragment() {
 
                     database.child("Usuario").child(userId).setValue(user)
                         .addOnCompleteListener { task ->
-                            Log.d("USUARIO", "USUARIO REGISTRADO" + email);
+                            Log.d("USUARIO", "USUARIO REGISTRADO: $email")
                         }
 
+                    // Registrar userId en todas las tablas sin ningún valor adicional
+                    database.child("Categoria").child(userId).setValue("")
+                    database.child("Gasto").child(userId).setValue("")
+                    database.child("GastoAnual").child(userId).setValue("")
+                    database.child("GastoSemanal").child(userId).setValue("")
+                    database.child("NotificacionPago").child(userId).setValue("")
+                    database.child("Presupuesto").child(userId).setValue("")
 
                 } else {
                     Toast.makeText(requireContext(), "CORREO YA REGISTRADO", Toast.LENGTH_SHORT)
@@ -90,5 +96,6 @@ class Register : Fragment() {
             Toast.makeText(requireContext(), "CAMPOS FALTANTES", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 }

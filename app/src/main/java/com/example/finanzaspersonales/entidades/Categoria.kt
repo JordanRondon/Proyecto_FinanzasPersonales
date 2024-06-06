@@ -1,6 +1,6 @@
 package com.example.finanzaspersonales.entidades
 
-class Categoria (
-    var codigo : Int? = null,
-    var nombre : String? = null
+class Categoria(
+    var nombre: String? = null,
+    var monto: Float? = null
 )
