@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -31,23 +30,9 @@ class Aplicacion: Application() {
                 return@addOnCompleteListener
             }
             val token = it.result
-            userName?.let{
-                registrarToken(it,token)
-            }?: Log.w("FCM", "User is not logged in, token not registered.")
-            Log.d("FCM", "Token: $token")
             println("El token es $token")
         }
         createNotificationChannel()
-    }
-    private fun registrarToken(user:String, token:String){
-        val refToken = database.child("Usuario").child(user).child("Token")
-        refToken.setValue(token).addOnCompleteListener{task ->
-            if(task.isSuccessful){
-                Log.d("FCM", "Token registered successfully")
-            }else {
-                Log.w("FCM", "Token registration failed", task.exception)
-            }
-        }
     }
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
