@@ -19,8 +19,8 @@ class CategoriaAdapter(arrayListCategoria: ArrayList<com.example.finanzaspersona
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemId.text = listCategoria[position].codigo.toString()
-        viewHolder.itemNombre.text = listCategoria[position].nombre.toString()
+        viewHolder.itemId.text = listCategoria[position].nombre.toString()
+        viewHolder.itemNombre.text = listCategoria[position].monto.toString()
     }
 
     override fun getItemCount(): Int {
@@ -28,7 +28,7 @@ class CategoriaAdapter(arrayListCategoria: ArrayList<com.example.finanzaspersona
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var itemId: TextView = itemView.findViewById(R.id.txt_id)
-        var itemNombre: TextView = itemView.findViewById(R.id.txt_nombre)
+        var itemId: TextView = itemView.findViewById(R.id.txt_nombre)
+        var itemNombre: TextView = itemView.findViewById(R.id.txt_monto)
     }
 }

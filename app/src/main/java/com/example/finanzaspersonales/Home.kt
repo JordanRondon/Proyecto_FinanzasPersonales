@@ -1,7 +1,6 @@
 package com.example.finanzaspersonales
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.Toast
@@ -10,13 +9,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+
+import com.example.finanzaspersonales.Clases.TaskViewModel
 import com.example.finanzaspersonales.Fragments.Categoria
+
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class Home : AppCompatActivity() {
 
@@ -27,12 +32,16 @@ class Home : AppCompatActivity() {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
     private lateinit var navController: NavController
+    private lateinit var taskViewModel: TaskViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        //taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
+
 
         initializeViews()
 
@@ -79,6 +88,11 @@ class Home : AppCompatActivity() {
                     navController.navigate(R.id.action_nueva_categoria)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
+                R.id.cerrar_sesion_item ->{
+                    Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
+                    FirebaseAuth.getInstance().signOut()
+                    finish()
+                }
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
@@ -91,8 +105,6 @@ class Home : AppCompatActivity() {
             navController.navigate(R.id.action_notificaciones)
             drawerLayout.closeDrawer(GravityCompat.START)
         }
-
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
