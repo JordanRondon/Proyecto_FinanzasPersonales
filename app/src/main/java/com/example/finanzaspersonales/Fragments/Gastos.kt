@@ -36,7 +36,7 @@ class Gastos : Fragment() {
         categoria_adapter = CategoriaAdapter(arrayListCategoria)
         recycle_conteiner.adapter = categoria_adapter
 
-        getCategoria()
+        //getCategoria()
 
         return view
     }
