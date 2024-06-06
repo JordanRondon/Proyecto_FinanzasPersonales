@@ -1,7 +1,8 @@
 package com.example.finanzaspersonales.entidades
 
 class EntidadGasto (
-    var nombreCategoria: String = "",
-    var fechaGasto: String = "",
-    var valorGasto: Float = 0.0f
+    var categoriaId: String = "",
+    var presupuestoId: String = "",
+    var valorGasto: Float = 0.0f,
+    var fechaGasto: String = ""
 )
