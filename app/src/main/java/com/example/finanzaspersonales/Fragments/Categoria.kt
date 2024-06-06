@@ -15,6 +15,8 @@ import com.example.finanzaspersonales.adaptadores.CrudCategoriaAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+
 class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
@@ -26,7 +28,7 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val username = "Admin"
+        val username = FirebaseAuth.getInstance().currentUser!!.uid
         database = FirebaseDatabase.getInstance().getReference("Categoria/$username")
     }
 

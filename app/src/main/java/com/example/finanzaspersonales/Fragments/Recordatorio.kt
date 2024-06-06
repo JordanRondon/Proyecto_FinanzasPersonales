@@ -16,6 +16,7 @@ import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.RecordatorioAdapter
 import com.example.finanzaspersonales.entidades.Recordatorio
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -35,7 +36,7 @@ class Recordatorio : Fragment() {
     private val listaRecordatorio = mutableListOf<Recordatorio>()
     private var fechaSeleccionada: Date? = null
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    private val userName = "Admin"
+    private val userName = FirebaseAuth.getInstance().currentUser!!.uid
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

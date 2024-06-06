@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -42,7 +43,8 @@ class NuevaCategoria : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val username = "Admin"
+        val username = FirebaseAuth.getInstance().currentUser!!.uid
+
         database  = FirebaseDatabase.getInstance().getReference("Categoria/"+username)
 
     }
