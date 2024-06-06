@@ -27,6 +27,7 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase_insertar
+import com.google.firebase.auth.FirebaseAuth
 
 class Presupuestos : Fragment() {
 
@@ -46,7 +47,8 @@ class Presupuestos : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val username = "Admin"
+        val username = FirebaseAuth.getInstance().currentUser!!.uid
+
         database_categoria = FirebaseDatabase.getInstance().getReference("Categoria/$username")
         database_presupuesto = FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
 
