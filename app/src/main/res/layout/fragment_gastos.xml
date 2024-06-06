@@ -52,6 +52,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:contentDescription="Añadir Gastos"
+            app:shapeAppearance="@style/Widget.Design.FloatingActionButton"
             app:backgroundTint="@color/piel"
             app:srcCompat="@drawable/ic_add"
             app:tint="@color/black" />

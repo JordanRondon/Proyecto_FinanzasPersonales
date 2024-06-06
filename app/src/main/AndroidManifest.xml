@@ -28,7 +28,7 @@
             android:name=".RecuperarCuentaActivity"
             android:exported="false" />
         <activity
-            android:name=".RegistroActivity"
+            android:name=".Home"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

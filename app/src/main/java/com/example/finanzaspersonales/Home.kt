@@ -14,6 +14,7 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class Home : AppCompatActivity() {
 
@@ -76,6 +77,11 @@ class Home : AppCompatActivity() {
                     navController.navigate(R.id.action_nueva_categoria)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
+                R.id.cerrar_sesion_item ->{
+                    Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
+                    FirebaseAuth.getInstance().signOut()
+                    finish()
+                }
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
@@ -88,8 +94,6 @@ class Home : AppCompatActivity() {
             navController.navigate(R.id.action_notificaciones)
             drawerLayout.closeDrawer(GravityCompat.START)
         }
-
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
