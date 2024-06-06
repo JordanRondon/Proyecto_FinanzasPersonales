@@ -32,7 +32,7 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-            <fragment
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="0dp"
@@ -62,16 +62,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
+            android:id="@+id/standard_bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/standard_bottom_sheet"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-
-
-
-        </FrameLayout>
-
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

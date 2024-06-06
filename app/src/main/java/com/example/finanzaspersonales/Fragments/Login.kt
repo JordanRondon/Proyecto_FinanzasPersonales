@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.Home
 import com.example.finanzaspersonales.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -24,7 +25,8 @@ class Login : Fragment() {
     private lateinit var tvRegistrate: TextView
     private lateinit var tvCorreo: TextView
     private lateinit var tvContrasenia: TextView
-    private lateinit var database: DatabaseReference
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +39,15 @@ class Login : Fragment() {
         tvContrasenia = view.findViewById(R.id.tvContrasenia)
         btnInicioSecion = view.findViewById(R.id.btnInicioSecion)
 
+        auth = FirebaseAuth.getInstance()
+
+        val user = FirebaseAuth.getInstance().currentUser
+
+        //Permite dejar el inicio de sesion activo
+        if(user != null){
+            Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_login_to_home2)
+        }
 
         tvRegistrate.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_register)
@@ -50,27 +61,21 @@ class Login : Fragment() {
     }
 
     private fun login() {
-        database = FirebaseDatabase.getInstance().reference
+        val email = tvCorreo.text.toString()
+        val password = tvContrasenia.text.toString()
 
-        val correo = tvCorreo.text.toString()
-        val contra = tvContrasenia.text.toString()
-
-        database.child("Usuario").child("Admin").get().addOnSuccessListener { it ->
-            if (it.exists()) {
-                val getCorreo = it.child("correo").value.toString()
-                val getContrasenia = it.child("contraseña").value.toString()
-
-                if (getCorreo == correo && getContrasenia == contra) {
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_login_to_home2)
+                    val user = auth.currentUser
                 } else {
-                    Toast.makeText(requireContext(), "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "DATOS INCORRECTOS", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(requireContext(), "Usuario no encontrado", Toast.LENGTH_SHORT).show()
             }
-        }.addOnFailureListener {
-            Toast.makeText(requireContext(), "Algo salió mal", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "CAMPOS FALTANTES", Toast.LENGTH_SHORT).show()
         }
     }
 
