@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.entidades.Recordatorio
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+
 class RecordatorioAdapter(private val context: Context, private var recordatorios: List<Recordatorio>) : RecyclerView.Adapter<RecordatorioAdapter.ViewHolder>(){
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val tvFecha: TextView = view.findViewById(R.id.tvFecha)
@@ -24,16 +25,10 @@ class RecordatorioAdapter(private val context: Context, private var recordatorio
     override fun onBindViewHolder(holder: ViewHolder, position: Int){
         val recordatorio = recordatorios[position]
 
-        val registroFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val salidaFecha = SimpleDateFormat("MMM dd", Locale.getDefault())
-        val date: Date? = registroFecha.parse(recordatorio.fecha)
-        val FechaCambiada: String = if (date!=null){
-            salidaFecha.format(date)
-        } else {
-            recordatorio.fecha
-        }
+        val formatoFecha = SimpleDateFormat("MMM dd", Locale.getDefault())
+        val fechaItems = formatoFecha.format(recordatorio.fecha)
 
-        holder.tvFecha.text = FechaCambiada
+        holder.tvFecha.text = fechaItems
         holder.tvDescripcion.text = recordatorio.descripcion
     }
 
