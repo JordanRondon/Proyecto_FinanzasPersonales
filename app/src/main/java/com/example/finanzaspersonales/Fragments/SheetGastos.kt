@@ -1,7 +1,7 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.finanzaspersonales.Clases.TaskViewModel
-import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.databinding.FragmentSheetGastosBinding
 import com.example.finanzaspersonales.entidades.Categoria
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -17,6 +16,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class SheetGastos : BottomSheetDialogFragment() {
 
@@ -24,6 +28,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var taskViewModel: TaskViewModel
     private val arrayListCategoria: ArrayList<String> = ArrayList()
 
+    private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
 
     private lateinit var database: DatabaseReference
 
@@ -36,20 +41,11 @@ class SheetGastos : BottomSheetDialogFragment() {
             saveCategoria()
         }
 
+
+
+
         getCategorias()
     }
-
-//    private fun saveCategoria() {
-//        if (binding.etMonto.text.isNotEmpty()) {
-//            taskViewModel.categoria.value = binding.spCategoria.selectedItem.toString()
-//            taskViewModel.monto.value = binding.etMonto.text.toString().toFloat()
-//
-//
-//            binding.spCategoria.setSelection(0)
-//            binding.etMonto.text.clear()
-//            dismiss()
-//        }
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,6 +58,8 @@ class SheetGastos : BottomSheetDialogFragment() {
     private fun saveCategoria() {
         val categoriaNombre = binding.spCategoria.selectedItem.toString()
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
+        val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        val time = zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
         if (userId != null && categoriaNombre.isNotEmpty() && categoriaMonto != null) {
@@ -70,24 +68,31 @@ class SheetGastos : BottomSheetDialogFragment() {
                 val categoria = Categoria(categoriaNombre, categoriaMonto)
                 database.child("Gastos").child(userId).child(categoriaId).setValue(categoria)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Categoría guardada exitosamente", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Categoría guardada exitosamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         binding.spCategoria.setSelection(0)
                         binding.etMonto.text.clear()
                         dismiss()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(context, "Error al guardar la categoría", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al guardar la categoría", Toast.LENGTH_SHORT)
+                            .show()
                     }
             }
         } else {
-            Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
     private fun getCategorias() {
         database = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
 
-        database.child("Categoria").child("Admin").get().addOnSuccessListener { dataSnapshot ->
+        database.child("Categoria").child(user).get().addOnSuccessListener { dataSnapshot ->
             arrayListCategoria.clear()
             if (dataSnapshot.exists()) {
                 for (ds: DataSnapshot in dataSnapshot.children) {
