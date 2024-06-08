@@ -16,10 +16,9 @@ import com.google.firebase.database.ValueEventListener
 
 class GastoAdapter(
     private val context: Context,
-    private val historalGastos: List<EntidadGasto>,
+    private val historialGastos: List<EntidadGasto>,
     private val database: DatabaseReference
 ): RecyclerView.Adapter<GastoAdapter.ViewHolder>() {
-
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvCategoria: TextView = view.findViewById(R.id.tvCategoria)
         val tvFecha: TextView = view.findViewById(R.id.tvFecha)
@@ -33,7 +32,7 @@ class GastoAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = historalGastos[position]
+        val item = historialGastos[position]
         val categoriaRef = database.child(item.categoriaId)
 
         categoriaRef.addValueEventListener(object : ValueEventListener {
@@ -58,5 +57,5 @@ class GastoAdapter(
         holder.tvValorSoles.text = item.valorGasto.toString()
     }
 
-    override fun getItemCount() = historalGastos.size
+    override fun getItemCount() = historialGastos.size
 }
