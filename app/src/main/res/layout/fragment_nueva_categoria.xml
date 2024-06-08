@@ -468,26 +468,24 @@
 
             </LinearLayout>
 
-            <Space
+            <Button
+                android:id="@+id/btn_guardar_categoria"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="80dp"
+                android:layout_height="wrap_content"
+                android:text="Guardar"
+
+
+                android:backgroundTint="#F58C27"
                 />
 
 
         </LinearLayout>
 
-    </ScrollView>
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginBottom="40dp"
-        android:layout_height="wrap_content"
-        android:text="Guardar"
-        android:layout_gravity="end|bottom"
 
-        android:backgroundTint="#F58C27"
-        />
+    </ScrollView>
+
 </FrameLayout>

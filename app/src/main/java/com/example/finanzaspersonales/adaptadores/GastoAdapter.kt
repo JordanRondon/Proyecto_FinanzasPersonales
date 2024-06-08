@@ -1,6 +1,7 @@
 package com.example.finanzaspersonales
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.entidades.EntidadGasto
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 
 class GastoAdapter(
     private val context: Context,
-    private val historalGastos: List<EntidadGasto>
+    private val historalGastos: List<EntidadGasto>,
+    private val database: DatabaseReference
 ): RecyclerView.Adapter<GastoAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -28,14 +34,26 @@ class GastoAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = historalGastos[position]
+        val categoriaRef = database.child(item.categoriaId)
 
-        /*if (item.valorMaquina == item.valorUsuario) {
-            holder.ivLogo.setImageResource(imagenes[0])
-        } else {
-            holder.txtEstadoJuego.text = "PERDISTE"
-        }*/
+        categoriaRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val urlIcono = dataSnapshot.child("urlicono").getValue(String::class.java)
+                    val resourceId = context.resources.getIdentifier(urlIcono, "drawable", context.packageName)
 
-        holder.tvCategoria.text = item.nombreCategoria.toString()
+                    if (resourceId != 0) {
+                        holder.ivIcono.setImageResource(resourceId);
+                    } else {
+                        holder.ivIcono.setImageResource(R.drawable.ic_launcher_foreground);
+                    }
+                }
+            } override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error al obtener los datos", databaseError.toException())
+            }
+        })
+
+        holder.tvCategoria.text = item.categoriaId.toString()
         holder.tvFecha.text = item.fechaGasto.toString()
         holder.tvValorSoles.text = item.valorGasto.toString()
     }

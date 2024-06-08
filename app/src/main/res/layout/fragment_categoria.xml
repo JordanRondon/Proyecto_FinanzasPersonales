@@ -32,7 +32,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="7dp"
                     android:layout_marginBottom="10dp"
-                    android:text="MIS PRESUPUESTOS"
+                    android:text="MIS CATEGORIAS"
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
