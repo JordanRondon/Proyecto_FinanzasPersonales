@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +22,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import org.w3c.dom.Text
 
 
 class Gastos : Fragment() {
@@ -31,6 +34,11 @@ class Gastos : Fragment() {
 
     private lateinit var database: DatabaseReference
 
+    private lateinit var txtGastos: TextView
+    private lateinit var ivImagen: ImageView
+    private lateinit var txtMensaje1: TextView
+    private lateinit var txtMensaje2: TextView
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +47,12 @@ class Gastos : Fragment() {
 
         recycle_conteiner = view.findViewById(R.id.recycle_conteiner)
         floating_action_button = view.findViewById(R.id.floating_action_button)
+        txtGastos = view.findViewById(R.id.txtGastos)
+        ivImagen = view.findViewById(R.id.ivImagen)
+        txtMensaje1 = view.findViewById(R.id.txtMensaje1)
+        txtMensaje2 = view.findViewById(R.id.txtMensaje2)
+
+
         database = FirebaseDatabase.getInstance().reference
 
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
@@ -63,14 +77,24 @@ class Gastos : Fragment() {
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         arrayListCategoria.clear()
-                        if (dataSnapshot.exists()) {
+                        if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
+                            txtGastos.visibility = View.VISIBLE
                             for (ds: DataSnapshot in dataSnapshot.children) {
-                                val categoria = ds.getValue(Categoria::class.java)
-                                categoria?.let {
-                                    arrayListCategoria.add(it)
+                                //val categoria = ds.getValue(Categoria::class.java)
+                                if (ds.key != "contador") {
+                                    val nombre =
+                                        ds.child("categoriaID").getValue(String::class.java)
+                                    val precio = ds.child("monto").getValue(Float::class.java)
+                                    //categoria?.let {
+                                    arrayListCategoria.add(Categoria(nombre, precio))
+                                    //}
                                 }
                             }
                             categoria_adapter.notifyDataSetChanged()
+                        } else {
+                            ivImagen.visibility = View.VISIBLE
+                            txtMensaje1.visibility = View.VISIBLE
+                            txtMensaje2.visibility = View.VISIBLE
                         }
                     }
 
@@ -80,5 +104,4 @@ class Gastos : Fragment() {
                 })
         }
     }
-
 }

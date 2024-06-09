@@ -62,5 +62,4 @@ class CategoriaGastosAdapter(
         return if (selectedPos != RecyclerView.NO_POSITION) dataSet[selectedPos] else null
     }
 
-
 }
