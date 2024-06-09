@@ -48,7 +48,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.firebase.auth.ktx)
+    implementation ("com.google.firebase:firebase-auth-ktx")
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)

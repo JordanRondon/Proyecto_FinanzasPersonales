@@ -1,6 +1,7 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,44 +59,26 @@ class Gastos : Fragment() {
     private fun getCategorias() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
-            database.child("Gastos").child(userId).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    arrayListCategoria.clear()
-                    if (dataSnapshot.exists()) {
-                        for (ds: DataSnapshot in dataSnapshot.children) {
-                            val categoria = ds.getValue(Categoria::class.java)
-                            categoria?.let {
-                                arrayListCategoria.add(it)
+            database.child("Gasto").child(userId)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        arrayListCategoria.clear()
+                        if (dataSnapshot.exists()) {
+                            for (ds: DataSnapshot in dataSnapshot.children) {
+                                val categoria = ds.getValue(Categoria::class.java)
+                                categoria?.let {
+                                    arrayListCategoria.add(it)
+                                }
                             }
+                            categoria_adapter.notifyDataSetChanged()
                         }
-                        categoria_adapter.notifyDataSetChanged()
                     }
-                }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Handle possible errors.
-                }
-            })
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Handle possible errors.
+                    }
+                })
         }
     }
 
-//    private fun getCategoria() {
-//        database = FirebaseDatabase.getInstance().reference
-//
-//        database.child("Categoria").get().addOnSuccessListener {
-//            arrayListCategoria.clear()
-//            if (it.exists()) {
-//                for (ds: DataSnapshot in it.children)
-//                    arrayListCategoria.add(
-//                        Categoria(
-//                            ds.child("id").value.toString().toInt(),
-//                            ds.child("nombre").value.toString()
-//                        )
-//                    )
-//                categoria_adapter.notifyDataSetChanged()
-//            }
-//        }.addOnFailureListener {
-//            Toast.makeText(context, "Algo salio mal", Toast.LENGTH_SHORT).show()
-//        }
-//    }
 }
