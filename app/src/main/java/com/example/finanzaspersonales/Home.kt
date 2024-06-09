@@ -3,21 +3,18 @@ package com.example.finanzaspersonales
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.setupWithNavController
-
 import com.example.finanzaspersonales.Clases.TaskViewModel
-import com.example.finanzaspersonales.Fragments.Categoria
-
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -32,18 +29,17 @@ class Home : AppCompatActivity() {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
     private lateinit var navController: NavController
-    private lateinit var taskViewModel: TaskViewModel
+    private val user = FirebaseAuth.getInstance().currentUser
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        //taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
-
 
         initializeViews()
+        toolBar.setTitle("")
+
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -54,6 +50,7 @@ class Home : AppCompatActivity() {
 
         setupActionBar()
         setupNavigationDrawer()
+
     }
 
     private fun initializeViews() {
@@ -80,15 +77,18 @@ class Home : AppCompatActivity() {
                     navController.navigate(R.id.action_inicio)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
+
                 R.id.historial_item -> {
                     navController.navigate(R.id.action_historialGastos)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
+
                 R.id.categoria_item -> {
                     navController.navigate(R.id.action_nueva_categoria)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
-                R.id.cerrar_sesion_item ->{
+
+                R.id.cerrar_sesion_item -> {
                     Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
                     FirebaseAuth.getInstance().signOut()
                     finish()
@@ -98,8 +98,12 @@ class Home : AppCompatActivity() {
             true
         }
 
+        //HEADER DEL NAVIGATION VIEW
         val header = navigationView.getHeaderView(0)
         val btnNotificacion = header.findViewById<ImageView>(R.id.btnNotificacion)
+        val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
+
+        txtCorreo.text = user?.email
 
         btnNotificacion.setOnClickListener {
             navController.navigate(R.id.action_notificaciones)
@@ -114,12 +118,6 @@ class Home : AppCompatActivity() {
             super.onOptionsItemSelected(item)
         }
     }
-
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-           .replace(R.id.fragment_container, fragment)
-            .commit()
-   }
 }
 
 //        setupBottomNavigation()

@@ -1,5 +1,6 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.finanzaspersonales.Home
 import com.example.finanzaspersonales.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -46,7 +48,7 @@ class Login : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser
 
         //Permite dejar el inicio de sesion activo
-        if(user != null){
+        if (user != null) {
             Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_login_to_home2)
         }
@@ -75,7 +77,11 @@ class Login : Fragment() {
                         // Obtener y registrar el token FCM
                         Firebase.messaging.token.addOnCompleteListener { tokenTask ->
                             if (!tokenTask.isSuccessful) {
-                                Log.w("FCM", "Fetching FCM registration token failed", tokenTask.exception)
+                                Log.w(
+                                    "FCM",
+                                    "Fetching FCM registration token failed",
+                                    tokenTask.exception
+                                )
                                 return@addOnCompleteListener
                             }
 
@@ -93,6 +99,7 @@ class Login : Fragment() {
             Toast.makeText(requireContext(), "CAMPOS FALTANTES", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun registrarToken(userId: String, token: String) {
         val refToken = database.child("Usuario").child(userId).child("Token")
         refToken.setValue(token).addOnCompleteListener { task ->
