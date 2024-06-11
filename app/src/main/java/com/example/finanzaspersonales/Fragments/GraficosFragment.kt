@@ -2,6 +2,7 @@ package com.example.finanzaspersonales
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,15 +16,23 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class GraficosFragment : Fragment() {
     private lateinit var graficoBarra: BarChart
     private lateinit var graficoLinea: LineChart
+    private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+
+        val username = FirebaseAuth.getInstance().currentUser!!.uid
+        database = FirebaseDatabase.getInstance().getReference("GastoSemanal/$username")
     }
 
     override fun onCreateView(
@@ -39,16 +48,9 @@ class GraficosFragment : Fragment() {
         graficoBarra = view.findViewById(R.id.graficoSemana)
         graficoLinea = view.findViewById(R.id.grafiAnio)
 
-        val gastoDiarioLista: MutableList<Float> =
-            mutableListOf(
-                50f,    // Lunes
-                65.50f, // Martes
-                24.60f, // Miercoles
-                30f,    // Jueves
-                55.40f, // Viernes
-                120.50f,// Sabado
-                200.30f // Domingo
-            )
+        obtenerGastoSemanal(database) { datos ->
+            graficoBarraSemana(graficoBarra, datos)
+        }
 
         val gastoMensualLista: MutableList<Float> =
             mutableListOf(
@@ -66,7 +68,7 @@ class GraficosFragment : Fragment() {
                 1010.70f, // Diciembre
             )
 
-        graficoBarraSemana(graficoBarra, gastoDiarioLista)
+
         graficoLineaAnio(graficoLinea, gastoMensualLista)
     }
 
@@ -164,5 +166,33 @@ class GraficosFragment : Fragment() {
         override fun getFormattedValue(value: Float): String {
             return diaSemana.getOrNull(value.toInt()) ?: value.toString()
         }
+    }
+
+    private fun obtenerGastoSemanal(gastoSemanalRef: DatabaseReference, callback: (List<Float>) -> Unit) {
+
+        gastoSemanalRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val resultadoNode = dataSnapshot.child("resultado") //referencia de resultado
+                val resultado = mutableMapOf<String, Float>()
+                resultadoNode.children.forEach {
+                    val key = it.key ?: ""
+                    val valor= it.getValue(Float::class.java) ?: 0F
+                    resultado[key] = valor
+                }
+
+                val valoresOrdenados = mutableListOf<Float>()
+                val diasSemana = listOf("lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo")
+                for (dia in diasSemana) {
+                    valoresOrdenados.add(resultado[dia] ?: 0F)
+                }
+
+                callback(valoresOrdenados)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Error al obtener los datos: ${error.message}")
+            }
+        })
+
     }
 }
