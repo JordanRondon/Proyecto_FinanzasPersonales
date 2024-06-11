@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class SheetGastos : BottomSheetDialogFragment() {
 
@@ -83,6 +84,8 @@ class SheetGastos : BottomSheetDialogFragment() {
                         "Gasto guardado exitosamente",
                         Toast.LENGTH_SHORT
                     ).show()
+
+                    setGastoSemanal_dia(categoriaMonto)
                     binding.etMonto.text.clear()
                     dismiss()
                 }
@@ -117,4 +120,38 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
+    private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
+        database = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        val diaSemana = obtenerDiaSemana()
+        val gastoSemanal_dia_Ref = FirebaseDatabase.getInstance().getReference("GastoSemanal/$user/resultado/$diaSemana")
+
+        //obtiene el valor actual del dia indicado
+        gastoSemanal_dia_Ref.get().addOnSuccessListener { data ->
+            val gastoActual = data.getValue(Float::class.java)?: 0f
+            val gastoActualizado = gastoActual + NuevoGastoMonto
+
+            //actualiza monto del dia
+            gastoSemanal_dia_Ref.setValue(gastoActualizado).addOnCompleteListener { tarea ->
+                if (tarea.isSuccessful) {
+                    println("El valor de domingo se ha actualizado correctamente a $gastoActualizado")
+                } else {
+                    println("Error al actualizar el valor: ${tarea.exception?.message}")
+                }
+            }
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
+        }
+    }
+
+    private fun obtenerDiaSemana(): String {
+        // Obtener la instancia del calendario actual
+        val calendar = Calendar.getInstance()
+
+        // Obtener el día de la semana (1=domingo, 2=lunes, ..., 7=sábado)
+        val diaSemana = calendar.get(Calendar.DAY_OF_WEEK)
+        val diasSemana = arrayOf("domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado")
+
+        return diasSemana[diaSemana - 1]
+    }
 }
