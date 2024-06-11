@@ -133,9 +133,7 @@ class SheetGastos : BottomSheetDialogFragment() {
 
             //actualiza monto del dia
             gastoSemanal_dia_Ref.setValue(gastoActualizado).addOnCompleteListener { tarea ->
-                if (tarea.isSuccessful) {
-                    println("El valor de domingo se ha actualizado correctamente a $gastoActualizado")
-                } else {
+                if (!tarea.isSuccessful) {
                     println("Error al actualizar el valor: ${tarea.exception?.message}")
                 }
             }
