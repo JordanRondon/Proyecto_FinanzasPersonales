@@ -29,4 +29,12 @@
         android:textAlignment="center"
         android:textSize="16sp" />
 
+    <ImageView
+        android:id="@+id/ivDelete"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center|end"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_delete" />
+
 </androidx.cardview.widget.CardView>

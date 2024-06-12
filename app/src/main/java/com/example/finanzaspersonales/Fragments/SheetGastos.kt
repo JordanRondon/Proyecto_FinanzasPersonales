@@ -18,7 +18,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -32,7 +34,6 @@ class SheetGastos : BottomSheetDialogFragment() {
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
-    //private val database = FirebaseDatabase.getInstance().getReference("Categoria/$userId")
 
     private lateinit var database: DatabaseReference
     private var idCategoria = 0
@@ -102,33 +103,38 @@ class SheetGastos : BottomSheetDialogFragment() {
 
     private fun getCategorias() {
         database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        val user = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        database.child("Categoria").child(user).get().addOnSuccessListener { dataSnapshot ->
-            arrayListCategoria.clear()
-            if (dataSnapshot.exists()) {
-                for (ds: DataSnapshot in dataSnapshot.children) {
-                    val categoriaNombre = ds.key
-                    val urlIcon = ds.child("urlicono").getValue(String::class.java)
+        database.child("Categoria").child(user).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    arrayListCategoria.clear()
+                    if (dataSnapshot.exists()) {
+                        for (ds: DataSnapshot in dataSnapshot.children) {
+                            val categoriaNombre = ds.key
+                            val urlIcon = ds.child("urlicono").getValue(String::class.java)
 
-                    arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
+                            arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
+                        }
+                        categoriaGastosAdapter.notifyDataSetChanged()
+                    }
                 }
-                categoriaGastosAdapter.notifyDataSetChanged()
-            }
-        }.addOnFailureListener {
-            Toast.makeText(context, "Algo salio mal", Toast.LENGTH_SHORT).show()
-        }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Handle possible errors.
+                }
+            })
     }
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
         val diaSemana = obtenerDiaSemana()
-        val gastoSemanal_dia_Ref = FirebaseDatabase.getInstance().getReference("GastoSemanal/$user/resultado/$diaSemana")
+        val gastoSemanal_dia_Ref =
+            FirebaseDatabase.getInstance().getReference("GastoSemanal/$user/resultado/$diaSemana")
 
         //obtiene el valor actual del dia indicado
         gastoSemanal_dia_Ref.get().addOnSuccessListener { data ->
-            val gastoActual = data.getValue(Float::class.java)?: 0f
+            val gastoActual = data.getValue(Float::class.java) ?: 0f
             val gastoActualizado = gastoActual + NuevoGastoMonto
 
             //actualiza monto del dia
@@ -148,7 +154,8 @@ class SheetGastos : BottomSheetDialogFragment() {
 
         // Obtener el día de la semana (1=domingo, 2=lunes, ..., 7=sábado)
         val diaSemana = calendar.get(Calendar.DAY_OF_WEEK)
-        val diasSemana = arrayOf("domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado")
+        val diasSemana =
+            arrayOf("domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado")
 
         return diasSemana[diaSemana - 1]
     }
