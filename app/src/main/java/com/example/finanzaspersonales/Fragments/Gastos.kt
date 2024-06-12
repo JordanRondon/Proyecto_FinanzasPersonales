@@ -15,6 +15,7 @@ import com.example.finanzaspersonales.Home
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.CategoriaAdapter
 import com.example.finanzaspersonales.entidades.Categoria
+import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -29,15 +30,19 @@ class Gastos : Fragment() {
 
     private lateinit var recycle_conteiner: RecyclerView
     private lateinit var categoria_adapter: CategoriaAdapter
-    private val arrayListCategoria: ArrayList<Categoria> = ArrayList()
+    private val arrayListCategoria: ArrayList<EntidadGasto> = ArrayList()
     private lateinit var floating_action_button: FloatingActionButton
 
-    private lateinit var database: DatabaseReference
 
     private lateinit var txtGastos: TextView
     private lateinit var ivImagen: ImageView
     private lateinit var txtMensaje1: TextView
     private lateinit var txtMensaje2: TextView
+
+
+    private val username = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    private val database = FirebaseDatabase.getInstance().getReference("Gasto/$username")
+    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,10 +58,8 @@ class Gastos : Fragment() {
         txtMensaje2 = view.findViewById(R.id.txtMensaje2)
 
 
-        database = FirebaseDatabase.getInstance().reference
-
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
-        categoria_adapter = CategoriaAdapter(arrayListCategoria)
+        categoria_adapter = CategoriaAdapter(arrayListCategoria, database, contadorReference)
         recycle_conteiner.adapter = categoria_adapter
 
 
@@ -71,37 +74,34 @@ class Gastos : Fragment() {
     }
 
     private fun getCategorias() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            database.child("Gasto").child(userId)
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        arrayListCategoria.clear()
-                        if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
-                            txtGastos.visibility = View.VISIBLE
-                            for (ds: DataSnapshot in dataSnapshot.children) {
-                                //val categoria = ds.getValue(Categoria::class.java)
-                                if (ds.key != "contador") {
-                                    val nombre =
-                                        ds.child("categoriaID").getValue(String::class.java)
-                                    val precio = ds.child("monto").getValue(Float::class.java)
-                                    //categoria?.let {
-                                    arrayListCategoria.add(Categoria(nombre, precio))
-                                    //}
-                                }
-                            }
-                            categoria_adapter.notifyDataSetChanged()
-                        } else {
-                            ivImagen.visibility = View.VISIBLE
-                            txtMensaje1.visibility = View.VISIBLE
-                            txtMensaje2.visibility = View.VISIBLE
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                arrayListCategoria.clear()
+                if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
+                    txtGastos.visibility = View.VISIBLE
+                    for (ds: DataSnapshot in dataSnapshot.children) {
+                        if (ds.key != "contador") {
+                            val categoriaID = ds.child("categoriaId").value.toString()
+                            val presupuestoID = ds.child("presupuestoId").value.toString()
+                            val monto = ds.child("valorGasto").getValue(Float::class.java) ?: 0.0f
+                            val fechaRegistro = ds.child("fechaGasto").value.toString()
+
+                            arrayListCategoria.add(EntidadGasto(categoriaID, presupuestoID, monto, fechaRegistro))
+
                         }
                     }
+                    categoria_adapter.notifyDataSetChanged()
+                } else {
+                    ivImagen.visibility = View.VISIBLE
+                    txtMensaje1.visibility = View.VISIBLE
+                    txtMensaje2.visibility = View.VISIBLE
+                }
+            }
 
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        // Handle possible errors.
-                    }
-                })
-        }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
+
     }
 }

@@ -1,6 +1,7 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.finanzaspersonales.entidades.EntidadGasto
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -31,11 +35,12 @@ class SheetGastos : BottomSheetDialogFragment() {
     private val arrayListCategoria: ArrayList<CategoriaGastos> = ArrayList()
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
-    private val userId = FirebaseAuth.getInstance().currentUser?.uid
-    //private val database = FirebaseDatabase.getInstance().getReference("Categoria/$userId")
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
+    private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
 
     private lateinit var database: DatabaseReference
-    private var idCategoria = 0
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var categoriaGastosAdapter: CategoriaGastosAdapter
@@ -58,6 +63,7 @@ class SheetGastos : BottomSheetDialogFragment() {
             saveGastos()
         }
 
+
     }
 
     override fun onCreateView(
@@ -74,61 +80,67 @@ class SheetGastos : BottomSheetDialogFragment() {
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
         val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
 
-        if (userId != null && categoriaNombre != null && categoriaMonto != null) {
-            val categoria = Categoria(categoriaNombre, categoriaMonto, date)
-            database.child("Gasto").child(userId).child((idCategoria + 1).toString())
-                .setValue(categoria)
-                .addOnSuccessListener {
-                    Toast.makeText(
-                        context,
-                        "Gasto guardado exitosamente",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        contadorReference.get().addOnSuccessListener { data ->
+            val contador = data.getValue(Int::class.java) ?: 0
+            val contadorUpdate = contador + 1
 
-                    setGastoSemanal_dia(categoriaMonto)
-                    binding.etMonto.text.clear()
-                    dismiss()
-                }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT)
-                        .show()
+            if (categoriaNombre != null && categoriaMonto != null) {
+                val gasto = EntidadGasto(categoriaNombre, "vacio", categoriaMonto, date)
 
-                }
-        } else {
-            Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
-                .show()
+                gastoReference.child(contadorUpdate.toString()).setValue(gasto)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT).show()
+
+                        setGastoSemanal_dia(categoriaMonto)
+                        binding.etMonto.text.clear()
+                        dismiss()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT).show()
+
+                    }
+            } else {
+                Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+            }
+
+            contadorReference.setValue(contadorUpdate)
         }
     }
 
     private fun getCategorias() {
         database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        val user = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        database.child("Categoria").child(user).get().addOnSuccessListener { dataSnapshot ->
-            arrayListCategoria.clear()
-            if (dataSnapshot.exists()) {
-                for (ds: DataSnapshot in dataSnapshot.children) {
-                    val categoriaNombre = ds.key
-                    val urlIcon = ds.child("urlicono").getValue(String::class.java)
+        database.child("Categoria").child(user).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                arrayListCategoria.clear()
+                if (dataSnapshot.exists()) {
+                    for (ds: DataSnapshot in dataSnapshot.children) {
+                        val categoriaNombre = ds.key
+                        val urlIcon = ds.child("urlicono").getValue(String::class.java)
 
-                    arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
+                        arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
+                    }
+                    categoriaGastosAdapter.notifyDataSetChanged()
                 }
-                categoriaGastosAdapter.notifyDataSetChanged()
             }
-        }.addOnFailureListener {
-            Toast.makeText(context, "Algo salio mal", Toast.LENGTH_SHORT).show()
-        }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
     }
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
         val diaSemana = obtenerDiaSemana()
-        val gastoSemanal_dia_Ref = FirebaseDatabase.getInstance().getReference("GastoSemanal/$user/resultado/$diaSemana")
+        val gastoSemanal_dia_Ref =
+            FirebaseDatabase.getInstance().getReference("GastoSemanal/$user/resultado/$diaSemana")
 
         //obtiene el valor actual del dia indicado
         gastoSemanal_dia_Ref.get().addOnSuccessListener { data ->
-            val gastoActual = data.getValue(Float::class.java)?: 0f
+            val gastoActual = data.getValue(Float::class.java) ?: 0f
             val gastoActualizado = gastoActual + NuevoGastoMonto
 
             //actualiza monto del dia
@@ -148,8 +160,11 @@ class SheetGastos : BottomSheetDialogFragment() {
 
         // Obtener el día de la semana (1=domingo, 2=lunes, ..., 7=sábado)
         val diaSemana = calendar.get(Calendar.DAY_OF_WEEK)
-        val diasSemana = arrayOf("domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado")
+        val diasSemana =
+            arrayOf("domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado")
 
         return diasSemana[diaSemana - 1]
     }
+
+
 }
