@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -38,7 +39,7 @@ class Aplicacion: Application() {
             println("El token es $token")
         }
         createNotificationChannel()
-        Toast.makeText(this, "Jordan Rondon", Toast.LENGTH_SHORT).show()
+        reiniciarGastoSemanal()
     }
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -53,19 +54,41 @@ class Aplicacion: Application() {
         }
     }
 
-    private fun reiniciarGastoSemanl() {
+    private fun reiniciarGastoSemanal() {
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
         val gastoSemanlRef = FirebaseDatabase.getInstance().getReference("GastoSemanal/$user")
 
         gastoSemanlRef.get().addOnSuccessListener { datos ->
-            val inicio_semana = datos.child("inicio_semana").value as String
-            val fin_semana = datos.child("fin_semana").value as String
             val fecha_actual = obtenerFechaActual()
+            val fin_semana = datos.child("fin_semana").value as String
 
             if (fecha_actual.after(convertirFecha(fin_semana))) {
-                
+                val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
+                // Actualizar los valores en Firebase
+                val resultadoActualizado = mapOf(
+                    "domingo" to 0,
+                    "lunes" to 0,
+                    "martes" to 0,
+                    "miercoles" to 0,
+                    "jueves" to 0,
+                    "viernes" to 0,
+                    "sabado" to 0
+                )
+                val datosActualizados = mapOf(
+                    "fin_semana" to nuevo_fin_semana,
+                    "inicio_semana" to nuevo_inicio_semana,
+                    "resultado" to resultadoActualizado
+                )
+
+                gastoSemanlRef.updateChildren(datosActualizados).addOnCompleteListener { tarea2 ->
+                    if (!tarea2.isSuccessful) {
+                        Log.e("FirebaseError", "Error al actualizar los datos: ${tarea2.exception?.message}")
+                    }
+                }
             }
+        }.addOnFailureListener { exception ->
+            Log.e("FirebaseError", "Error al obtener los datos: ${exception.message}")
         }
     }
 
@@ -77,5 +100,27 @@ class Aplicacion: Application() {
     private fun convertirFecha(fechaString: String): Date {
         val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return formatoFecha.parse(fechaString)!!
+    }
+
+    private  fun obtenerInicioYFinDeSemana(fecha: Date): Pair<String, String> {
+        val calendar = Calendar.getInstance().apply {
+            time = fecha
+        }
+
+        val inicioSemana = calendar.clone() as Calendar
+        inicioSemana.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            inicioSemana.add(Calendar.WEEK_OF_YEAR, -1)
+        }
+
+        val finSemana = inicioSemana.clone() as Calendar
+        finSemana.add(Calendar.DAY_OF_WEEK, 6)
+
+        // Formatear las fechas como cadenas
+        val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val inicioSemanaStr = formatoFecha.format(inicioSemana.time)
+        val finSemanaStr = formatoFecha.format(finSemana.time)
+
+        return Pair(inicioSemanaStr, finSemanaStr)
     }
 }
