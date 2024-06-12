@@ -33,12 +33,14 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentSheetGastosBinding
     private lateinit var taskViewModel: TaskViewModel
     private val arrayListCategoria: ArrayList<CategoriaGastos> = ArrayList()
+    private val arrayListPresupuestos: ArrayList<CategoriaGastos> = ArrayList()
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
     private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
+    private val presupuestoReference = FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
 
     private lateinit var database: DatabaseReference
 
@@ -130,6 +132,26 @@ class SheetGastos : BottomSheetDialogFragment() {
             }
         })
     }
+
+    private fun getPresupuestos(){
+        presupuestoReference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(data: DataSnapshot) {
+                if(data.exists()){
+                    for(ds:DataSnapshot in data.children){
+                        val presupuestoID = ds.key
+
+
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
         database = FirebaseDatabase.getInstance().reference

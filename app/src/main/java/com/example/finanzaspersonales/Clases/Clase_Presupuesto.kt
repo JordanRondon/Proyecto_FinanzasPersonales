@@ -12,7 +12,6 @@ data class Presupuesto_Firebase(
     val periodo: String = "",
     )
 data class Presupuesto_Firebase_insertar(
-
     val categoriaID: String = "",
     val estado: Boolean = true,
     val fechaCulminacion: String = "",

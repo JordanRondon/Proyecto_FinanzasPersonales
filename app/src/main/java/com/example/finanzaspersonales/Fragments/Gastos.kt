@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.R
-import com.example.finanzaspersonales.adaptadores.CategoriaAdapter
+import com.example.finanzaspersonales.adaptadores.GastoHomeAdapter
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener
 class Gastos : Fragment() {
 
     private lateinit var recycle_conteiner: RecyclerView
-    private lateinit var categoria_adapter: CategoriaAdapter
+    private lateinit var categoria_adapter: GastoHomeAdapter
     private val arrayListCategoria: ArrayList<EntidadGasto> = ArrayList()
     private lateinit var floating_action_button: FloatingActionButton
 
@@ -54,7 +54,7 @@ class Gastos : Fragment() {
 
 
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
-        categoria_adapter = CategoriaAdapter(arrayListCategoria, database, contadorReference, categoriaReference)
+        categoria_adapter = GastoHomeAdapter(arrayListCategoria, database, contadorReference, categoriaReference)
         recycle_conteiner.adapter = categoria_adapter
 
 
