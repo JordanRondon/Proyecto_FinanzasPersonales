@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.Categoria
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>) : RecyclerView.Adapter<PresupuestoAdapter.PresupuestoViewHolder>() {
@@ -20,7 +21,7 @@ class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>) :
 
     override fun onBindViewHolder(holder: PresupuestoViewHolder, position: Int) {
         val presupuesto = presupuestos[position]
-        val username = "Admin"
+        val username = FirebaseAuth.getInstance().currentUser!!.uid
         val categoriaid = presupuesto.categoriaID
 
         loadCategoria(username, categoriaid) { categoria ->
