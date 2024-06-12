@@ -28,6 +28,10 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase_insertar
 import com.google.firebase.auth.FirebaseAuth
+import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 
 class Presupuestos : Fragment() {
 
@@ -43,6 +47,7 @@ class Presupuestos : Fragment() {
     private lateinit var database_presupuesto: DatabaseReference
     private val categoriasList = mutableListOf<Categoria>()
     private lateinit var textoSeleccionado:String
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,7 +58,7 @@ class Presupuestos : Fragment() {
         database_presupuesto = FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
 
         val view = inflater.inflate(R.layout.fragment_presupuestos, container, false)
-
+        val navController = findNavController()
 
         recycler = view.findViewById(R.id.recyclerView)
         spinner = view.findViewById(R.id.spinner)
@@ -63,7 +68,7 @@ class Presupuestos : Fragment() {
 
         recycler.layoutManager = LinearLayoutManager(context)
 
-        adapterPresupuesto = PresupuestoAdapter(presupuestos_firebase)
+        adapterPresupuesto = PresupuestoAdapter(presupuestos_firebase,navController)
 
         recycler.adapter = adapterPresupuesto
 
@@ -73,16 +78,32 @@ class Presupuestos : Fragment() {
             val nombrePresupuesto = etNombre.text.toString()
             val categoriaSeleccionada = spinner.selectedItem as Categoria
             val montototal=etMonto.text.toString().toDouble()
+            var fecha_siguiente="05/12/2025"
+            val calendar = Calendar.getInstance()
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            var currentDate= "05/11/2025"
+            currentDate=simpleDateFormat.format(calendar.time)
+
+            Toast.makeText(context, currentDate, Toast.LENGTH_SHORT).show()
+
             radioGroup = view.findViewById(R.id.radiogrouppresupuesto)
             val radioButtonId = radioGroup.checkedRadioButtonId
 
             if (radioButtonId != -1) {
+
                 val radioButton: RadioButton = view.findViewById(radioButtonId)
                 textoSeleccionado = radioButton.text.toString()
-
+                if(textoSeleccionado=="Mensual"){
+                    calendar.add(Calendar.MONTH, 1)
+                    fecha_siguiente = simpleDateFormat.format(calendar.time)
+                }
+                else{
+                    calendar.add(Calendar.WEEK_OF_YEAR, 1)
+                    fecha_siguiente = simpleDateFormat.format(calendar.time)
+                }
             }
             val Presupuesto_registro=Presupuesto_Firebase_insertar(categoriaSeleccionada.nombre,true
-            ,"05/12/2025","05/12/2024",0.0,montototal,textoSeleccionado)
+            ,fecha_siguiente,currentDate,0.0,montototal,textoSeleccionado)
 
             if (nombrePresupuesto.isNotEmpty() ) {
 
