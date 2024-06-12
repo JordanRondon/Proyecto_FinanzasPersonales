@@ -1,7 +1,6 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import com.example.finanzaspersonales.Clases.TaskViewModel
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.CategoriaGastosAdapter
 import com.example.finanzaspersonales.databinding.FragmentSheetGastosBinding
-import com.example.finanzaspersonales.entidades.Categoria
 import com.example.finanzaspersonales.entidades.CategoriaGastos
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -33,17 +31,25 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentSheetGastosBinding
     private lateinit var taskViewModel: TaskViewModel
     private val arrayListCategoria: ArrayList<CategoriaGastos> = ArrayList()
+    private val arrayListPresupuestos: ArrayList<CategoriaGastos> = ArrayList()
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
+    private val contadorReference =
+        FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
     private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
+    private val presupuestoReference =
+        FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
 
     private lateinit var database: DatabaseReference
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewCategoria: RecyclerView
+    private lateinit var recyclerViewPresupuestos: RecyclerView
     private lateinit var categoriaGastosAdapter: CategoriaGastosAdapter
+    private lateinit var presupuestoGastosAdapter: CategoriaGastosAdapter
+
+    private val categoriasMap: MutableMap<String, String?> = mutableMapOf()
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,13 +57,20 @@ class SheetGastos : BottomSheetDialogFragment() {
         val activity = requireActivity()
         taskViewModel = ViewModelProvider(activity).get(TaskViewModel::class.java)
 
-        recyclerView = view.findViewById(R.id.recyclerViewCategoriaGastos)
-        recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
-        categoriaGastosAdapter = CategoriaGastosAdapter(arrayListCategoria, requireContext())
-        recyclerView.adapter = categoriaGastosAdapter
+        recyclerViewCategoria = view.findViewById(R.id.recyclerViewCategoriaGastos)
+        recyclerViewPresupuestos = view.findViewById(R.id.recyclerViewPresupuestos)
 
+        recyclerViewCategoria.layoutManager = GridLayoutManager(requireContext(), 3)
+        recyclerViewPresupuestos.layoutManager = GridLayoutManager(requireContext(), 3)
+
+        categoriaGastosAdapter = CategoriaGastosAdapter(arrayListCategoria, requireContext())
+        presupuestoGastosAdapter = CategoriaGastosAdapter(arrayListPresupuestos, requireContext())
+
+        recyclerViewCategoria.adapter = categoriaGastosAdapter
+        recyclerViewPresupuestos.adapter = presupuestoGastosAdapter
 
         getCategorias()
+        getPresupuestos()
 
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
@@ -76,7 +89,8 @@ class SheetGastos : BottomSheetDialogFragment() {
 
 
     private fun saveGastos() {
-        val categoriaNombre = categoriaGastosAdapter.getCategoriaSelected()?.nombre
+        val categoriaID = categoriaGastosAdapter.getCategoriaSelected()?.nombre
+        val presupuestoID = presupuestoGastosAdapter.getCategoriaSelected()?.nombre
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
         val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
 
@@ -84,23 +98,26 @@ class SheetGastos : BottomSheetDialogFragment() {
             val contador = data.getValue(Int::class.java) ?: 0
             val contadorUpdate = contador + 1
 
-            if (categoriaNombre != null && categoriaMonto != null) {
-                val gasto = EntidadGasto(categoriaNombre, "vacio", categoriaMonto, date)
+            if (categoriaID != null && presupuestoID != null && categoriaMonto != null) {
+                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date)
 
                 gastoReference.child(contadorUpdate.toString()).setValue(gasto)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT)
+                            .show()
 
                         setGastoSemanal_dia(categoriaMonto)
                         binding.etMonto.text.clear()
                         dismiss()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT)
+                            .show()
 
                     }
             } else {
-                Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
+                    .show()
             }
 
             contadorReference.setValue(contadorUpdate)
@@ -119,7 +136,10 @@ class SheetGastos : BottomSheetDialogFragment() {
                         val categoriaNombre = ds.key
                         val urlIcon = ds.child("urlicono").getValue(String::class.java)
 
-                        arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
+                        if (categoriaNombre != null) {
+                            arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
+                            categoriasMap[categoriaNombre] = urlIcon
+                        }
                     }
                     categoriaGastosAdapter.notifyDataSetChanged()
                 }
@@ -130,6 +150,29 @@ class SheetGastos : BottomSheetDialogFragment() {
             }
         })
     }
+
+    private fun getPresupuestos() {
+        presupuestoReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(data: DataSnapshot) {
+                if (data.exists()) {
+                    for (ds: DataSnapshot in data.children) {
+                        val presupuestoID = ds.key
+                        val categoriaID = ds.child("categoriaID").getValue(String::class.java)
+                        val urlIcon = categoriasMap[categoriaID]
+
+                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID, urlIcon))
+                    }
+
+                    presupuestoGastosAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+    }
+
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
         database = FirebaseDatabase.getInstance().reference
