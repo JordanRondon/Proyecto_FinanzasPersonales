@@ -1,17 +1,19 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CalendarView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.applandeo.materialcalendarview.CalendarView
+import com.applandeo.materialcalendarview.EventDay
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.RecordatorioAdapter
 import com.example.finanzaspersonales.entidades.Recordatorio
@@ -34,7 +36,8 @@ class Recordatorio : Fragment() {
     private lateinit var adapter: RecordatorioAdapter
     private lateinit var fbAgregarRecordatorio: FloatingActionButton
     private val listaRecordatorio = mutableListOf<Recordatorio>()
-    private var fechaSeleccionada: Date? = null
+    private val eventosCalendario = mutableListOf<EventDay>()
+    //private var fechaSeleccionada: Date? = null
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     private val userName = FirebaseAuth.getInstance().currentUser!!.uid
 
@@ -60,54 +63,66 @@ class Recordatorio : Fragment() {
         RecyclerViewRecordatorio.adapter = adapter
 
         // Configurar CalendarView
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance()
-            calendar.set(year,month,dayOfMonth)
-            fechaSeleccionada = calendar.time
-            obtenerRecordatorios(fechaSeleccionada!!)
-        }
-
+//        calendarView.setOnCalendarDayLongClickListener{ calendarDay  ->
+//            val fechaSeleccionada = calendarDay.get
+//            obtenerRecordatorios(fechaSeleccionada)
+//        }
         //Configurar boton flotante
         fbAgregarRecordatorio.setOnClickListener {
-            if (fechaSeleccionada != null) {
-                mostrarDialogoAgregarRecordatorio(fechaSeleccionada!!)
-            } else {
-                Toast.makeText(requireContext(), "Por favor, seleccione una fecha", Toast.LENGTH_SHORT).show()
-            }
+           mostrarDatePickerDialog()
         }
+
+        //OBTENER RECORDATORIOS DE FIREBASE
+        obtenerRecordatorios()
     }
-//    private fun mostrarDatosEjemplo(){
-//        listaRecordatorio.add(Recordatorio("1/5/2024","Pagar alquiler"))
-//        listaRecordatorio.add(Recordatorio("15/5/2024","Cancelar subscripcion"))
-//        listaRecordatorio.add(Recordatorio("25/5/2024","Pagar deuda Kevin"))
-//
-//        adapter.notifyDataSetChanged()
-//    }
+
+    //PARA REGISTRAR RECORDATORIOS MEDIANTE DATEPICKER
+    private fun mostrarDatePickerDialog(){
+        val calendar = Calendar.getInstance()
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            {_, year, month, dayOfMonth ->
+                val selectDate = Calendar.getInstance()
+                selectDate.set(year,month,dayOfMonth)
+                val fechaSeleccionada = selectDate.time
+                mostrarDialogoAgregarRecordatorio(fechaSeleccionada)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
+    }
+
     private fun mostrarRecordatorios(fecha: Date){
         val recordatoriosFiltrados = listaRecordatorio.filter { dateFormat.format(it.fecha) == dateFormat.format(fecha)}
         adapter.actualizarLista(recordatoriosFiltrados)
     }
 
-    private fun mostrarDialogoAgregarRecordatorio(fecha:Date){
+    private fun mostrarDialogoAgregarRecordatorio(fecha:Date) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Agregar Recordatorio")
 
-        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialogo_agregar_recordatorio,null)
+        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialogo_agregar_recordatorio, null)
         val inputDescripcion = view.findViewById<EditText>(R.id.etDescripcion)
 
         builder.setView(view)
 
-        builder.setPositiveButton("Agregar"){dialog, _ ->
+        builder.setPositiveButton("Agregar") { dialog, _ ->
             val descripcion = inputDescripcion.text.toString()
-            if(descripcion.isNotEmpty()){
-                val recordatorio = Recordatorio(fecha,descripcion,true)
+            if (descripcion.isNotEmpty()) {
+                val recordatorio = Recordatorio(fecha, descripcion, true)
                 listaRecordatorio.add(recordatorio)
                 mostrarRecordatorios(fecha)
-                AgregarRecordatorioFirebase(recordatorio,userName)
+                AgregarRecordatorioFirebase(recordatorio, userName)
                 dialog.dismiss()
-
-            }else {
-                Toast.makeText(requireContext(), "Por favor, ingrese una descripción", Toast.LENGTH_SHORT).show()
+                agregarEvento(fecha)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Por favor, ingrese una descripción",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         builder.setNegativeButton("Cancelar") { dialog, _ ->
@@ -115,7 +130,19 @@ class Recordatorio : Fragment() {
         }
         builder.create().show()
     }
+    private fun agregarEvento(fecha: Date){
+        val calendar = Calendar.getInstance().apply { time=fecha }
+//        val calendarDay = CalendarDay(calendar)
+//        calendarDay.labelColor
+//        calendarDay.imageResource
+//        eventosCalendario.add(calendarDay)
+//        calendarView.setCalendarDays(eventosCalendario)
 
+        val eventDay = EventDay(calendar, R.drawable.noti_icon)
+
+        eventosCalendario.add(eventDay)
+        calendarView.setEvents(eventosCalendario)
+    }
     //Agregar Recordatorio -> Firebase
     private fun AgregarRecordatorioFirebase(recordatorio: Recordatorio, nombreUsuario: String){
         val refUsuario = database.child("NotificacionPago").child(nombreUsuario)
@@ -144,20 +171,23 @@ class Recordatorio : Fragment() {
     }
     //Obtener recordatorios -> Firebase
 
-    private fun obtenerRecordatorios(fecha: Date){
+    private fun obtenerRecordatorios(){
         val refUsuario = database.child("NotificacionPago").child(userName)
         refUsuario.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 listaRecordatorio.clear()
+                eventosCalendario.clear()
                 for (recordatorioSnapshot in snapshot.children){
                     if(recordatorioSnapshot.key != "Contador"){
                         val recordatorio = recordatorioSnapshot.getValue(Recordatorio::class.java)
                         if(recordatorio != null){
                             listaRecordatorio.add(recordatorio)
+                            agregarEvento(recordatorio.fecha)
                         }
                     }
                 }
-                mostrarRecordatorios(fecha)
+                val fechaActual = Calendar.getInstance().time
+                mostrarRecordatorios(fechaActual)
             }
 
             override fun onCancelled(error: DatabaseError) {

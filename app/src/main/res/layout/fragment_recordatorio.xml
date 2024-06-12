@@ -16,11 +16,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <CalendarView
+            <com.applandeo.materialcalendarview.CalendarView
                 android:id="@+id/calendarView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:headerColor="@color/naranja"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/RVrecordatorios"
+                app:todayLabelColor="@color/naranja"
+
                 />
 
             <androidx.recyclerview.widget.RecyclerView
