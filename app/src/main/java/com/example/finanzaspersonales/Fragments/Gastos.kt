@@ -1,29 +1,23 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finanzaspersonales.Home
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.CategoriaAdapter
-import com.example.finanzaspersonales.entidades.Categoria
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import org.w3c.dom.Text
 
 
 class Gastos : Fragment() {
@@ -43,6 +37,7 @@ class Gastos : Fragment() {
     private val username = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val database = FirebaseDatabase.getInstance().getReference("Gasto/$username")
     private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
+    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$username")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +54,7 @@ class Gastos : Fragment() {
 
 
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
-        categoria_adapter = CategoriaAdapter(arrayListCategoria, database, contadorReference)
+        categoria_adapter = CategoriaAdapter(arrayListCategoria, database, contadorReference, categoriaReference)
         recycle_conteiner.adapter = categoria_adapter
 
 
@@ -67,13 +62,13 @@ class Gastos : Fragment() {
             SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
         }
 
-        getCategorias()
+        getGasto()
 
 
         return view
     }
 
-    private fun getCategorias() {
+    private fun getGasto() {
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 arrayListCategoria.clear()
