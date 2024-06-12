@@ -98,7 +98,7 @@
                         android:orientation="horizontal">
 
                         <RadioButton
-                            android:id="@+id/radioButton"
+                            android:id="@+id/radio_mensual"
                             android:layout_width="91dp"
                             android:layout_height="match_parent"
                             android:layout_marginStart="3dp"
@@ -107,7 +107,7 @@
                             android:textSize="13sp" />
 
                         <RadioButton
-                            android:id="@+id/radioButton1"
+                            android:id="@+id/radio_semanal"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:text="Semanal"

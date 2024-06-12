@@ -1,17 +1,21 @@
 package com.example.finanzaspersonales
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.Categoria
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>) : RecyclerView.Adapter<PresupuestoAdapter.PresupuestoViewHolder>() {
+
+class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>,private val navController: NavController
+    ) : RecyclerView.Adapter<PresupuestoAdapter.PresupuestoViewHolder>() {
     private lateinit var database: DatabaseReference
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PresupuestoViewHolder {
@@ -32,6 +36,15 @@ class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>) :
                 holder.imageView.setImageResource(R.drawable.moneda)
                 holder.textViewDetalles.text = "Detalles"
             }
+        }
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val bundle = Bundle().apply {
+                putString("Presupuesto_id", presupuesto.nombre)
+            }
+            navController.navigate(R.id.action_presupuestos_to_detalle_presupuesto, bundle)
+
+
         }
 
         holder.textViewNombre.text = presupuesto.nombre
