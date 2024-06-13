@@ -1,10 +1,20 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.TaskViewModel
@@ -50,10 +60,65 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var presupuestoGastosAdapter: CategoriaGastosAdapter
 
     private val categoriasMap: MutableMap<String, String?> = mutableMapOf()
+    companion object{
+        const val MI_CANAL_ID="CanalPresupuesto"
+        const val NOTIFICATION_ID = 1
+        const val REQUEST_CODE_PERMISSIONS = 1001
+    }
+    fun createSimpleNotification(presupuestoid: String) {
+        val builder = NotificationCompat.Builder(requireContext(), MI_CANAL_ID)
+            .setSmallIcon(R.drawable.moneda)
+            .setContentTitle("Notificación de LooKash")
+            .setContentText("Se notifica que el presupuesto $presupuestoid ha excedido el monto límite")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED) {
+            with(NotificationManagerCompat.from(requireContext())) {
+                notify(NOTIFICATION_ID, builder.build())
+            }
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_CODE_PERMISSIONS
+            )
+        }
+    }
+    private fun crearCanalDeNotificacion() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nombre = "Mi Canal"
+            val descripcion = "Descripción de mi canal"
+            val importancia = NotificationManager.IMPORTANCE_DEFAULT
+            val canal = NotificationChannel(MI_CANAL_ID, nombre, importancia).apply {
+                description = descripcion
+            }
+            val notificationManager: NotificationManager =
+                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(canal)
+        }
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_CODE_PERMISSIONS
+                )
+            }
+        }
+        crearCanalDeNotificacion()
+
         val activity = requireActivity()
         taskViewModel = ViewModelProvider(activity).get(TaskViewModel::class.java)
 
@@ -106,7 +171,9 @@ class SheetGastos : BottomSheetDialogFragment() {
                         Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT)
                             .show()
 
+
                         setGastoSemanal_dia(categoriaMonto)
+                        setGastoPresupuesto(categoriaMonto,presupuestoID)
                         binding.etMonto.text.clear()
                         dismiss()
                     }
@@ -195,6 +262,48 @@ class SheetGastos : BottomSheetDialogFragment() {
         }.addOnFailureListener { exception ->
             println("Error al obtener el valor actual: ${exception.message}")
         }
+    }
+
+    private fun setGastoPresupuesto(NuevoGastoMonto: Float,presuesto_id: String) {
+        database = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
+
+        val gasto_presupuesto =
+            FirebaseDatabase.getInstance().getReference("Presupuesto/$user/$presuesto_id/monto_actual")
+
+        //obtiene el valor actual del monto actual
+        gasto_presupuesto.get().addOnSuccessListener { data ->
+            val monto_Actual = data.getValue(Float::class.java) ?: 0f
+            val monto_presupuestoActualizado = monto_Actual + NuevoGastoMonto
+            if(obtenermontototal_presupuesto(presuesto_id)!! <=monto_presupuestoActualizado){
+                createSimpleNotification(presuesto_id)
+            }
+            //actualiza monto del dia
+            gasto_presupuesto.setValue(monto_presupuestoActualizado).addOnCompleteListener { tarea ->
+                if (!tarea.isSuccessful) {
+                    println("Error al actualizar el valor: ${tarea.exception?.message}")
+                }
+            }
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
+        }
+    }
+    private fun obtenermontototal_presupuesto(presuesto_id: String): Float? {
+        database = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        var monto_total:Float?=0.0f
+        val gasto_presupuesto =
+            FirebaseDatabase.getInstance().getReference("Presupuesto/$user/$presuesto_id/monto_total")
+
+        //obtiene el valor actual del monto actual
+        gasto_presupuesto.get().addOnSuccessListener { data ->
+            monto_total = data.getValue(Float::class.java) ?: 0f
+
+
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
+        }
+        return monto_total
     }
 
     private fun obtenerDiaSemana(): String {
