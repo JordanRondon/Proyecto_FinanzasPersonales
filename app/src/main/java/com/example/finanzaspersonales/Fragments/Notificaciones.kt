@@ -42,6 +42,8 @@ class Notificaciones : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentNotificacionesBinding.inflate(layoutInflater)
+        initRecyclerView()
+        getNotifications()
         return binding.root
     }
 
@@ -49,8 +51,6 @@ class Notificaciones : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         testButton = view.findViewById<Button>(R.id.testButton)
         testButton.setOnClickListener{createNotification()}
-        getNotifications()
-        initRecyclerView(view)
     }
 
     private fun getNotifications() {
@@ -78,9 +78,10 @@ class Notificaciones : Fragment() {
                 notificationList.add(notificacion)
             }
         }
+        adapter.notifyDataSetChanged()
     }
 
-    private fun initRecyclerView(view : View) {
+    private fun initRecyclerView() {
         adapter = NotificationAdapter(notificationList){ notification -> onNotificationSelected(notification)}
         binding.rwNotificaciones.layoutManager = LinearLayoutManager(this.context)
         binding.rwNotificaciones.adapter = adapter
