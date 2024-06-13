@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
+import com.example.finanzaspersonales.Listeners.CustomDayClickListener
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.RecordatorioAdapter
 import com.example.finanzaspersonales.entidades.Recordatorio
@@ -62,14 +63,21 @@ class Recordatorio : Fragment() {
         adapter = RecordatorioAdapter(requireContext(),listaRecordatorio)
         RecyclerViewRecordatorio.adapter = adapter
 
-        // Configurar CalendarView
-//        calendarView.setOnCalendarDayLongClickListener{ calendarDay  ->
-//            val fechaSeleccionada = calendarDay.get
-//            obtenerRecordatorios(fechaSeleccionada)
-//        }
+        //Configurar CalendarView
+        calendarView.setOnDayClickListener(CustomDayClickListener(calendarView) { fechaSeleccionada ->
+            obtenerRecordatorios(fechaSeleccionada)
+        })
+//        Toast.makeText(requireContext(),"HOLa",Toast.LENGTH_SHORT).show()
+
         //Configurar boton flotante
         fbAgregarRecordatorio.setOnClickListener {
-           mostrarDatePickerDialog()
+            val calendario = Calendar.getInstance()
+            DatePickerDialog(requireContext(),{_, year, month, dayOfMonth ->
+                val fechaSeleccionada = Calendar.getInstance().apply{
+                    set(year, month,dayOfMonth)
+                }.time
+                mostrarDialogoAgregarRecordatorio(fechaSeleccionada)
+            }, calendario.get(Calendar.YEAR), calendario.get(Calendar.MONTH),calendario.get(Calendar.DAY_OF_MONTH)).show()
         }
 
         //OBTENER RECORDATORIOS DE FIREBASE
@@ -132,14 +140,9 @@ class Recordatorio : Fragment() {
     }
     private fun agregarEvento(fecha: Date){
         val calendar = Calendar.getInstance().apply { time=fecha }
-//        val calendarDay = CalendarDay(calendar)
-//        calendarDay.labelColor
-//        calendarDay.imageResource
-//        eventosCalendario.add(calendarDay)
-//        calendarView.setCalendarDays(eventosCalendario)
+        //val eventDay = EventDay(calendar, R.drawable.noti_icon)
 
         val eventDay = EventDay(calendar, R.drawable.noti_icon)
-
         eventosCalendario.add(eventDay)
         calendarView.setEvents(eventosCalendario)
     }
@@ -176,7 +179,7 @@ class Recordatorio : Fragment() {
         refUsuario.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 listaRecordatorio.clear()
-                eventosCalendario.clear()
+                //eventosCalendario.clear()
                 for (recordatorioSnapshot in snapshot.children){
                     if(recordatorioSnapshot.key != "Contador"){
                         val recordatorio = recordatorioSnapshot.getValue(Recordatorio::class.java)
@@ -186,8 +189,6 @@ class Recordatorio : Fragment() {
                         }
                     }
                 }
-                val fechaActual = Calendar.getInstance().time
-                mostrarRecordatorios(fechaActual)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -196,5 +197,35 @@ class Recordatorio : Fragment() {
         })
 
     }
+    private fun obtenerRecordatorios(fecha: Date) {
+        val refUsuario = database.child("NotificacionPago").child(userName)
+        refUsuario.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val listaRecordatorioFiltrada = mutableListOf<Recordatorio>()
+                for (recordatorioSnapshot in snapshot.children) {
+                    if (recordatorioSnapshot.key != "Contador") {
+                        val recordatorio = recordatorioSnapshot.getValue(Recordatorio::class.java)
+                        if (recordatorio != null && dateFormat.format(recordatorio.fecha) == dateFormat.format(fecha)) {
+                            listaRecordatorioFiltrada.add(recordatorio)
+                            if (dateFormat.format(recordatorio.fecha) == dateFormat.format(fecha)) {
+                                mostrarRecordatorios(fecha)
+                            }
+                        }
+                    }
+                    if (listaRecordatorioFiltrada.isEmpty()) {
+                        (RecyclerViewRecordatorio.adapter as RecordatorioAdapter).limpiarLista()
+                    } else {
+                        (RecyclerViewRecordatorio.adapter as RecordatorioAdapter).actualizarLista(listaRecordatorioFiltrada)
+                    }
 
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Recordatorio", "Error al leer los recordatorios", error.toException())
+            }
+        })
+    }
+    private fun marcarDiaSeleccionado(selectedView: View?) {
+        selectedView?.setBackgroundResource(R.drawable.disenno_dia_seleccionado)
+    }
 }
