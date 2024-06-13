@@ -14,9 +14,7 @@
         android:id="@+id/presupuestos"
         android:name="com.example.finanzaspersonales.Fragments.Presupuestos"
         android:label="fragment_presupuestos"
-        tools:layout="@layout/fragment_presupuestos"
-
-        >
+        tools:layout="@layout/fragment_presupuestos">
         <action
             android:id="@+id/action_presupuestos_to_detalle_presupuesto"
             app:destination="@id/detalle_presupuesto" />
@@ -31,49 +29,52 @@
         android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
         android:label="fragment_recordatorio"
         tools:layout="@layout/fragment_recordatorio" />
-    <fragment
-        android:id="@+id/notificaciones"
-        android:name="com.example.finanzaspersonales.Fragments.Notificaciones"
-        android:label="fragment_recordatorio"
-        tools:layout="@layout/fragment_notificaciones" />
-    <action
-        android:id="@+id/action_notificaciones"
-        app:destination="@+id/notificaciones" />
-    <fragment
 
-        android:id="@+id/categoria"
-        android:name="com.example.finanzaspersonales.Fragments.Categoria"
-        android:label="fragment_categoria"
-        tools:layout="@layout/fragment_categoria" >
-        <action
-            android:id="@+id/action_categoria_to_nuevaCategoria"
-            app:destination="@id/nuevaCategoria" />
-    </fragment>
-    <fragment
-        android:id="@+id/nuevaCategoria"
-        android:name="com.example.finanzaspersonales.Fragments.NuevaCategoria"
-        android:label="fragment_nueva_categoria"
-        tools:layout="@layout/fragment_nueva_categoria" />
-
-    <action android:id="@+id/action_nueva_categoria"
-        app:destination="@+id/categoria"/>
-    <action android:id="@+id/action_inicio"
-        app:destination="@+id/gastos"/>
-    <fragment
-        android:id="@+id/historialFragment"
-        android:name="com.example.finanzaspersonales.Fragments.HistorialFragment"
-        android:label="fragment_historial"
-        tools:layout="@layout/fragment_historial" />
-
-    <action android:id="@+id/action_historialGastos"
-        app:destination="@+id/historialFragment"/>
     <fragment
         android:id="@+id/detalle_presupuesto"
         android:name="com.example.finanzaspersonales.Fragments.Detalle_presupuesto"
         android:label="fragment_detalle_presupuesto"
-        tools:layout="@layout/fragment_detalle_presupuesto" >
+        tools:layout="@layout/fragment_detalle_presupuesto">
         <action
             android:id="@+id/action_detalle_presupuesto_to_presupuestos"
             app:destination="@id/presupuestos" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/inicio_item"
+        android:name="com.example.finanzaspersonales.Fragments.Gastos"
+        android:label="fragment_gastos"
+        tools:layout="@layout/fragment_gastos" />
+
+    <fragment
+        android:id="@+id/historial_item"
+        android:name="com.example.finanzaspersonales.Fragments.HistorialFragment"
+        android:label="fragment_historial"
+        tools:layout="@layout/fragment_historial" />
+
+    <fragment
+        android:id="@+id/notificaciones_item"
+        android:name="com.example.finanzaspersonales.Fragments.Notificaciones"
+        android:label="fragment_recordatorio"
+        tools:layout="@layout/fragment_notificaciones" />
+
+    <fragment
+        android:id="@+id/categoria_item"
+        android:name="com.example.finanzaspersonales.Fragments.Categoria"
+        android:label="fragment_categoria"
+        tools:layout="@layout/fragment_categoria">
+        <action
+            android:id="@+id/action_categoria_to_nuevaCategoria"
+            app:destination="@id/nuevaCategoria" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nuevaCategoria"
+        android:name="com.example.finanzaspersonales.Fragments.NuevaCategoria"
+        android:label="fragment_nueva_categoria"
+        tools:layout="@layout/fragment_nueva_categoria" >
+        <action
+            android:id="@+id/action_nuevaCategoria_to_categoria_item"
+            app:destination="@id/categoria_item" />
     </fragment>
 </navigation>

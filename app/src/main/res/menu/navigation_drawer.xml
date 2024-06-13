@@ -16,6 +16,11 @@
             android:checkable="true"
             android:icon="@drawable/ic_category"
             android:title="Categorias" />
+        <item
+            android:id="@+id/notificaciones_item"
+            android:checkable="true"
+            android:icon="@drawable/ic_notifications"
+            android:title="Notificaciones" />
     </group>
 
     <group android:id="@+id/group_secondary">
