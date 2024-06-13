@@ -164,7 +164,7 @@ class Presupuestos : Fragment() {
         })
     }
     private fun loadPresupuesto() {
-        database_presupuesto.addListenerForSingleValueEvent(object : ValueEventListener {
+        database_presupuesto.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 presupuestos_firebase.clear()
                 for (presupuestoSnapshot in snapshot.children) {
