@@ -13,7 +13,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.finanzaspersonales.Clases.TaskViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -24,101 +26,136 @@ class Home : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolBar: MaterialToolbar
-    private lateinit var bottomNavigation: BottomNavigationView
-    private lateinit var navigationView: NavigationView
-    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
-    private lateinit var navController: NavController
     private val user = FirebaseAuth.getInstance().currentUser
-
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        drawerLayout = findViewById(R.id.main)
+        toolBar = findViewById(R.id.toolBar)
 
-        initializeViews()
         toolBar.setTitle("")
 
+        setSupportActionBar(toolBar)
+
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolBar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+
+        toggle.syncState()
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
+        val navController = navHostFragment.navController
+        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
 
-        setupWithNavController(bottomNavigation, navController)
-
-
-        setupActionBar()
-        setupNavigationDrawer()
-
-    }
-
-    private fun initializeViews() {
-        drawerLayout = findViewById(R.id.main)
-        toolBar = findViewById(R.id.toolBar)
-        bottomNavigation = findViewById(R.id.bottom_navigation)
-        navigationView = findViewById(R.id.navigation_view)
-    }
-
-    private fun setupActionBar() {
-        setSupportActionBar(toolBar)
-    }
-
-    private fun setupNavigationDrawer() {
-        actionBarDrawerToggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolBar, R.string.app_name, R.string.app_name
+        findViewById<NavigationView>(R.id.navigation_view).setupWithNavController(navController)
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(
+            navController
         )
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
-        actionBarDrawerToggle.syncState()
 
-        navigationView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.inicio_item -> {
-                    navController.navigate(R.id.action_inicio)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                }
-
-                R.id.historial_item -> {
-                    navController.navigate(R.id.action_historialGastos)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                }
-
-                R.id.categoria_item -> {
-                    navController.navigate(R.id.action_nueva_categoria)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                }
-
-                R.id.cerrar_sesion_item -> {
-                    Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
-                    FirebaseAuth.getInstance().signOut()
-                    finish()
-                }
-            }
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
-        }
-
-        //HEADER DEL NAVIGATION VIEW
+        val navigationView = findViewById<NavigationView>(R.id.navigation_view)
         val header = navigationView.getHeaderView(0)
-        val btnNotificacion = header.findViewById<ImageView>(R.id.btnNotificacion)
         val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
 
         txtCorreo.text = user?.email
-
-        btnNotificacion.setOnClickListener {
-            navController.navigate(R.id.action_notificaciones)
-            drawerLayout.closeDrawer(GravityCompat.START)
-        }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            true
-        } else {
-            super.onOptionsItemSelected(item)
-        }
-    }
+
 }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.activity_home)
+//
+//
+//        initializeViews()
+//        toolBar.setTitle("")
+//
+//
+//        val navHostFragment =
+//            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+//        navController = navHostFragment.navController
+//
+//        setupWithNavController(bottomNavigation, navController)
+//
+//
+//        setupActionBar()
+//        setupNavigationDrawer()
+//
+//    }
+//
+//    private fun initializeViews() {
+//        drawerLayout = findViewById(R.id.main)
+//        toolBar = findViewById(R.id.toolBar)
+//        bottomNavigation = findViewById(R.id.bottom_navigation)
+//        navigationView = findViewById(R.id.navigation_view)
+//    }
+//
+//    private fun setupActionBar() {
+//        setSupportActionBar(toolBar)
+//    }
+//
+//    private fun setupNavigationDrawer() {
+//        actionBarDrawerToggle = ActionBarDrawerToggle(
+//            this, drawerLayout, toolBar, R.string.app_name, R.string.app_name
+//        )
+//        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+//        actionBarDrawerToggle.syncState()
+//
+//        navigationView.setNavigationItemSelectedListener {
+//            when (it.itemId) {
+//                R.id.inicio_item -> {
+//                    navController.navigate(R.id.action_inicio)
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                }
+//
+//                R.id.historial_item -> {
+//                    navController.navigate(R.id.action_historialGastos)
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                }
+//
+//                R.id.categoria_item -> {
+//                    navController.navigate(R.id.action_nueva_categoria)
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                }
+//
+//                R.id.cerrar_sesion_item -> {
+//                    Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
+//                    FirebaseAuth.getInstance().signOut()
+//                    finish()
+//                }
+//            }
+//            drawerLayout.closeDrawer(GravityCompat.START)
+//            true
+//        }
+//
+//        //HEADER DEL NAVIGATION VIEW
+//        val header = navigationView.getHeaderView(0)
+//        val btnNotificacion = header.findViewById<ImageView>(R.id.btnNotificacion)
+//        val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
+//
+//        txtCorreo.text = user?.email
+//
+//        btnNotificacion.setOnClickListener {
+//            navController.navigate(R.id.action_notificaciones)
+//            drawerLayout.closeDrawer(GravityCompat.START)
+//        }
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+//            true
+//        } else {
+//            super.onOptionsItemSelected(item)
+//        }
+//    }
+//}
 
 //        setupBottomNavigation()
 //        replaceFragment(Gastos())
