@@ -63,7 +63,7 @@ class Register : Fragment() {
         val password = tvContraseniaRegistro.text.toString()
 
         if (email.isNotEmpty() && password.isNotEmpty() && cbRegistroTerminos.isChecked) {
-            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{ task ->
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "REGISTRO EXITOSO", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_register_to_login)
@@ -84,9 +84,10 @@ class Register : Fragment() {
                     database.child("Gasto").child(userId).setValue("")
                     database.child("GastoAnual").child(userId).setValue("")
                     database.child("GastoSemanal").child(userId).setValue("")
+                    database.child("Gastos").child(userId).setValue("")
                     database.child("NotificacionPago").child(userId).setValue("")
                     database.child("Presupuesto").child(userId).setValue("")
-
+                    database.child("Notificacion").child(userId).setValue("")
                 } else {
                     Toast.makeText(requireContext(), "CORREO YA REGISTRADO", Toast.LENGTH_SHORT)
                         .show()
