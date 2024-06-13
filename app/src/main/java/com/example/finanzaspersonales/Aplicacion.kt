@@ -32,7 +32,7 @@ class Aplicacion: Application() {
         val currentUsuario = FirebaseAuth.getInstance().currentUser
         if(currentUsuario != null){
             userName = currentUsuario.uid
-            reiniciarGastoSemanal()
+            //reiniciarGastoSemanal()
         }else{
             Log.e("Aplicacion","No hay usuario")
         }

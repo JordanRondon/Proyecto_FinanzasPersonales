@@ -36,8 +36,10 @@ class Gastos : Fragment() {
 
     private val username = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val database = FirebaseDatabase.getInstance().getReference("Gasto/$username")
-    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
-    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$username")
+    private val contadorReference =
+        FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
+    private val categoriaReference =
+        FirebaseDatabase.getInstance().getReference("Categoria/$username")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +56,8 @@ class Gastos : Fragment() {
 
 
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
-        categoria_adapter = GastoHomeAdapter(arrayListCategoria, database, contadorReference, categoriaReference)
+        categoria_adapter =
+            GastoHomeAdapter(arrayListCategoria, database, contadorReference, categoriaReference)
         recycle_conteiner.adapter = categoria_adapter
 
 
@@ -81,8 +84,20 @@ class Gastos : Fragment() {
                             val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
                             val fechaRegistro = ds.child("fechaRegistro").value.toString()
 
-                            arrayListCategoria.add(EntidadGasto(categoriaID, presupuestoID, monto, fechaRegistro))
+                            arrayListCategoria.add(
+                                EntidadGasto(
+                                    categoriaID,
+                                    presupuestoID,
+                                    monto,
+                                    fechaRegistro
+                                )
+                            )
 
+                        } else {
+                            txtGastos.visibility = View.INVISIBLE
+                            ivImagen.visibility = View.VISIBLE
+                            txtMensaje1.visibility = View.VISIBLE
+                            txtMensaje2.visibility = View.VISIBLE
                         }
                     }
                     categoria_adapter.notifyDataSetChanged()

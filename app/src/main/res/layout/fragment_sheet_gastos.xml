@@ -16,14 +16,27 @@
         android:text="Categoría"
         android:textSize="17sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCategoriaGastos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        tools:orientation="horizontal" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewCategoriaGastos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:orientation="horizontal" />
+
+        <TextView
+            android:id="@+id/txt_categoria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="No hay categorias registradas"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
     <TextView
         style="@style/TextAppearance.AppCompat.Title"
@@ -69,24 +82,37 @@
         android:text="Presupuesto"
         android:textSize="17sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewPresupuestos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        tools:orientation="horizontal" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewPresupuestos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:orientation="horizontal" />
+
+        <TextView
+            android:id="@+id/txt_presupuesto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="No hay categorias registradas"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
 
     <Button
         android:id="@+id/btnGuardarCategoria"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/piel"
-        android:textColor="@color/white"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="50dp"
         android:layout_marginTop="20dp"
-        android:text="GUARDAR" />
+        android:backgroundTint="@color/piel"
+        android:text="GUARDAR"
+        android:textColor="@color/white" />
 
 </LinearLayout>

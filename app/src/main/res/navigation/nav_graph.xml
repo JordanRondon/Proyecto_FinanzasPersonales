@@ -41,12 +41,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/inicio_item"
-        android:name="com.example.finanzaspersonales.Fragments.Gastos"
-        android:label="fragment_gastos"
-        tools:layout="@layout/fragment_gastos" />
-
-    <fragment
         android:id="@+id/historial_item"
         android:name="com.example.finanzaspersonales.Fragments.HistorialFragment"
         android:label="fragment_historial"
