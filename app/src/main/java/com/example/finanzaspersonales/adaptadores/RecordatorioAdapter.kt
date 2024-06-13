@@ -40,5 +40,9 @@ class RecordatorioAdapter(private val context: Context, private var recordatorio
         recordatorios = nuevaLista
         notifyDataSetChanged()
     }
+    fun limpiarLista(){
+        this.recordatorios = emptyList()
+        notifyDataSetChanged()
+    }
 
 }
