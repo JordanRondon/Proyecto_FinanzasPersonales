@@ -11,19 +11,22 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.entidades.EntidadGasto
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class GastoHomeAdapter(
     private val arrayListCategoria: ArrayList<EntidadGasto>,
     private val database: DatabaseReference,
+
     private val contadorReference: DatabaseReference,
     private val categoriaReference: DatabaseReference
 ) :
     RecyclerView.Adapter<GastoHomeAdapter.ViewHolder>() {
-
+    private lateinit var database2: DatabaseReference
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.item_gastos, viewGroup, false)
@@ -34,9 +37,10 @@ class GastoHomeAdapter(
         viewHolder.onBind(arrayListCategoria[position])
         viewHolder.imagen.setOnClickListener {
             deleteCategoria(position, viewHolder.context)
+
         }
 
-        getIconCategoria(viewHolder.icon, arrayListCategoria[position].categoriaId,viewHolder.context)
+        getIconCategoria(viewHolder.icon, arrayListCategoria[position].categoriaID,viewHolder.context)
     }
 
     override fun getItemCount(): Int {
@@ -55,19 +59,47 @@ class GastoHomeAdapter(
             val fecha: TextView = view.findViewById(R.id.txt_fecha)
 
 
-            nombre.text = entidadGasto.categoriaId
-            monto.text = entidadGasto.valorGasto.toString()
-            fecha.text = entidadGasto.fechaGasto
+            nombre.text = entidadGasto.categoriaID
+            monto.text = entidadGasto.monto.toString()
+            fecha.text = entidadGasto.fechaRegistro
         }
+    }
+    interface OnDataRetrieved<T> {
+        fun onSuccess(data: T)
+        fun onFailure(error: String)
     }
 
     private fun deleteCategoria(index: Int, context: Context) {
-        database.child((index + 1).toString()).removeValue()
-        decrementContador()
-        Toast.makeText(context, "Gasto eliminado exitosamente", Toast.LENGTH_SHORT).show()
-        arrayListCategoria.removeAt(index)
-        notifyDataSetChanged()
+        val idGasto = (index + 1).toString()
+
+        obtener_id_presupuesto(idGasto, object : OnDataRetrieved<String?> {
+            override fun onSuccess(id_presupuesto: String?) {
+                obtener_monto_gasto(idGasto, object : OnDataRetrieved<Float?> {
+                    override fun onSuccess(monto_gasto: Float?) {
+                        if (id_presupuesto != null && monto_gasto != null) {
+                            setGastoPresupuesto(monto_gasto, id_presupuesto)
+                        }
+
+                        database.child(idGasto).removeValue()
+                        decrementContador()
+
+                        Toast.makeText(context, "Gasto eliminado exitosamente", Toast.LENGTH_SHORT).show()
+                        arrayListCategoria.removeAt(index)
+                        notifyDataSetChanged()
+                    }
+
+                    override fun onFailure(error: String) {
+                        Toast.makeText(context, "Error al obtener el monto: $error", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+
+            override fun onFailure(error: String) {
+                Toast.makeText(context, "Error al obtener el ID del presupuesto: $error", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
+
 
     private fun decrementContador(){
         contadorReference.get().addOnSuccessListener { data ->
@@ -75,6 +107,57 @@ class GastoHomeAdapter(
             val contadorUpdate = contador - 1
 
             contadorReference.setValue(contadorUpdate)
+        }
+    }
+    private fun setGastoPresupuesto(Monto_gasto: Float,presuesto_id: String) {
+
+
+        database2 = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        val gasto_presupuesto =
+            FirebaseDatabase.getInstance().getReference("Presupuesto/$user/$presuesto_id/monto_actual")
+
+        //obtiene el valor actual del monto actual
+        gasto_presupuesto.get().addOnSuccessListener { data ->
+            val monto_Actual = data.getValue(Float::class.java) ?: 0f
+            val monto_presupuestoActualizado = monto_Actual - Monto_gasto
+            //actualiza monto del dia
+            gasto_presupuesto.setValue(monto_presupuestoActualizado).addOnCompleteListener { tarea ->
+                if (!tarea.isSuccessful) {
+                    println("Error al actualizar el valor: ${tarea.exception?.message}")
+                }
+            }
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
+        }
+    }
+    private fun obtener_id_presupuesto(Id_gasto: String, callback: OnDataRetrieved<String?>) {
+        database2 = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        val presupuestoID =
+            FirebaseDatabase.getInstance().getReference("Gasto/$user/$Id_gasto/presupuestoID")
+
+        presupuestoID.get().addOnSuccessListener { data ->
+            val id_presupuesto = data.getValue(String::class.java) ?: ""
+            callback.onSuccess(id_presupuesto)
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
+            callback.onFailure(exception.message ?: "Error desconocido")
+        }
+    }
+
+    private fun obtener_monto_gasto(Id_gasto: String, callback: OnDataRetrieved<Float?>) {
+        database2 = FirebaseDatabase.getInstance().reference
+        val user = FirebaseAuth.getInstance().currentUser!!.uid
+        val presupuestoID =
+            FirebaseDatabase.getInstance().getReference("Gasto/$user/$Id_gasto/monto")
+
+        presupuestoID.get().addOnSuccessListener { data ->
+            val monto_gasto = data.getValue(Float::class.java) ?: 0f
+            callback.onSuccess(monto_gasto)
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
+            callback.onFailure(exception.message ?: "Error desconocido")
         }
     }
 

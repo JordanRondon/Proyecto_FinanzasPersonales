@@ -128,7 +128,7 @@ class NuevaCategoria : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.action_nueva_categoria)
+                        findNavController().navigate(R.id.action_nuevaCategoria_to_categoria_item)
                     } else {
                         Toast.makeText(context, "Ha ocurrido un error al registrar.", Toast.LENGTH_SHORT).show()
                     }
