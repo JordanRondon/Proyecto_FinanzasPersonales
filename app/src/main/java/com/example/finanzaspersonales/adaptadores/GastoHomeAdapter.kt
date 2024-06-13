@@ -20,12 +20,13 @@ import com.google.firebase.database.ValueEventListener
 
 class GastoHomeAdapter(
     private val arrayListCategoria: ArrayList<EntidadGasto>,
-    private var database: DatabaseReference,
+    private val database: DatabaseReference,
+
     private val contadorReference: DatabaseReference,
     private val categoriaReference: DatabaseReference
 ) :
     RecyclerView.Adapter<GastoHomeAdapter.ViewHolder>() {
-
+    private lateinit var database2: DatabaseReference
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.item_gastos, viewGroup, false)
@@ -78,6 +79,7 @@ class GastoHomeAdapter(
                         if (id_presupuesto != null && monto_gasto != null) {
                             setGastoPresupuesto(monto_gasto, id_presupuesto)
                         }
+
                         database.child(idGasto).removeValue()
                         decrementContador()
 
@@ -110,7 +112,7 @@ class GastoHomeAdapter(
     private fun setGastoPresupuesto(Monto_gasto: Float,presuesto_id: String) {
 
 
-        database = FirebaseDatabase.getInstance().reference
+        database2 = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
         val gasto_presupuesto =
             FirebaseDatabase.getInstance().getReference("Presupuesto/$user/$presuesto_id/monto_actual")
@@ -130,7 +132,7 @@ class GastoHomeAdapter(
         }
     }
     private fun obtener_id_presupuesto(Id_gasto: String, callback: OnDataRetrieved<String?>) {
-        database = FirebaseDatabase.getInstance().reference
+        database2 = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
         val presupuestoID =
             FirebaseDatabase.getInstance().getReference("Gasto/$user/$Id_gasto/presupuestoID")
@@ -145,7 +147,7 @@ class GastoHomeAdapter(
     }
 
     private fun obtener_monto_gasto(Id_gasto: String, callback: OnDataRetrieved<Float?>) {
-        database = FirebaseDatabase.getInstance().reference
+        database2 = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
         val presupuestoID =
             FirebaseDatabase.getInstance().getReference("Gasto/$user/$Id_gasto/monto")
