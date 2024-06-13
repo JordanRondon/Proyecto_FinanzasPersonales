@@ -49,8 +49,22 @@ class Login : Fragment() {
 
         //Permite dejar el inicio de sesion activo
         if (user != null) {
+            val userid = user.uid
             Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_login_to_home2)
+            Firebase.messaging.token.addOnCompleteListener { tokenTask ->
+                if (!tokenTask.isSuccessful) {
+                    Log.w(
+                        "FCM",
+                        "Fetching FCM registration token failed",
+                        tokenTask.exception
+                    )
+                    return@addOnCompleteListener
+                }
+
+                val token = tokenTask.result
+                registrarToken(userid, token)
+            }
         }
 
         tvRegistrate.setOnClickListener {

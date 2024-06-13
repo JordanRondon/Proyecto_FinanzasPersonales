@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -50,129 +51,28 @@ class Home : AppCompatActivity() {
 
         toggle.syncState()
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
 
         findViewById<NavigationView>(R.id.navigation_view).setupWithNavController(navController)
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(
-            navController
-        )
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(navController)
 
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
         val header = navigationView.getHeaderView(0)
         val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
 
         txtCorreo.text = user?.email
+        val menu = navigationView.menu[4]
+
+        menu.setOnMenuItemClickListener {
+            Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
+            FirebaseAuth.getInstance().signOut()
+            finish()
+
+            true
+        }
     }
-
-
 }
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_home)
-//
-//
-//        initializeViews()
-//        toolBar.setTitle("")
-//
-//
-//        val navHostFragment =
-//            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//        navController = navHostFragment.navController
-//
-//        setupWithNavController(bottomNavigation, navController)
-//
-//
-//        setupActionBar()
-//        setupNavigationDrawer()
-//
-//    }
-//
-//    private fun initializeViews() {
-//        drawerLayout = findViewById(R.id.main)
-//        toolBar = findViewById(R.id.toolBar)
-//        bottomNavigation = findViewById(R.id.bottom_navigation)
-//        navigationView = findViewById(R.id.navigation_view)
-//    }
-//
-//    private fun setupActionBar() {
-//        setSupportActionBar(toolBar)
-//    }
-//
-//    private fun setupNavigationDrawer() {
-//        actionBarDrawerToggle = ActionBarDrawerToggle(
-//            this, drawerLayout, toolBar, R.string.app_name, R.string.app_name
-//        )
-//        drawerLayout.addDrawerListener(actionBarDrawerToggle)
-//        actionBarDrawerToggle.syncState()
-//
-//        navigationView.setNavigationItemSelectedListener {
-//            when (it.itemId) {
-//                R.id.inicio_item -> {
-//                    navController.navigate(R.id.action_inicio)
-//                    drawerLayout.closeDrawer(GravityCompat.START)
-//                }
-//
-//                R.id.historial_item -> {
-//                    navController.navigate(R.id.action_historialGastos)
-//                    drawerLayout.closeDrawer(GravityCompat.START)
-//                }
-//
-//                R.id.categoria_item -> {
-//                    navController.navigate(R.id.action_nueva_categoria)
-//                    drawerLayout.closeDrawer(GravityCompat.START)
-//                }
-//
-//                R.id.cerrar_sesion_item -> {
-//                    Toast.makeText(this, "HASTA LUEGO", Toast.LENGTH_SHORT).show()
-//                    FirebaseAuth.getInstance().signOut()
-//                    finish()
-//                }
-//            }
-//            drawerLayout.closeDrawer(GravityCompat.START)
-//            true
-//        }
-//
-//        //HEADER DEL NAVIGATION VIEW
-//        val header = navigationView.getHeaderView(0)
-//        val btnNotificacion = header.findViewById<ImageView>(R.id.btnNotificacion)
-//        val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
-//
-//        txtCorreo.text = user?.email
-//
-//        btnNotificacion.setOnClickListener {
-//            navController.navigate(R.id.action_notificaciones)
-//            drawerLayout.closeDrawer(GravityCompat.START)
-//        }
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-//            true
-//        } else {
-//            super.onOptionsItemSelected(item)
-//        }
-//    }
-//}
 
-//        setupBottomNavigation()
-//        replaceFragment(Gastos())
-
-//    private fun setupBottomNavigation() {
-//        bottomNavigation.setOnItemSelectedListener { item ->
-//            val fragment: Fragment = when (item.itemId) {
-//                R.id.item_gastos -> Gastos()
-//                R.id.item_presupuestos -> Presupuestos()
-//                R.id.item_ahorro -> Ahorro()
-//                R.id.item_recordatorios -> Recordatorio()
-//                else -> return@setOnItemSelectedListener false
-//            }
-//            replaceFragment(fragment)
-//            true
-//        }
-//    }
-//
-//
 

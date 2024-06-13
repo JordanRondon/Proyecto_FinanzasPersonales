@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -59,12 +60,17 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var categoriaGastosAdapter: CategoriaGastosAdapter
     private lateinit var presupuestoGastosAdapter: CategoriaGastosAdapter
 
+    private lateinit var txt_categoria: TextView
+    private lateinit var txt_presupuesto: TextView
+
     private val categoriasMap: MutableMap<String, String?> = mutableMapOf()
-    companion object{
-        const val MI_CANAL_ID="CanalPresupuesto"
+
+    companion object {
+        const val MI_CANAL_ID = "CanalPresupuesto"
         const val NOTIFICATION_ID = 1
         const val REQUEST_CODE_PERMISSIONS = 1001
     }
+
     fun createSimpleNotification(presupuestoid: String) {
         val builder = NotificationCompat.Builder(requireContext(), MI_CANAL_ID)
             .setSmallIcon(R.drawable.moneda)
@@ -75,7 +81,8 @@ class SheetGastos : BottomSheetDialogFragment() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED) {
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             with(NotificationManagerCompat.from(requireContext())) {
                 notify(NOTIFICATION_ID, builder.build())
             }
@@ -87,6 +94,7 @@ class SheetGastos : BottomSheetDialogFragment() {
             )
         }
     }
+
     private fun crearCanalDeNotificacion() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nombre = "Mi Canal"
@@ -134,6 +142,9 @@ class SheetGastos : BottomSheetDialogFragment() {
         recyclerViewCategoria.adapter = categoriaGastosAdapter
         recyclerViewPresupuestos.adapter = presupuestoGastosAdapter
 
+        txt_categoria = view.findViewById(R.id.txt_categoria)
+        txt_presupuesto = view.findViewById(R.id.txt_presupuesto)
+
         getCategorias()
         getPresupuestos()
 
@@ -173,7 +184,7 @@ class SheetGastos : BottomSheetDialogFragment() {
 
 
                         setGastoSemanal_dia(categoriaMonto)
-                        setGastoPresupuesto(categoriaMonto,presupuestoID)
+                        setGastoPresupuesto(categoriaMonto, presupuestoID)
                         binding.etMonto.text.clear()
                         dismiss()
                     }
@@ -198,7 +209,7 @@ class SheetGastos : BottomSheetDialogFragment() {
         database.child("Categoria").child(user).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 arrayListCategoria.clear()
-                if (dataSnapshot.exists()) {
+                if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
                     for (ds: DataSnapshot in dataSnapshot.children) {
                         val categoriaNombre = ds.key
                         val urlIcon = ds.child("urlicono").getValue(String::class.java)
@@ -209,6 +220,10 @@ class SheetGastos : BottomSheetDialogFragment() {
                         }
                     }
                     categoriaGastosAdapter.notifyDataSetChanged()
+                    txt_categoria.visibility = View.INVISIBLE
+
+                } else {
+                    txt_categoria.visibility = View.VISIBLE
                 }
             }
 
@@ -221,7 +236,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     private fun getPresupuestos() {
         presupuestoReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(data: DataSnapshot) {
-                if (data.exists()) {
+                if (data.exists() && data.hasChildren()) {
                     for (ds: DataSnapshot in data.children) {
                         val presupuestoID = ds.key
                         val categoriaID = ds.child("categoriaID").getValue(String::class.java)
@@ -231,6 +246,10 @@ class SheetGastos : BottomSheetDialogFragment() {
                     }
 
                     presupuestoGastosAdapter.notifyDataSetChanged()
+                    txt_presupuesto.visibility = View.INVISIBLE
+
+                } else {
+                    txt_presupuesto.visibility = View.VISIBLE
                 }
             }
 
@@ -264,36 +283,40 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setGastoPresupuesto(NuevoGastoMonto: Float,presuesto_id: String) {
+    private fun setGastoPresupuesto(NuevoGastoMonto: Float, presuesto_id: String) {
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
 
         val gasto_presupuesto =
-            FirebaseDatabase.getInstance().getReference("Presupuesto/$user/$presuesto_id/monto_actual")
+            FirebaseDatabase.getInstance()
+                .getReference("Presupuesto/$user/$presuesto_id/monto_actual")
 
         //obtiene el valor actual del monto actual
         gasto_presupuesto.get().addOnSuccessListener { data ->
             val monto_Actual = data.getValue(Float::class.java) ?: 0f
             val monto_presupuestoActualizado = monto_Actual + NuevoGastoMonto
-            if(obtenermontototal_presupuesto(presuesto_id)!! <=monto_presupuestoActualizado){
+            if (obtenermontototal_presupuesto(presuesto_id)!! <= monto_presupuestoActualizado) {
                 createSimpleNotification(presuesto_id)
             }
             //actualiza monto del dia
-            gasto_presupuesto.setValue(monto_presupuestoActualizado).addOnCompleteListener { tarea ->
-                if (!tarea.isSuccessful) {
-                    println("Error al actualizar el valor: ${tarea.exception?.message}")
+            gasto_presupuesto.setValue(monto_presupuestoActualizado)
+                .addOnCompleteListener { tarea ->
+                    if (!tarea.isSuccessful) {
+                        println("Error al actualizar el valor: ${tarea.exception?.message}")
+                    }
                 }
-            }
         }.addOnFailureListener { exception ->
             println("Error al obtener el valor actual: ${exception.message}")
         }
     }
+
     private fun obtenermontototal_presupuesto(presuesto_id: String): Float? {
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser!!.uid
-        var monto_total:Float?=0.0f
+        var monto_total: Float? = 0.0f
         val gasto_presupuesto =
-            FirebaseDatabase.getInstance().getReference("Presupuesto/$user/$presuesto_id/monto_total")
+            FirebaseDatabase.getInstance()
+                .getReference("Presupuesto/$user/$presuesto_id/monto_total")
 
         //obtiene el valor actual del monto actual
         gasto_presupuesto.get().addOnSuccessListener { data ->
