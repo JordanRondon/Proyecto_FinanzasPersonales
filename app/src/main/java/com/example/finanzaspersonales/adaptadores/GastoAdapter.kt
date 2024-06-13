@@ -33,7 +33,7 @@ class GastoAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = historialGastos[position]
-        val categoriaRef = database.child(item.categoriaId)
+        val categoriaRef = database.child(item.categoriaID)
 
         categoriaRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -52,9 +52,9 @@ class GastoAdapter(
             }
         })
 
-        holder.tvCategoria.text = item.categoriaId.toString()
-        holder.tvFecha.text = item.fechaGasto.toString()
-        holder.tvValorSoles.text = item.valorGasto.toString()
+        holder.tvCategoria.text = item.categoriaID.toString()
+        holder.tvFecha.text = item.fechaRegistro.toString()
+        holder.tvValorSoles.text = item.monto.toString()
     }
 
     override fun getItemCount() = historialGastos.size

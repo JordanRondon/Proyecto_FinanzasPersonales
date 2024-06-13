@@ -81,10 +81,10 @@ class GastosFragment : Fragment() {
                         val fechaRegistro = gastoSnapshot.child("fechaRegistro").value.toString()
 
                         val entidad = EntidadGasto(
-                            categoriaId = categoriaID,
-                            presupuestoId = presupuestoID,
-                            valorGasto = monto,
-                            fechaGasto = fechaRegistro
+                            categoriaID = categoriaID,
+                            presupuestoID = presupuestoID,
+                            monto = monto,
+                            fechaRegistro = fechaRegistro
                         )
                         historialGasto.add(entidad)
                     }
@@ -103,7 +103,7 @@ class GastosFragment : Fragment() {
         if (texto.isEmpty()) {
             historialGastoFiltrado.addAll(historialGasto)
         } else {
-            historialGastoFiltrado.addAll(historialGasto.filter { it.categoriaId.contains(texto, ignoreCase = true) })
+            historialGastoFiltrado.addAll(historialGasto.filter { it.categoriaID.contains(texto, ignoreCase = true) })
         }
         adaptadorPersonalizado = GastoAdapter(requireContext(), historialGastoFiltrado, databaseCategoria)
         RecyclerViewHistorial.layoutManager = LinearLayoutManager(requireContext())
