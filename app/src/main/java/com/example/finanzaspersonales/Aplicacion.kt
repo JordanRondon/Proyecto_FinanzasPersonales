@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -27,8 +26,16 @@ class Aplicacion: Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        userName = FirebaseAuth.getInstance().currentUser?.uid
+        //userName = FirebaseAuth.getInstance().currentUser?.uid
         database=FirebaseDatabase.getInstance().reference
+
+        val currentUsuario = FirebaseAuth.getInstance().currentUser
+        if(currentUsuario != null){
+            userName = currentUsuario.uid
+            reiniciarGastoSemanal()
+        }else{
+            Log.e("Aplicacion","No hay usuario")
+        }
 
         Firebase.messaging.token.addOnCompleteListener{
             if(!it.isSuccessful){
@@ -39,7 +46,7 @@ class Aplicacion: Application() {
             println("El token es $token")
         }
         createNotificationChannel()
-        reiniciarGastoSemanal()
+        //reiniciarGastoSemanal()
     }
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -55,40 +62,43 @@ class Aplicacion: Application() {
     }
 
     private fun reiniciarGastoSemanal() {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
-        val gastoSemanlRef = FirebaseDatabase.getInstance().getReference("GastoSemanal/$user")
+        val user = userName
+        if(user != null){
+            val gastoSemanlRef = FirebaseDatabase.getInstance().getReference("GastoSemanal/$user")
 
-        gastoSemanlRef.get().addOnSuccessListener { datos ->
-            val fecha_actual = obtenerFechaActual()
-            val fin_semana = datos.child("fin_semana").value as String
+            gastoSemanlRef.get().addOnSuccessListener { datos ->
+                val fecha_actual = obtenerFechaActual()
+                val fin_semana = datos.child("fin_semana").value as String
 
-            if (fecha_actual.after(convertirFecha(fin_semana))) {
-                val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
-                // Actualizar los valores en Firebase
-                val resultadoActualizado = mapOf(
-                    "domingo" to 0,
-                    "lunes" to 0,
-                    "martes" to 0,
-                    "miercoles" to 0,
-                    "jueves" to 0,
-                    "viernes" to 0,
-                    "sabado" to 0
-                )
-                val datosActualizados = mapOf(
-                    "fin_semana" to nuevo_fin_semana,
-                    "inicio_semana" to nuevo_inicio_semana,
-                    "resultado" to resultadoActualizado
-                )
+                if (fecha_actual.after(convertirFecha(fin_semana))) {
+                    val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
+                    // Actualizar los valores en Firebase
+                    val resultadoActualizado = mapOf(
+                        "domingo" to 0,
+                        "lunes" to 0,
+                        "martes" to 0,
+                        "miercoles" to 0,
+                        "jueves" to 0,
+                        "viernes" to 0,
+                        "sabado" to 0
+                    )
+                    val datosActualizados = mapOf(
+                        "fin_semana" to nuevo_fin_semana,
+                        "inicio_semana" to nuevo_inicio_semana,
+                        "resultado" to resultadoActualizado
+                    )
 
-                gastoSemanlRef.updateChildren(datosActualizados).addOnCompleteListener { tarea2 ->
-                    if (!tarea2.isSuccessful) {
-                        Log.e("FirebaseError", "Error al actualizar los datos: ${tarea2.exception?.message}")
+                    gastoSemanlRef.updateChildren(datosActualizados).addOnCompleteListener { tarea2 ->
+                        if (!tarea2.isSuccessful) {
+                            Log.e("FirebaseError", "Error al actualizar los datos: ${tarea2.exception?.message}")
+                        }
                     }
                 }
+            }.addOnFailureListener { exception ->
+                Log.e("FirebaseError", "Error al obtener los datos: ${exception.message}")
             }
-        }.addOnFailureListener { exception ->
-            Log.e("FirebaseError", "Error al obtener los datos: ${exception.message}")
+        }else{
+            Log.e("Aplicacion","El usuario no esta autenticado")
         }
     }
 
