@@ -76,10 +76,10 @@ class Gastos : Fragment() {
                     txtGastos.visibility = View.VISIBLE
                     for (ds: DataSnapshot in dataSnapshot.children) {
                         if (ds.key != "contador") {
-                            val categoriaID = ds.child("categoriaId").value.toString()
-                            val presupuestoID = ds.child("presupuestoId").value.toString()
-                            val monto = ds.child("valorGasto").getValue(Float::class.java) ?: 0.0f
-                            val fechaRegistro = ds.child("fechaGasto").value.toString()
+                            val categoriaID = ds.child("categoriaID").value.toString()
+                            val presupuestoID = ds.child("presupuestoID").value.toString()
+                            val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
+                            val fechaRegistro = ds.child("fechaRegistro").value.toString()
 
                             arrayListCategoria.add(EntidadGasto(categoriaID, presupuestoID, monto, fechaRegistro))
 

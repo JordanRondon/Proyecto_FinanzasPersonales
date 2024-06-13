@@ -36,7 +36,7 @@ class GastoHomeAdapter(
             deleteCategoria(position, viewHolder.context)
         }
 
-        getIconCategoria(viewHolder.icon, arrayListCategoria[position].categoriaId,viewHolder.context)
+        getIconCategoria(viewHolder.icon, arrayListCategoria[position].categoriaID,viewHolder.context)
     }
 
     override fun getItemCount(): Int {
@@ -55,9 +55,9 @@ class GastoHomeAdapter(
             val fecha: TextView = view.findViewById(R.id.txt_fecha)
 
 
-            nombre.text = entidadGasto.categoriaId
-            monto.text = entidadGasto.valorGasto.toString()
-            fecha.text = entidadGasto.fechaGasto
+            nombre.text = entidadGasto.categoriaID
+            monto.text = entidadGasto.monto.toString()
+            fecha.text = entidadGasto.fechaRegistro
         }
     }
 
