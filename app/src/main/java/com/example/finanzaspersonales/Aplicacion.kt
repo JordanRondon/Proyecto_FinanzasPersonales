@@ -46,7 +46,7 @@ class Aplicacion: Application() {
             println("El token es $token")
         }
         createNotificationChannel()
-        //reiniciarGastoSemanal()
+        reiniciarGastoSemanal()
     }
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
