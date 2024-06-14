@@ -38,25 +38,28 @@ class CategoriaGastosAdapter(
 
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.txtNombreCategoria.text = dataSet[position].nombre
-        viewHolder.ivCategoria.setImageResource(
-            context.resources.getIdentifier(
-                dataSet[position].urlImage,
-                "drawable",
-                context.packageName
+        val categoria = dataSet.getOrNull(position)
+        if (categoria != null) {
+            viewHolder.txtNombreCategoria.text = categoria.nombre
+            viewHolder.ivCategoria.setImageResource(
+                context.resources.getIdentifier(
+                    categoria.urlImage,
+                    "drawable",
+                    context.packageName
+                )
             )
-        )
-        viewHolder.itemView.setOnClickListener {
-            notifyItemChanged(selectedPos)
-            selectedPos = viewHolder.layoutPosition
-            notifyItemChanged(selectedPos)
+            viewHolder.itemView.setOnClickListener {
+                notifyItemChanged(selectedPos)
+                selectedPos = viewHolder.layoutPosition
+                notifyItemChanged(selectedPos)
+            }
+
+            viewHolder.cardView.setBackgroundColor(
+                if (selectedPos == position) Color.rgb(180, 180, 184) else Color.TRANSPARENT
+            )
         }
-
-        viewHolder.cardView.setBackgroundColor(
-            if (selectedPos == position) Color.rgb(180, 180, 184) else Color.TRANSPARENT
-        )
-
     }
+
 
     fun getCategoriaSelected(): CategoriaGastos? {
         return if (selectedPos != RecyclerView.NO_POSITION) dataSet[selectedPos] else null
