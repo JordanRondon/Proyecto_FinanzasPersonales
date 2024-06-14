@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/group_primary">
         <item
-            android:id="@+id/inicio_item"
+            android:id="@+id/gastos"
             android:checkable="true"
             android:icon="@drawable/ic_home"
             android:title="Inicio" />
