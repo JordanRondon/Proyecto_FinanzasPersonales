@@ -149,7 +149,7 @@ class Recordatorio : Fragment() {
     //Agregar Recordatorio -> Firebase
     private fun AgregarRecordatorioFirebase(recordatorio: Recordatorio, nombreUsuario: String){
         val refUsuario = database.child("NotificacionPago").child(nombreUsuario)
-        val refcontador = refUsuario.child("Contador").child("ultimo_NotificacionPago")
+        val refcontador = refUsuario.child("contador").child("ultimo_NotificacionPago")
 
         refcontador.get().addOnSuccessListener { dataSnapshot ->
             val contadorActual = dataSnapshot.getValue(Int::class.java) ?: 0
@@ -181,7 +181,7 @@ class Recordatorio : Fragment() {
                 listaRecordatorio.clear()
                 //eventosCalendario.clear()
                 for (recordatorioSnapshot in snapshot.children){
-                    if(recordatorioSnapshot.key != "Contador"){
+                    if(recordatorioSnapshot.key != "contador"){
                         val recordatorio = recordatorioSnapshot.getValue(Recordatorio::class.java)
                         if(recordatorio != null){
                             listaRecordatorio.add(recordatorio)
@@ -203,7 +203,7 @@ class Recordatorio : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val listaRecordatorioFiltrada = mutableListOf<Recordatorio>()
                 for (recordatorioSnapshot in snapshot.children) {
-                    if (recordatorioSnapshot.key != "Contador") {
+                    if (recordatorioSnapshot.key != "contador") {
                         val recordatorio = recordatorioSnapshot.getValue(Recordatorio::class.java)
                         if (recordatorio != null && dateFormat.format(recordatorio.fecha) == dateFormat.format(fecha)) {
                             listaRecordatorioFiltrada.add(recordatorio)
