@@ -13,12 +13,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.R
+import com.example.finanzaspersonales.entidades.GastoSemanal
+import com.example.finanzaspersonales.entidades.GastoSemanal_resultado
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 class Register : Fragment() {
@@ -81,10 +87,21 @@ class Register : Fragment() {
 
                     // Registrar userId en todas las tablas sin ningún valor adicional
                     database.child("Categoria").child(userId).setValue("")
-                    database.child("Gasto").child(userId).setValue("")
+
+                    val gasto_Data = mapOf(
+                        "contador" to mapOf(
+                            "ultimo_gasto" to 0
+                        )
+                    )
+                    database.child("Gasto").child(userId).setValue(gasto_Data)
                     database.child("GastoAnual").child(userId).setValue("")
-                    database.child("GastoSemanal").child(userId).setValue("")
-                    database.child("NotificacionPago").child(userId).setValue("")
+                    database.child("GastoSemanal").child(userId).setValue(inicializarGastoSemanal())
+                    val NotificacionPago_Data = mapOf(
+                        "contador" to mapOf(
+                            "ultimo_NotificacionPago" to 0
+                        )
+                    )
+                    database.child("NotificacionPago").child(userId).setValue(NotificacionPago_Data)
                     database.child("Presupuesto").child(userId).setValue("")
 
                 } else {
@@ -97,5 +114,53 @@ class Register : Fragment() {
         }
     }
 
+    private fun obtenerFechaActual(): Date {
+        val calendar = Calendar.getInstance()
+        return calendar.time
+    }
 
+    private fun obtenerInicioYFinDeSemana(fecha: Date): Pair<String, String> {
+        val calendar = Calendar.getInstance().apply {
+            time = fecha
+        }
+
+        val inicioSemana = calendar.clone() as Calendar
+        inicioSemana.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            inicioSemana.add(Calendar.WEEK_OF_YEAR, -1)
+        }
+
+        val finSemana = inicioSemana.clone() as Calendar
+        finSemana.add(Calendar.DAY_OF_WEEK, 6)
+
+        // Formatear las fechas como cadenas
+        val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val inicioSemanaStr = formatoFecha.format(inicioSemana.time)
+        val finSemanaStr = formatoFecha.format(finSemana.time)
+
+        return Pair(inicioSemanaStr, finSemanaStr)
+    }
+
+    private fun inicializarGastoSemanal(): GastoSemanal {
+        val resultado = GastoSemanal_resultado(
+            domingo = 0,
+            jueves = 0,
+            lunes = 0,
+            martes = 0,
+            miercoles = 0,
+            sabado = 0,
+            viernes = 0
+        )
+
+        val fecha_actual = obtenerFechaActual()
+        val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
+
+        val gastoSemanal = GastoSemanal(
+            fin_semana = nuevo_fin_semana,
+            inicio_semana = nuevo_inicio_semana,
+            resultado = resultado
+        )
+
+        return  gastoSemanal
+    }
 }
