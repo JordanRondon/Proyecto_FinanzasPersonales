@@ -36,7 +36,6 @@ class CategoriaGastosAdapter(
 
     override fun getItemCount() = dataSet.size
 
-
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val categoria = dataSet.getOrNull(position)
         if (categoria != null) {

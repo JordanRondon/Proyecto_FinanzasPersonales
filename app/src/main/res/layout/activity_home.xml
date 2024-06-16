@@ -72,4 +72,5 @@
         app:itemTextColor="?attr/android:textColor"
         app:menu="@menu/navigation_drawer" />
 
+
 </androidx.drawerlayout.widget.DrawerLayout>

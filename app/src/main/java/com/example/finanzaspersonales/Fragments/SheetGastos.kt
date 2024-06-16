@@ -47,11 +47,10 @@ class SheetGastos : BottomSheetDialogFragment() {
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    private val contadorReference =
-        FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
+    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
     private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
-    private val presupuestoReference =
-        FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
+    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$userId")
+    private val presupuestoReference = FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
 
     private lateinit var database: DatabaseReference
 
@@ -203,10 +202,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     }
 
     private fun getCategorias() {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
-        database.child("Categoria").child(user).addValueEventListener(object : ValueEventListener {
+        categoriaReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 arrayListCategoria.clear()
                 if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
