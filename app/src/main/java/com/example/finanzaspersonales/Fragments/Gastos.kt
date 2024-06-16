@@ -1,5 +1,7 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.GastoHomeAdapter
 import com.example.finanzaspersonales.entidades.EntidadGasto
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -33,13 +36,13 @@ class Gastos : Fragment() {
     private lateinit var txtMensaje1: TextView
     private lateinit var txtMensaje2: TextView
 
+    //private lateinit var card: MaterialCardView
+
 
     private val username = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val database = FirebaseDatabase.getInstance().getReference("Gasto/$username")
-    private val contadorReference =
-        FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
-    private val categoriaReference =
-        FirebaseDatabase.getInstance().getReference("Categoria/$username")
+    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
+    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$username")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,11 +56,18 @@ class Gastos : Fragment() {
         ivImagen = view.findViewById(R.id.ivImagen)
         txtMensaje1 = view.findViewById(R.id.txtMensaje1)
         txtMensaje2 = view.findViewById(R.id.txtMensaje2)
+        //card = view.findViewById(R.id.card)
 
 
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
         categoria_adapter =
-            GastoHomeAdapter(arrayListCategoria, database, contadorReference, categoriaReference)
+            GastoHomeAdapter(
+                arrayListCategoria,
+                database,
+                contadorReference,
+                categoriaReference
+                //card
+            )
         recycle_conteiner.adapter = categoria_adapter
 
 
@@ -93,15 +103,12 @@ class Gastos : Fragment() {
                                 )
                             )
 
-                        } else {
-                            txtGastos.visibility = View.INVISIBLE
-                            ivImagen.visibility = View.VISIBLE
-                            txtMensaje1.visibility = View.VISIBLE
-                            txtMensaje2.visibility = View.VISIBLE
                         }
                     }
                     categoria_adapter.notifyDataSetChanged()
-                } else {
+                    showImages(arrayListCategoria)
+                }else{
+                    txtGastos.visibility = View.INVISIBLE
                     ivImagen.visibility = View.VISIBLE
                     txtMensaje1.visibility = View.VISIBLE
                     txtMensaje2.visibility = View.VISIBLE
@@ -114,4 +121,19 @@ class Gastos : Fragment() {
         })
 
     }
+
+    private fun showImages(arrayListCategoria: ArrayList<EntidadGasto>) {
+        if (arrayListCategoria.isNotEmpty()) {
+            txtGastos.visibility = View.VISIBLE
+            ivImagen.visibility = View.INVISIBLE
+            txtMensaje1.visibility = View.INVISIBLE
+            txtMensaje2.visibility = View.INVISIBLE
+        } else {
+            txtGastos.visibility = View.INVISIBLE
+            ivImagen.visibility = View.VISIBLE
+            txtMensaje1.visibility = View.VISIBLE
+            txtMensaje2.visibility = View.VISIBLE
+        }
+    }
+
 }

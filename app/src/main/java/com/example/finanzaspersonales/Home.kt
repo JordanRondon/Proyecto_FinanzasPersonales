@@ -22,6 +22,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class Home : AppCompatActivity() {
 
@@ -30,13 +32,14 @@ class Home : AppCompatActivity() {
 
     private val user = FirebaseAuth.getInstance().currentUser
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    private lateinit var database: DatabaseReference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
         drawerLayout = findViewById(R.id.main)
         toolBar = findViewById(R.id.toolBar)
+        database = FirebaseDatabase.getInstance().reference
 
         toolBar.setTitle("")
 
@@ -51,12 +54,15 @@ class Home : AppCompatActivity() {
 
         toggle.syncState()
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
 
         findViewById<NavigationView>(R.id.navigation_view).setupWithNavController(navController)
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(navController)
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(
+            navController
+        )
 
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
         val header = navigationView.getHeaderView(0)
@@ -71,6 +77,22 @@ class Home : AppCompatActivity() {
             finish()
 
             true
+        }
+
+//        deleteUser()
+    }
+
+//USAR ESTA FUNCION PARA ELIMINAR EL USUARIO ACTUAL DE TODAS LAS TABLAS
+    private fun deleteUser() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            database.child("Gasto").child(userId).removeValue()
+            database.child("Usuario").child(userId).removeValue()
+            database.child("Categoria").child(userId).removeValue()
+            database.child("GastoAnual").child(userId).removeValue()
+            database.child("GastoSemanal").child(userId).removeValue()
+            database.child("NotificacionPago").child(userId).removeValue()
+            database.child("Presupuesto").child(userId).removeValue()
         }
     }
 }
