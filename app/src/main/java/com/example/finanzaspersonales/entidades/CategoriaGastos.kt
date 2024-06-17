@@ -1,6 +1,6 @@
 package com.example.finanzaspersonales.entidades
 
-class CategoriaGastos(
-    val nombre: String? = null,
-    val urlImage: String? = null
+data class CategoriaGastos(
+    val nombre: String,
+    val urlImage: String?
 )
