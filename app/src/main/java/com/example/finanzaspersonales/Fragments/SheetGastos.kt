@@ -47,10 +47,13 @@ class SheetGastos : BottomSheetDialogFragment() {
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
+    private val contadorReference =
+        FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
     private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
-    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$userId")
-    private val presupuestoReference = FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
+    private val categoriaReference =
+        FirebaseDatabase.getInstance().getReference("Categoria/$userId")
+    private val presupuestoReference =
+        FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
 
     private lateinit var database: DatabaseReference
 
@@ -62,7 +65,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var txt_categoria: TextView
     private lateinit var txt_presupuesto: TextView
 
-    private val categoriasMap: MutableMap<String, String?> = mutableMapOf()
+    private var categoriasMap: MutableMap<String, String?> = mutableMapOf()
 
     companion object {
         const val MI_CANAL_ID = "CanalPresupuesto"
@@ -148,7 +151,7 @@ class SheetGastos : BottomSheetDialogFragment() {
             saveGastos()
         }
 
-
+        loadCategoriasYPresupuestos()
     }
 
     override fun onCreateView(
@@ -156,11 +159,6 @@ class SheetGastos : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSheetGastosBinding.inflate(inflater, container, false)
-
-
-        getCategorias()
-        getPresupuestos()
-
 
         return binding.root
     }
@@ -204,59 +202,64 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
-    private fun getCategorias() {
-        categoriaReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                arrayListCategoria.clear()
-                if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
-                    for (ds: DataSnapshot in dataSnapshot.children) {
-                        val categoriaNombre = ds.key
-                        val urlIcon = ds.child("urlicono").getValue(String::class.java)
+    private fun loadCategoriasYPresupuestos() {
+        categoriaReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(categoriaSnapshot: DataSnapshot) {
+                if (categoriaSnapshot.exists()) {
+                    val categoriasMap = mutableMapOf<String, String>()
 
-                        if (categoriaNombre != null) {
-                            arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
-                            categoriasMap[categoriaNombre] = urlIcon
+                    arrayListCategoria.clear()
+
+                    for (catSnap: DataSnapshot in categoriaSnapshot.children) {
+                        val categoriaID = catSnap.key
+                        val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
+                        if (categoriaID != null) {
+                            categoriasMap[categoriaID] = urlIcon
+
+                            arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
                         }
                     }
-                    categoriaGastosAdapter.notifyDataSetChanged()
-                    txt_categoria.visibility = View.INVISIBLE
 
+                    categoriaGastosAdapter.notifyDataSetChanged()
+                    txt_categoria.visibility = if (arrayListCategoria.isEmpty()) View.VISIBLE else View.INVISIBLE
+
+
+                    presupuestoReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(data: DataSnapshot) {
+
+                            arrayListPresupuestos.clear()
+
+                            if (data.exists() && data.hasChildren()) {
+                                for (ds: DataSnapshot in data.children) {
+                                    val presupuestoID = ds.key
+                                    val categoriaID = ds.child("categoriaID").getValue(String::class.java)
+                                    val urlIcon = categoriasMap[categoriaID]
+                                    arrayListPresupuestos.add(CategoriaGastos(presupuestoID ?: "", urlIcon))
+                                }
+                                presupuestoGastosAdapter.notifyDataSetChanged()
+                                txt_presupuesto.visibility = View.INVISIBLE
+                            } else {
+                                txt_presupuesto.visibility = View.VISIBLE
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Manejar el error
+                        }
+                    })
                 } else {
                     txt_categoria.visibility = View.VISIBLE
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle possible errors.
-            }
-        })
-    }
-
-    private fun getPresupuestos() {
-        presupuestoReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(data: DataSnapshot) {
-                if (data.exists() && data.hasChildren()) {
-                    for (ds: DataSnapshot in data.children) {
-                        val presupuestoID = ds.key
-                        val categoriaID = ds.child("categoriaID").getValue(String::class.java)
-                        val urlIcon = categoriasMap[categoriaID]
-
-                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID, urlIcon))
-                    }
-
-                    presupuestoGastosAdapter.notifyDataSetChanged()
-                    txt_presupuesto.visibility = View.INVISIBLE
-
-                } else {
-                    txt_presupuesto.visibility = View.VISIBLE
-                }
-            }
-
             override fun onCancelled(error: DatabaseError) {
-
+                // Manejar el error
             }
         })
     }
+
+
+
 
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
