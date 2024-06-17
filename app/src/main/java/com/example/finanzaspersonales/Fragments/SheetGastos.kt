@@ -144,9 +144,6 @@ class SheetGastos : BottomSheetDialogFragment() {
         txt_categoria = view.findViewById(R.id.txt_categoria)
         txt_presupuesto = view.findViewById(R.id.txt_presupuesto)
 
-        getCategorias()
-        getPresupuestos()
-
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
         }
@@ -159,6 +156,12 @@ class SheetGastos : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSheetGastosBinding.inflate(inflater, container, false)
+
+
+        getCategorias()
+        getPresupuestos()
+
+
         return binding.root
     }
 
