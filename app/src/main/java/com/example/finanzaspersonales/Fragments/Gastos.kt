@@ -70,12 +70,11 @@ class Gastos : Fragment() {
             )
         recycle_conteiner.adapter = categoria_adapter
 
+        getGasto()
 
         floating_action_button.setOnClickListener {
             SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
         }
-
-        getGasto()
 
 
         return view

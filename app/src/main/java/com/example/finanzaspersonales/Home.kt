@@ -26,6 +26,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -34,22 +37,33 @@ class Home : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolBar: MaterialToolbar
+    private lateinit var custom_title :TextView
 
     private val user = FirebaseAuth.getInstance().currentUser
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var database: DatabaseReference
     private lateinit var databaseGastoSemanal: DatabaseReference
+
+    private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
+    private val formatter = DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM 'de' yyyy", Locale("es", "ES"))
+    private val formattedDate = zonedDateTime.format(formatter).lowercase().replaceFirstChar { it.uppercase() }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
         drawerLayout = findViewById(R.id.main)
         toolBar = findViewById(R.id.toolBar)
+        custom_title = findViewById(R.id.custom_title)
+
         database = FirebaseDatabase.getInstance().reference
         val username = FirebaseAuth.getInstance().currentUser!!.uid
         databaseGastoSemanal = FirebaseDatabase.getInstance().getReference("GastoSemanal/$username")
 
         toolBar.setTitle("")
+        custom_title.text = formattedDate
+
         reiniciarGastoSemanal(databaseGastoSemanal)
 
         setSupportActionBar(toolBar)
