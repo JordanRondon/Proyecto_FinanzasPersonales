@@ -25,7 +25,6 @@ import com.google.firebase.database.ValueEventListener
 
 class GraficosFragment : Fragment() {
     private lateinit var graficoBarra: BarChart
-    private lateinit var graficoLinea: LineChart
     private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,30 +45,10 @@ class GraficosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         graficoBarra = view.findViewById(R.id.graficoSemana)
-        graficoLinea = view.findViewById(R.id.grafiAnio)
 
         obtenerGastoSemanal(database) { datos ->
             graficoBarraSemana(graficoBarra, datos)
         }
-
-        val gastoMensualLista: MutableList<Float> =
-            mutableListOf(
-                800.90f,  // Enero
-                500.50f,  // Febrero
-                450.60f,  // Marzo
-                600f,     // Abril
-                400.20f,  // Mayo
-                790.99f,  // Junio
-                899.10f, // Julio
-                520.15f, // Agosto
-                400.30f,  // Septiembre
-                500.60f,  // Octubre
-                400.20f,  // Novienbre
-                1010.70f, // Diciembre
-            )
-
-
-        graficoLineaAnio(graficoLinea, gastoMensualLista)
     }
 
     private fun graficoBarraSemana(barChart: BarChart, gastoDiario: List<Float>) {
@@ -115,54 +94,6 @@ class GraficosFragment : Fragment() {
 
     inner class diasDeLaSemana : com.github.mikephil.charting.formatter.ValueFormatter() {
         private val diaSemana = arrayOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
-        override fun getFormattedValue(value: Float): String {
-            return diaSemana.getOrNull(value.toInt()) ?: value.toString()
-        }
-    }
-
-    private fun graficoLineaAnio(lineChart: LineChart, gastoMensual: List<Float>) {
-        val datos = ArrayList<Entry>()
-
-        for (i in gastoMensual.indices) { //ingreso de datos: BarEntry(coordenada x, coordenada y)
-            datos.add(BarEntry(i.toFloat(), gastoMensual[i]))
-        }
-
-        val obtenerDato = LineDataSet(datos, "Gasto Anual")
-        obtenerDato.color = Color.RED
-        obtenerDato.setCircleColor(Color.BLUE)
-        obtenerDato.lineWidth = 2f
-        obtenerDato.circleRadius = 4f
-        obtenerDato.setDrawCircleHole(false)
-
-        val LineDato = LineData(obtenerDato)
-        lineChart.data = LineDato
-        lineChart.invalidate()
-
-        // Configurar el eje X
-        val ejeX = lineChart.xAxis
-        ejeX.position = XAxis.XAxisPosition.BOTTOM
-        ejeX.granularity = 1f
-        ejeX.isGranularityEnabled = true
-        ejeX.valueFormatter = mesDelAnio()
-
-        // Configurar el eje Y izquierdo
-        val ejeYIzquierdo = lineChart.axisLeft
-        ejeYIzquierdo.axisMinimum = 0f
-
-        // Configurar el eje Y derecho
-        val ejeYDerecho = lineChart.axisRight
-        ejeYDerecho.isEnabled = false
-
-        // Configurar descripción
-        lineChart.description.isEnabled = false
-
-        // Configurar animaciones
-        lineChart.animateY(1000)
-        lineChart.animateX(1000)
-    }
-
-    inner class mesDelAnio : com.github.mikephil.charting.formatter.ValueFormatter() {
-        private val diaSemana = arrayOf("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nob", "Dis")
         override fun getFormattedValue(value: Float): String {
             return diaSemana.getOrNull(value.toInt()) ?: value.toString()
         }
