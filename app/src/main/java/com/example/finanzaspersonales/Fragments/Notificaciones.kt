@@ -1,11 +1,11 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,11 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.finanzaspersonales.Home
+import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTIFICATION_ID
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.NotificationAdapter
 import com.example.finanzaspersonales.databinding.FragmentNotificacionesBinding
@@ -30,7 +28,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 
 class Notificaciones : Fragment() {
@@ -43,7 +44,7 @@ class Notificaciones : Fragment() {
     companion object{
         const val MY_CHANNEL_ID="myChannel"
     }
-    fun createChannel(){
+    private fun createChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
                 MY_CHANNEL_ID,
@@ -57,23 +58,7 @@ class Notificaciones : Fragment() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-    private fun createNotification(notification: Notificacion){
-        val intent = Intent(this.context, Home::class.java).putExtra("redirect","homeFragment").apply{
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or  Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val flag = if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
-        val pendingIntent : PendingIntent = PendingIntent.getActivity(this.context,0, intent,flag)
-        var builder= NotificationCompat.Builder(this.requireContext(), MY_CHANNEL_ID)
-            .setSmallIcon(R.drawable.moneda)
-            .setContentTitle(notification.asunto)
-            .setContentText(notification.descripcion)
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        with(NotificationManagerCompat.from(this.requireContext())){
-            notify(1, builder.build())
-        }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Get identifier of logged user
@@ -134,8 +119,11 @@ class Notificaciones : Fragment() {
         binding.rwNotificaciones.adapter = adapter
     }
 
+
+
+
     private fun createNotification() {
-        val sdf= SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val sdf= SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
         val date = sdf.format(Date()).toString()
         val notification = Notificacion("agua_icono", "Gastos","Registra tus gastos no lo olvides!",date,false)
         database.get().addOnSuccessListener {dataSnapshot->
@@ -154,9 +142,48 @@ class Notificaciones : Fragment() {
             Toast.makeText(this.context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
         }
         notificationList.add(notification)
-        createNotification(notification)
+        //createNotification(notification)
+
+        scheduleNotification(notification)
+
         adapter.notifyItemInserted(notificationList.size-1)
     }
+
+    private fun scheduleNotification(notificacion: Notificacion) {
+        /*val sdf= SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+        sdf.timeZone = TimeZone.getTimeZone("America/Lima")
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Lima"));
+        calendar.set(Calendar.HOUR_OF_DAY, 13);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 0);*/
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 17)
+        }
+
+        /*val getCurrentDateTime = sdf.format(Date()).toString()
+        val getCalendar = sdf.format(calendar.time).toString()*/
+
+        /*al calendar = Calendar.getInstance()
+        calendar[Calendar.HOUR_OF_DAY] = 11
+        calendar[Calendar.MINUTE] = 37
+        calendar[Calendar.SECOND] = 0
+
+        if (calendar.time.compareTo(Date()) < 0) calendar.add(Calendar.DAY_OF_MONTH, 1)*/
+        val intent = Intent(this.context, AlarmNotification::class.java)
+            .putExtra("asunto",notificacion.asunto)
+            .putExtra("descripcion",notificacion.descripcion)
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val alarmManager = this.requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_HOUR,pendingIntent)
+
+    }
+
     private fun onNotificationSelected(notificacion: Notificacion){
         Toast.makeText(this.context, notificacion.asunto,Toast.LENGTH_SHORT).show()
     }
