@@ -97,7 +97,8 @@ class Detalle_presupuesto : Fragment() {
                         progressBar?.progress = porcentaje_barra
 
                         txtmontototal?.text = "S/ "+presupuesto.monto_total.toString()
-                        txtmontoactual?.text = "S/ "+presupuesto.monto_actual.toString()
+                        txtmontoactual?.text = "S/ %.2f".format(presupuesto.monto_actual)
+
                         txtcategoria?.text = presupuesto.categoriaID
                         txtperiodo?.text = presupuesto.periodo
                         txtfecharegistro?.text = presupuesto.fechaInicio
