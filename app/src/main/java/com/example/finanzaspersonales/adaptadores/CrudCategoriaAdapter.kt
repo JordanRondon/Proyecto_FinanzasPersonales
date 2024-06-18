@@ -52,12 +52,12 @@ class CrudCategoriaAdapter (private val Categorias: List<Categoria>,private val 
         )
         holder.imageView.setImageResource(dictIconos[categoria.URLicono]?: R.drawable.moneda)
         holder.textViewNombre.text = categoria.nombre
+        holder.textViewDescripcion.text = categoria.descripcion
 
-
-
-        holder.botonOpciones.setOnClickListener {
-            listener.onOptionsButtonClick(categoria.nombre)
-        }
+        //
+        //holder.botonOpciones.setOnClickListener {
+        //    listener.onOptionsButtonClick(categoria.nombre)
+        //}
     }
 
     override fun getItemCount(): Int {
@@ -67,7 +67,8 @@ class CrudCategoriaAdapter (private val Categorias: List<Categoria>,private val 
     class CrudCategoriaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.img_icono_crud)
         val textViewNombre: TextView = itemView.findViewById(R.id.txt_nombre_categoria_crud)
-        val botonOpciones: ImageButton = itemView.findViewById(R.id.boton_categoria_opciones)
+        val textViewDescripcion: TextView = itemView.findViewById(R.id.txt_descripcion_crud)
+        //val botonOpciones: ImageButton = itemView.findViewById(R.id.boton_categoria_opciones)
 
     }
 
