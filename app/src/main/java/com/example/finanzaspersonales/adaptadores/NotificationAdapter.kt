@@ -1,5 +1,9 @@
 package com.example.finanzaspersonales.adaptadores
 
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,11 +33,21 @@ class NotificationAdapter(private val notificationList: List<Notificacion>, priv
 
         fun render(notificationModel: Notificacion, onClickListener: (Notificacion)->Unit){
             binding.tvAsunto.text = notificationModel.asunto
-            binding.tvDescripcion.text = notificationModel.descripcion
+            val spannableString = BoldPresupuesto(notificationModel.descripcion)
+            binding.tvDescripcion.text = spannableString
             binding.tvFecha.text = notificationModel.fecha
             binding.ivIcono.setImageResource(R.drawable.moneda)
             itemView.setOnClickListener{ onClickListener(notificationModel)}
         }
+    }
+
+    fun BoldPresupuesto(text : String):SpannableString{
+        val input = text
+        val words = input.split("Se notifica que "," ha excedido")[1].length
+        val spannableString = SpannableString(text)
+        val boldSpan = StyleSpan(Typeface.BOLD)
+        spannableString.setSpan(boldSpan, 16, words+16, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannableString
     }
 
 }

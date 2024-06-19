@@ -320,7 +320,7 @@ class SheetGastos : BottomSheetDialogFragment() {
         val calendar: Calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, 12)
-            set(Calendar.MINUTE, 40)
+            set(Calendar.MINUTE, 50)
         }
         val intent = Intent(context, AlarmNotification::class.java)
             .putExtra("asunto","Gastos")
