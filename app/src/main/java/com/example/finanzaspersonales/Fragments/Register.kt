@@ -103,7 +103,7 @@ class Register : Fragment() {
                     )
                     database.child("NotificacionPago").child(userId).setValue(NotificacionPago_Data)
                     database.child("Presupuesto").child(userId).setValue("")
-
+                    database.child("Notificacion").child(userId).setValue("")
                 } else {
                     Toast.makeText(requireContext(), "CORREO YA REGISTRADO", Toast.LENGTH_SHORT)
                         .show()
