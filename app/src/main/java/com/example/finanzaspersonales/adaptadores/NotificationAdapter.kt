@@ -33,7 +33,7 @@ class NotificationAdapter(private val notificationList: List<Notificacion>, priv
 
         fun render(notificationModel: Notificacion, onClickListener: (Notificacion)->Unit){
             binding.tvAsunto.text = notificationModel.asunto
-            val spannableString = BoldPresupuesto(notificationModel.descripcion)
+            val spannableString = BoldBudgetText(notificationModel.descripcion)
             binding.tvDescripcion.text = spannableString
             binding.tvFecha.text = notificationModel.fecha
             binding.ivIcono.setImageResource(R.drawable.moneda)
@@ -41,7 +41,7 @@ class NotificationAdapter(private val notificationList: List<Notificacion>, priv
         }
     }
 
-    fun BoldPresupuesto(text : String):SpannableString{
+    fun BoldBudgetText(text : String):SpannableString{
         val input = text
         val words = input.split("Se notifica que "," ha excedido")[1].length
         val spannableString = SpannableString(text)
