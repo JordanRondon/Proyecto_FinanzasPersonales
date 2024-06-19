@@ -1,8 +1,10 @@
 package com.example.finanzaspersonales.entidades
 
 data class Notificacion (
-    var ventana : String,
-    var texto : String,
-    var fecha: String
+    var urlImagen: String,
+    var asunto : String,
+    var descripcion : String,
+    var fecha: String,
+    var visto: Boolean = false
 )
 
