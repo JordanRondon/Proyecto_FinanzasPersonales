@@ -91,26 +91,31 @@ class Login : Fragment() {
         if (email.isNotEmpty() && password.isNotEmpty()) {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-
                     val user = auth.currentUser
-                    user?.let {
-                        // Obtener y registrar el token FCM
-                        Firebase.messaging.token.addOnCompleteListener { tokenTask ->
-                            if (!tokenTask.isSuccessful) {
-                                Log.w(
-                                    "FCM",
-                                    "Fetching FCM registration token failed",
-                                    tokenTask.exception
-                                )
-                                return@addOnCompleteListener
-                            }
+                    // Validar si el correo del usuario esta verificado
+                    if (user != null && user.isEmailVerified) {
+                        user.let {
+                            // Obtener y registrar el token FCM
+                            Firebase.messaging.token.addOnCompleteListener { tokenTask ->
+                                if (!tokenTask.isSuccessful) {
+                                    Log.w(
+                                        "FCM",
+                                        "Fetching FCM registration token failed",
+                                        tokenTask.exception
+                                    )
+                                    return@addOnCompleteListener
+                                }
 
-                            val token = tokenTask.result
-                            registrarToken(it.uid, token)
+                                val token = tokenTask.result
+                                registrarToken(it.uid, token)
+                            }
                         }
+                        Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_login_to_home2)
+                    } else {
+                        Toast.makeText(requireContext(), "Verifique su correo electrónico.", Toast.LENGTH_SHORT).show()
+                        auth.signOut()
                     }
-                    Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_login_to_home2)
                 } else {
                     Toast.makeText(requireContext(), "DATOS INCORRECTOS", Toast.LENGTH_SHORT).show()
                 }

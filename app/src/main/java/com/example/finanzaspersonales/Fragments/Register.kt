@@ -56,6 +56,7 @@ class Register : Fragment() {
 
         btnRegistro.setOnClickListener {
             register()
+            findNavController().navigate(R.id.action_register_to_login)
         }
         tvRegistroInicio.setOnClickListener {
             findNavController().navigate(R.id.action_register_to_login)
@@ -71,39 +72,49 @@ class Register : Fragment() {
         if (email.isNotEmpty() && password.isNotEmpty() && cbRegistroTerminos.isChecked) {
             auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "REGISTRO EXITOSO", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_register_to_login)
-                    val userId = auth.currentUser!!.uid
+                    val user = auth.currentUser
+                    //envio de correo de verificación
+                    user?.sendEmailVerification()?.addOnCompleteListener { tareaVerificacion ->
+                        if (tareaVerificacion.isSuccessful) {
+                            Toast.makeText(requireContext(), "REGISTRO EXITOSO", Toast.LENGTH_SHORT).show()
+                            //findNavController().navigate(R.id.action_register_to_login)
+                            val userId = auth.currentUser!!.uid
+                            // Obtención del tiempo actual en milisegundos
+                            val creationTime = System.currentTimeMillis()
 
-                    val user = mapOf(
-                        "correo" to email,
-                        "contraseña" to password
-                    )
+                            val user_Data = mapOf(
+                                "correo" to email,
+                                "contraseña" to password,
+                                "tiempoCreaccion" to creationTime
+                            )
 
-                    database.child("Usuario").child(userId).setValue(user)
-                        .addOnCompleteListener { task ->
-                            Log.d("USUARIO", "USUARIO REGISTRADO: $email")
+                            database.child("Usuario").child(userId).setValue(user_Data)
+                                .addOnCompleteListener { task ->
+                                    Log.d("USUARIO", "USUARIO REGISTRADO: $email")
+                                }
+
+                            // Registrar userId en todas las tablas sin ningún valor adicional
+                            database.child("Categoria").child(userId).setValue("")
+
+                            val gasto_Data = mapOf(
+                                "contador" to mapOf(
+                                    "ultimo_gasto" to 0
+                                )
+                            )
+                            database.child("Gasto").child(userId).setValue(gasto_Data)
+                            database.child("GastoAnual").child(userId).setValue("")
+                            database.child("GastoSemanal").child(userId).setValue(inicializarGastoSemanal())
+                            val NotificacionPago_Data = mapOf(
+                                "contador" to mapOf(
+                                    "ultimo_NotificacionPago" to 0
+                                )
+                            )
+                            database.child("NotificacionPago").child(userId).setValue(NotificacionPago_Data)
+                            database.child("Presupuesto").child(userId).setValue("")
+                        } else {
+                            Toast.makeText(requireContext(), "Fallo al enviar el correo de verificación.", Toast.LENGTH_SHORT).show()
                         }
-
-                    // Registrar userId en todas las tablas sin ningún valor adicional
-                    database.child("Categoria").child(userId).setValue("")
-
-                    val gasto_Data = mapOf(
-                        "contador" to mapOf(
-                            "ultimo_gasto" to 0
-                        )
-                    )
-                    database.child("Gasto").child(userId).setValue(gasto_Data)
-                    database.child("GastoAnual").child(userId).setValue("")
-                    database.child("GastoSemanal").child(userId).setValue(inicializarGastoSemanal())
-                    val NotificacionPago_Data = mapOf(
-                        "contador" to mapOf(
-                            "ultimo_NotificacionPago" to 0
-                        )
-                    )
-                    database.child("NotificacionPago").child(userId).setValue(NotificacionPago_Data)
-                    database.child("Presupuesto").child(userId).setValue("")
-                    database.child("Notificacion").child(userId).setValue("")
+                    }
                 } else {
                     Toast.makeText(requireContext(), "CORREO YA REGISTRADO", Toast.LENGTH_SHORT)
                         .show()
