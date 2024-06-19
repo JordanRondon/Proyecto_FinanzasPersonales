@@ -22,6 +22,7 @@ import com.google.firebase.messaging.ktx.messaging
 class Login : Fragment() {
 
     private lateinit var btnInicioSecion: Button
+    private lateinit var tvRecuperarCuenta: TextView
     private lateinit var tvRegistrate: TextView
     private lateinit var tvCorreo: TextView
     private lateinit var tvContrasenia: TextView
@@ -36,6 +37,7 @@ class Login : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
+        tvRecuperarCuenta = view.findViewById(R.id.tvRecuperarCuenta)
         tvRegistrate = view.findViewById(R.id.tvRegistrate)
         tvCorreo = view.findViewById(R.id.tvCorreo)
         tvContrasenia = view.findViewById(R.id.tvContrasenia)
@@ -65,6 +67,10 @@ class Login : Fragment() {
                 val token = tokenTask.result
                 registrarToken(userid, token)
             }
+        }
+
+        tvRecuperarCuenta.setOnClickListener {
+            findNavController().navigate(R.id.action_login_to_recuperarCuenta)
         }
 
         tvRegistrate.setOnClickListener {

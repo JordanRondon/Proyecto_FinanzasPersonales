@@ -108,7 +108,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:height="30dp"
-                    android:onClick="recuperarCuenta"
                     android:text="@string/tvLoginRecupCuenta"
                     android:textSize="16dp" />
 
