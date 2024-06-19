@@ -46,6 +46,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
+import java.util.TimeZone
 
 class SheetGastos : BottomSheetDialogFragment() {
 
@@ -296,7 +297,8 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
     private fun saveNotification(presupuestoId: String) {
-        val sdf= SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
+        val sdf= SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+        sdf.setTimeZone(TimeZone.getTimeZone("America/Lima"))
         val date = sdf.format(Date()).toString()
         val notification = Notificacion("moneda", "Advertencia","Se notifica que $presupuestoId ha excedido el monto límite",date,false)
         notificationReference.get().addOnSuccessListener {dataSnapshot->
