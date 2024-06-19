@@ -102,7 +102,7 @@ class Notificaciones : Fragment() {
                     i.child("descripcion").getValue().toString(),
                     i.child("fecha").getValue().toString(),
                     i.child("visto").getValue().toString().toBoolean())
-                notificationList.add(notificacion)
+                notificationList.add(0,notificacion)
             }
         }
         adapter.notifyDataSetChanged()
