@@ -31,9 +31,7 @@ class NotificationAdapter(private val notificationList: List<Notificacion>, priv
             binding.tvAsunto.text = notificationModel.asunto
             binding.tvDescripcion.text = notificationModel.descripcion
             binding.tvFecha.text = notificationModel.fecha
-
-
-            binding.ivIcono.setImageResource(R.drawable.icono_agua)
+            binding.ivIcono.setImageResource(R.drawable.moneda)
             itemView.setOnClickListener{ onClickListener(notificationModel)}
         }
     }

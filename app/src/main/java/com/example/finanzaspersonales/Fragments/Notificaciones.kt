@@ -1,12 +1,9 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,8 +27,6 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 
 class Notificaciones : Fragment() {
@@ -41,10 +36,10 @@ class Notificaciones : Fragment() {
     private var notificationList = mutableListOf<Notificacion>()
     private lateinit var adapter: NotificationAdapter
     private lateinit var testButton : Button
-    companion object{
+    /*companion object{
         const val MY_CHANNEL_ID="myChannel"
-    }
-    private fun createChannel(){
+    }*/
+    /*private fun createChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
                 MY_CHANNEL_ID,
@@ -57,7 +52,7 @@ class Notificaciones : Fragment() {
             val notificationManager: NotificationManager = requireActivity().getSystemService (Context.NOTIFICATION_SERVICE)as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,14 +72,14 @@ class Notificaciones : Fragment() {
 
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        testButton = view.findViewById<Button>(R.id.testButton)
-        createChannel()
-        testButton.setOnClickListener{createNotification()}
+        /*testButton = view.findViewById<Button>(R.id.testButton)
+        //createChannel()
+        testButton.setOnClickListener{
+            //createNotification()
+        }*/
     }
-
     private fun getNotifications() {
         database.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -119,7 +114,7 @@ class Notificaciones : Fragment() {
         binding.rwNotificaciones.adapter = adapter
     }
 
-    private fun createNotification() {
+    /*private fun createNotification() {
         val sdf= SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
         val date = sdf.format(Date()).toString()
         val notification = Notificacion("agua_icono", "Gastos","Registra tus gastos no lo olvides!",date,false)
@@ -144,29 +139,13 @@ class Notificaciones : Fragment() {
         scheduleNotification(notification)
 
         adapter.notifyItemInserted(notificationList.size-1)
-    }
+    }*/
 
-    private fun scheduleNotification(notificacion: Notificacion) {
-        /*val sdf= SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-        sdf.timeZone = TimeZone.getTimeZone("America/Lima")
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Lima"));
-        calendar.set(Calendar.HOUR_OF_DAY, 13);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 0);*/
+    /*private fun scheduleNotification(notificacion: Notificacion) {
         val calendar: Calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, 17)
         }
-
-        /*val getCurrentDateTime = sdf.format(Date()).toString()
-        val getCalendar = sdf.format(calendar.time).toString()*/
-
-        /*al calendar = Calendar.getInstance()
-        calendar[Calendar.HOUR_OF_DAY] = 11
-        calendar[Calendar.MINUTE] = 37
-        calendar[Calendar.SECOND] = 0
-
-        if (calendar.time.compareTo(Date()) < 0) calendar.add(Calendar.DAY_OF_MONTH, 1)*/
         val intent = Intent(this.context, AlarmNotification::class.java)
             .putExtra("asunto",notificacion.asunto)
             .putExtra("descripcion",notificacion.descripcion)
@@ -179,7 +158,7 @@ class Notificaciones : Fragment() {
         val alarmManager = this.requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_HOUR,pendingIntent)
 
-    }
+    }*/
 
     private fun onNotificationSelected(notificacion: Notificacion){
         Toast.makeText(this.context, notificacion.asunto,Toast.LENGTH_SHORT).show()
