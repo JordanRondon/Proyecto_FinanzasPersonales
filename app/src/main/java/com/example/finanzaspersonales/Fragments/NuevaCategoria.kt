@@ -16,7 +16,7 @@ import com.example.finanzaspersonales.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-
+import androidx.appcompat.app.AlertDialog
 
 class NuevaCategoria : Fragment() {
     private lateinit var iconoAgua: ImageView ;private lateinit var iconoAntena: ImageView ;private lateinit var iconoBarco: ImageView
@@ -97,7 +97,7 @@ class NuevaCategoria : Fragment() {
             }
         }
         btnguardarcategoria.setOnClickListener {
-            RegistrarCategoria()
+            MostrarAlertDialog()
         }
         return view
 
@@ -113,6 +113,23 @@ class NuevaCategoria : Fragment() {
                 icono.setBackgroundColor(Color.TRANSPARENT)
             }
         }
+    }
+    private fun MostrarAlertDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        val textonombre = txtnombre.text.toString()
+        builder.setTitle("Confirmación de Registro")
+        builder.setMessage("¿Esta seguro de realizar el registro de una Categoria con nombre:$textonombre?")
+
+        builder.setPositiveButton("Aceptar") { dialog, _ ->
+            RegistrarCategoria()
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.create().show()
     }
     private fun RegistrarCategoria() {
         val textonombre = txtnombre.text.toString()
@@ -134,7 +151,7 @@ class NuevaCategoria : Fragment() {
                     }
                 }
         } else {
-            Toast.makeText(context, "Ha ocurrio un error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Llene todos los campos requeridos", Toast.LENGTH_SHORT).show()
         }
 
     }

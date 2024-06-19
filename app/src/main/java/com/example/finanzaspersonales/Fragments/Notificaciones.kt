@@ -119,9 +119,6 @@ class Notificaciones : Fragment() {
         binding.rwNotificaciones.adapter = adapter
     }
 
-
-
-
     private fun createNotification() {
         val sdf= SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
         val date = sdf.format(Date()).toString()

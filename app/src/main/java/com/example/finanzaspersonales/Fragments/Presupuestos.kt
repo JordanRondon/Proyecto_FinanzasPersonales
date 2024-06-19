@@ -76,8 +76,21 @@ class Presupuestos : Fragment() {
         btnAgregar.setOnClickListener {
 
             val nombrePresupuesto = etNombre.text.toString()
-            val categoriaSeleccionada = spinner.selectedItem as Categoria
-            val montototal=etMonto.text.toString().toDouble()
+            val categoriaSeleccionada = spinner.selectedItem as? Categoria
+            val montoTotalText = etMonto.text.toString()
+            var montototal: Double
+            if (categoriaSeleccionada == null) {
+                Toast.makeText(context, "ERROR: No hay ninguna categoria", Toast.LENGTH_SHORT).show()
+                if (montoTotalText.isEmpty()) {
+                    Toast.makeText(context, "ERROR: Monto total no puede estar vacío", Toast.LENGTH_SHORT).show()
+
+                }
+            }
+            try {
+                montototal = montoTotalText.toDouble()
+            } catch (e: NumberFormatException) {
+                Toast.makeText(context, "ERROR: Monto total debe ser un número válido", Toast.LENGTH_SHORT).show()
+            }
             var fecha_siguiente="05/12/2025"
             val calendar = Calendar.getInstance()
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -102,11 +115,16 @@ class Presupuestos : Fragment() {
                     fecha_siguiente = simpleDateFormat.format(calendar.time)
                 }
             }
-            val Presupuesto_registro=Presupuesto_Firebase_insertar(categoriaSeleccionada.nombre,true
-            ,fecha_siguiente,currentDate,0.0,montototal,textoSeleccionado)
 
-            if (nombrePresupuesto.isNotEmpty() ) {
-
+            try {
+                montototal = montoTotalText.toDouble()
+            } catch (e: NumberFormatException) {
+                montototal = Double.NaN
+                Toast.makeText(context, "ERROR: Monto total debe ser un número válido", Toast.LENGTH_SHORT).show()
+            }
+            if (nombrePresupuesto.isNotEmpty()  &&  !montototal.isNaN() && categoriaSeleccionada != null) {
+                val Presupuesto_registro=Presupuesto_Firebase_insertar(categoriaSeleccionada.nombre,true
+                    ,fecha_siguiente,currentDate,0.0,montototal,textoSeleccionado)
                 database_presupuesto.child("Presupuesto ${nombrePresupuesto}").setValue(Presupuesto_registro)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {

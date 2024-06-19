@@ -36,18 +36,23 @@ class CategoriaGastosAdapter(
 
     override fun getItemCount() = dataSet.size
 
-
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val categoria = dataSet.getOrNull(position)
         if (categoria != null) {
             viewHolder.txtNombreCategoria.text = categoria.nombre
-            viewHolder.ivCategoria.setImageResource(
+
+            val resourceId = if (categoria.urlImage != null) {
                 context.resources.getIdentifier(
                     categoria.urlImage,
                     "drawable",
                     context.packageName
                 )
-            )
+            } else {
+                R.drawable.ic_downloading
+            }
+
+            viewHolder.ivCategoria.setImageResource(resourceId)
+
             viewHolder.itemView.setOnClickListener {
                 notifyItemChanged(selectedPos)
                 selectedPos = viewHolder.layoutPosition
@@ -64,6 +69,4 @@ class CategoriaGastosAdapter(
     fun getCategoriaSelected(): CategoriaGastos? {
         return if (selectedPos != RecyclerView.NO_POSITION) dataSet[selectedPos] else null
     }
-
-
 }

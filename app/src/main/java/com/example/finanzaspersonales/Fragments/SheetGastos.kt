@@ -1,6 +1,7 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.Manifest
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -50,6 +51,8 @@ class SheetGastos : BottomSheetDialogFragment() {
     private val contadorReference =
         FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
     private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
+    private val categoriaReference =
+        FirebaseDatabase.getInstance().getReference("Categoria/$userId")
     private val presupuestoReference =
         FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
 
@@ -63,7 +66,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var txt_categoria: TextView
     private lateinit var txt_presupuesto: TextView
 
-    private val categoriasMap: MutableMap<String, String?> = mutableMapOf()
+    private var categoriasMap: MutableMap<String, String?> = mutableMapOf()
 
     companion object {
         const val MI_CANAL_ID = "CanalPresupuesto"
@@ -71,24 +74,24 @@ class SheetGastos : BottomSheetDialogFragment() {
         const val REQUEST_CODE_PERMISSIONS = 1001
     }
 
-    fun createSimpleNotification(presupuestoid: String) {
-        val builder = NotificationCompat.Builder(requireContext(), MI_CANAL_ID)
+    fun createSimpleNotification(presupuestoId: String, context: Context) {
+        val builder = NotificationCompat.Builder(context, MI_CANAL_ID)
             .setSmallIcon(R.drawable.moneda)
             .setContentTitle("Notificación de LooKash")
-            .setContentText("Se notifica que el presupuesto $presupuestoid ha excedido el monto límite")
+            .setContentText("Se notifica que $presupuestoId ha excedido el monto límite")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
+                context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            with(NotificationManagerCompat.from(requireContext())) {
+            with(NotificationManagerCompat.from(context)) {
                 notify(NOTIFICATION_ID, builder.build())
             }
         } else {
             ActivityCompat.requestPermissions(
-                requireActivity(),
+                (context as Activity),
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                 REQUEST_CODE_PERMISSIONS
             )
@@ -145,14 +148,11 @@ class SheetGastos : BottomSheetDialogFragment() {
         txt_categoria = view.findViewById(R.id.txt_categoria)
         txt_presupuesto = view.findViewById(R.id.txt_presupuesto)
 
-        getCategorias()
-        getPresupuestos()
-
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
         }
 
-
+        loadCategoriasYPresupuestos()
     }
 
     override fun onCreateView(
@@ -160,6 +160,7 @@ class SheetGastos : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSheetGastosBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -184,7 +185,7 @@ class SheetGastos : BottomSheetDialogFragment() {
 
 
                         setGastoSemanal_dia(categoriaMonto)
-                        setGastoPresupuesto(categoriaMonto, presupuestoID)
+                        setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext())
                         binding.etMonto.text.clear()
                         dismiss()
                     }
@@ -202,62 +203,64 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
-    private fun getCategorias() {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    private fun loadCategoriasYPresupuestos() {
+        categoriaReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(categoriaSnapshot: DataSnapshot) {
+                if (categoriaSnapshot.exists()) {
+                    val categoriasMap = mutableMapOf<String, String>()
 
-        database.child("Categoria").child(user).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                arrayListCategoria.clear()
-                if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
-                    for (ds: DataSnapshot in dataSnapshot.children) {
-                        val categoriaNombre = ds.key
-                        val urlIcon = ds.child("urlicono").getValue(String::class.java)
+                    arrayListCategoria.clear()
 
-                        if (categoriaNombre != null) {
-                            arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
-                            categoriasMap[categoriaNombre] = urlIcon
+                    for (catSnap: DataSnapshot in categoriaSnapshot.children) {
+                        val categoriaID = catSnap.key
+                        val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
+                        if (categoriaID != null) {
+                            categoriasMap[categoriaID] = urlIcon
+
+                            arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
                         }
                     }
-                    categoriaGastosAdapter.notifyDataSetChanged()
-                    txt_categoria.visibility = View.INVISIBLE
 
+                    categoriaGastosAdapter.notifyDataSetChanged()
+                    txt_categoria.visibility = if (arrayListCategoria.isEmpty()) View.VISIBLE else View.INVISIBLE
+
+
+                    presupuestoReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(data: DataSnapshot) {
+
+                            arrayListPresupuestos.clear()
+
+                            if (data.exists() && data.hasChildren()) {
+                                for (ds: DataSnapshot in data.children) {
+                                    val presupuestoID = ds.key
+                                    val categoriaID = ds.child("categoriaID").getValue(String::class.java)
+                                    val urlIcon = categoriasMap[categoriaID]
+                                    arrayListPresupuestos.add(CategoriaGastos(presupuestoID ?: "", urlIcon))
+                                }
+                                presupuestoGastosAdapter.notifyDataSetChanged()
+                                txt_presupuesto.visibility = View.INVISIBLE
+                            } else {
+                                txt_presupuesto.visibility = View.VISIBLE
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Manejar el error
+                        }
+                    })
                 } else {
                     txt_categoria.visibility = View.VISIBLE
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle possible errors.
-            }
-        })
-    }
-
-    private fun getPresupuestos() {
-        presupuestoReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(data: DataSnapshot) {
-                if (data.exists() && data.hasChildren()) {
-                    for (ds: DataSnapshot in data.children) {
-                        val presupuestoID = ds.key
-                        val categoriaID = ds.child("categoriaID").getValue(String::class.java)
-                        val urlIcon = categoriasMap[categoriaID]
-
-                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID, urlIcon))
-                    }
-
-                    presupuestoGastosAdapter.notifyDataSetChanged()
-                    txt_presupuesto.visibility = View.INVISIBLE
-
-                } else {
-                    txt_presupuesto.visibility = View.VISIBLE
-                }
-            }
-
             override fun onCancelled(error: DatabaseError) {
-
+                // Manejar el error
             }
         })
     }
+
+
+
 
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
@@ -283,51 +286,58 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setGastoPresupuesto(NuevoGastoMonto: Float, presuesto_id: String) {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
+    private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context) {
+        val user = FirebaseAuth.getInstance().currentUser?.uid
+        if (user == null) {
+            println("Usuario no autenticado")
+            return
+        }
 
-        val gasto_presupuesto =
-            FirebaseDatabase.getInstance()
-                .getReference("Presupuesto/$user/$presuesto_id/monto_actual")
+        val gastoPresupuestoRef = FirebaseDatabase.getInstance()
+            .getReference("Presupuesto/$user/$presupuestoId/monto_actual")
 
-        //obtiene el valor actual del monto actual
-        gasto_presupuesto.get().addOnSuccessListener { data ->
-            val monto_Actual = data.getValue(Float::class.java) ?: 0f
-            val monto_presupuestoActualizado = monto_Actual + NuevoGastoMonto
-            if (obtenermontototal_presupuesto(presuesto_id)!! <= monto_presupuestoActualizado) {
-                createSimpleNotification(presuesto_id)
-            }
-            //actualiza monto del dia
-            gasto_presupuesto.setValue(monto_presupuestoActualizado)
-                .addOnCompleteListener { tarea ->
-                    if (!tarea.isSuccessful) {
-                        println("Error al actualizar el valor: ${tarea.exception?.message}")
+        gastoPresupuestoRef.get().addOnSuccessListener { data ->
+            val montoActual = data.getValue(Float::class.java) ?: 0f
+            val montoPresupuestoActualizado = montoActual + nuevoGastoMonto
+
+            obtenerMontoTotalPresupuesto(presupuestoId) { montoTotal ->
+                if (montoTotal != null) {
+                    if (montoTotal <= montoPresupuestoActualizado) {
+                        createSimpleNotification(presupuestoId, context)
                     }
+                } else {
+                    println("No se pudo obtener el monto total del presupuesto")
                 }
+                gastoPresupuestoRef.setValue(montoPresupuestoActualizado)
+                    .addOnCompleteListener { tarea ->
+                        if (!tarea.isSuccessful) {
+                            println("Error al actualizar el valor: ${tarea.exception?.message}")
+                        }
+                    }
+            }
         }.addOnFailureListener { exception ->
             println("Error al obtener el valor actual: ${exception.message}")
         }
     }
 
-    private fun obtenermontototal_presupuesto(presuesto_id: String): Float? {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
-        var monto_total: Float? = 0.0f
-        val gasto_presupuesto =
-            FirebaseDatabase.getInstance()
-                .getReference("Presupuesto/$user/$presuesto_id/monto_total")
-
-        //obtiene el valor actual del monto actual
-        gasto_presupuesto.get().addOnSuccessListener { data ->
-            monto_total = data.getValue(Float::class.java) ?: 0f
-
-
+    private fun obtenerMontoTotalPresupuesto(presupuestoId: String, callback: (Float?) -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser?.uid
+        if (user == null) {
+            println("Usuario no autenticado")
+            callback(null)
+            return
+        }
+        val gastoPresupuestoRef = FirebaseDatabase.getInstance()
+            .getReference("Presupuesto/$user/$presupuestoId/monto_total")
+        gastoPresupuestoRef.get().addOnSuccessListener { data ->
+            val montoTotal = data.getValue(Float::class.java) ?: 0f
+            callback(montoTotal)
         }.addOnFailureListener { exception ->
             println("Error al obtener el valor actual: ${exception.message}")
+            callback(null)
         }
-        return monto_total
     }
+
 
     private fun obtenerDiaSemana(): String {
         // Obtener la instancia del calendario actual
