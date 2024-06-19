@@ -22,7 +22,7 @@ class AlarmNotification(): BroadcastReceiver() {
         createNotification(context,asunto,descripcion)
     }
     private fun createNotification(context: Context, asunto : String?, descripcion : String?){
-        val intent = Intent(context, Home::class.java).putExtra("redirect","homeFragment").apply{
+        val intent = Intent(context, Home::class.java).apply{
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or  Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val flag = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
