@@ -17,6 +17,10 @@
             android:id="@+id/action_login_to_home2"
             app:destination="@id/home2"
             app:enterAnim="@anim/nav_default_pop_enter_anim" />
+        <action
+            android:id="@+id/action_login_to_recuperarCuenta"
+            app:destination="@+id/recuperarCuentaFragment"
+            app:enterAnim="@anim/nav_default_pop_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/register"
@@ -33,4 +37,16 @@
         android:name="com.example.finanzaspersonales.Home"
         android:label="activity_home"
         tools:layout="@layout/activity_home" />
+
+    <fragment
+        android:id="@+id/recuperarCuentaFragment"
+        android:name="com.example.finanzaspersonales.Fragments.RecuperarCuentaFragment"
+        android:label="fragment_recuperar_cuenta"
+        tools:layout="@layout/fragment_recuperar_cuenta">
+        <action
+            android:id="@+id/action_recuperarCuenta_to_login"
+            app:destination="@+id/login"
+            app:exitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
 </navigation>
