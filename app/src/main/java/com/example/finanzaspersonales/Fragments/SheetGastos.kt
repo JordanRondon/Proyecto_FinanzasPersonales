@@ -91,7 +91,7 @@ class SheetGastos : BottomSheetDialogFragment() {
 
     fun createSimpleNotification(presupuestoId: String, context: Context) {
         val builder = NotificationCompat.Builder(context, MI_CANAL_ID)
-            .setSmallIcon(R.drawable.moneda)
+            .setSmallIcon(R.drawable.logo)
             .setContentTitle("Notificación de LooKash")
             .setContentText("Se notifica que $presupuestoId ha excedido el monto límite")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -209,12 +209,13 @@ class SheetGastos : BottomSheetDialogFragment() {
                             .show()
 
                     }
+                contadorReference.setValue(contadorUpdate)
             } else {
                 Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
                     .show()
             }
 
-            contadorReference.setValue(contadorUpdate)
+
         }
     }
 
