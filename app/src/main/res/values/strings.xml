@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">FinanzasPersonales</string>
 
-    <string name="NombreAplicaionLogin">Finanzas Personales</string>
+    <string name="NombreAplicaionLogin">LOOKCASH</string>
     <string name="tvLogin">Inicio de Sesión</string>
     <string name="LoginMensaje">¡Hola! Qué gusto verte de nuevo.</string>
     <string name="btnloginInicioSecion">Iniciar sesión</string>
-    <string name="tvLoginRecupCuenta">¿Has olvidado tu contraseña?</string>
+    <string name="tvLoginRecupCuenta">¿Olvidaste tu contraseña?</string>
     <string name="tvLoginRegistrar">Registrate</string>
 
     <string name="tvRegistro">Registrate</string>

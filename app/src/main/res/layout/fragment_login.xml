@@ -14,20 +14,22 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="602dp"
+            android:layout_height="632dp"
             android:orientation="vertical"
             android:paddingHorizontal="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.373">
 
             <ImageView
                 android:id="@+id/ivAplicacion"
-                android:layout_width="120dp"
-                android:layout_height="113dp"
-                android:layout_marginLeft="105dp"
-                app:srcCompat="@drawable/moneda" />
+                android:layout_width="144dp"
+                android:layout_height="147dp"
+                android:layout_marginLeft="87dp"
+                app:srcCompat="@drawable/logo" />
 
             <TextView
                 android:id="@+id/tvNombreAplicacion"
@@ -37,7 +39,8 @@
                 android:layout_marginBottom="35dp"
                 android:gravity="center"
                 android:text="@string/NombreAplicaionLogin"
-                android:textSize="16dp" />
+                android:textSize="20dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvLogin"
@@ -104,11 +107,11 @@
                 android:paddingHorizontal="10dp">
 
                 <TextView
-                    android:id="@+id/tvRecuperarCuenta"
+                    android:id="@+id/tvMensaje1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:height="30dp"
-                    android:text="@string/tvLoginRecupCuenta"
+                    android:text="¿No tienes cuenta?"
                     android:textSize="16dp" />
 
                 <TextView
@@ -121,6 +124,33 @@
                     android:text="@string/tvLoginRegistrar"
                     android:textColor="#3D9AEC"
                     android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp">
+
+                <TextView
+                    android:id="@+id/tvMensaje2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:height="30dp"
+                    android:text="@string/tvLoginRecupCuenta"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvRecuperarCuenta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:height="30dp"
+                    android:paddingLeft="5dp"
+                    android:text="Recuperalo"
+                    android:textColor="#3D9AEC"
+                    android:textSize="16dp" />
             </LinearLayout>
 
         </LinearLayout>
