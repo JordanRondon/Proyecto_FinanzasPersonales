@@ -23,8 +23,11 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -65,7 +68,7 @@ class Home : AppCompatActivity() {
         custom_title.text = formattedDate
 
         reiniciarGastoSemanal(databaseGastoSemanal)
-
+        verificarPresupuestosVencidos()
         setSupportActionBar(toolBar)
 
         val toggle = ActionBarDrawerToggle(
@@ -188,6 +191,45 @@ class Home : AppCompatActivity() {
 
         return Pair(inicioSemanaStr, finSemanaStr)
     }
+    //Funcion para verificar presupuesto
+    fun verificarPresupuestosVencidos() {
+        database = FirebaseDatabase.getInstance().reference
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val presupuestosReference = database.child("Presupuesto").child("$userId")
+
+        presupuestosReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (presupuestoSnapshot in snapshot.children) {
+                    val presupuestoId = presupuestoSnapshot.key ?: continue
+                    val fechaVencimiento = presupuestoSnapshot.child("fechaCulminacion").getValue(String::class.java)
+                    val estado = presupuestoSnapshot.child("estado").getValue(Boolean::class.java) ?: true
+
+                    if (fechaVencimiento != null && estado) {
+                        val calendar = Calendar.getInstance()
+                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val currentDate = simpleDateFormat.format(calendar.time)
+
+                        val fechaVencimientoDate = simpleDateFormat.parse(fechaVencimiento)
+
+                        if (fechaVencimientoDate != null && simpleDateFormat.parse(currentDate).after(fechaVencimientoDate)) {
+                            presupuestosReference.child(presupuestoId).child("estado").setValue(false)
+                                .addOnSuccessListener {
+                                    println("Presupuesto $presupuestoId actualizado a vencido.")
+                                }
+                                .addOnFailureListener {
+                                    println("Error al actualizar el presupuesto $presupuestoId: ${it.message}")
+                                }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error al obtener los presupuestos: ${error.message}")
+            }
+        })
+    }
+    //
 }
 
 
