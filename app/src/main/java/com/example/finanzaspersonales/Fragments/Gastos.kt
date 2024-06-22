@@ -21,6 +21,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 class Gastos : Fragment() {
@@ -38,6 +41,8 @@ class Gastos : Fragment() {
 
     //private lateinit var card: MaterialCardView
 
+    private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
+    val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
 
     private val username = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val database = FirebaseDatabase.getInstance().getReference("Gasto/$username")
@@ -88,20 +93,22 @@ class Gastos : Fragment() {
                     txtGastos.visibility = View.VISIBLE
                     for (ds: DataSnapshot in dataSnapshot.children) {
                         if (ds.key != "contador") {
-                            val categoriaID = ds.child("categoriaID").value.toString()
-                            val presupuestoID = ds.child("presupuestoID").value.toString()
-                            val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
                             val fechaRegistro = ds.child("fechaRegistro").value.toString()
 
-                            arrayListCategoria.add(
-                                EntidadGasto(
-                                    categoriaID,
-                                    presupuestoID,
-                                    monto,
-                                    fechaRegistro
-                                )
-                            )
+                            if(fechaRegistro == date){
+                                val categoriaID = ds.child("categoriaID").value.toString()
+                                val presupuestoID = ds.child("presupuestoID").value.toString()
+                                val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
 
+                                arrayListCategoria.add(
+                                    EntidadGasto(
+                                        categoriaID,
+                                        presupuestoID,
+                                        monto,
+                                        fechaRegistro
+                                    )
+                                )
+                            }
                         }
                     }
                     categoria_adapter.notifyDataSetChanged()
