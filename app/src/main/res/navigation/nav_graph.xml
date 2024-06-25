@@ -20,11 +20,6 @@
             app:destination="@id/detalle_presupuesto" />
     </fragment>
     <fragment
-        android:id="@+id/ahorro"
-        android:name="com.example.finanzaspersonales.Fragments.Ahorro"
-        android:label="fragment_ahorro"
-        tools:layout="@layout/fragment_ahorro" />
-    <fragment
         android:id="@+id/recordatorio"
         android:name="com.example.finanzaspersonales.Fragments.Recordatorio"
         android:label="fragment_recordatorio"
@@ -71,4 +66,11 @@
             android:id="@+id/action_nuevaCategoria_to_categoria_item"
             app:destination="@id/categoria_item" />
     </fragment>
+    <fragment
+        android:id="@+id/connection"
+        android:name="com.example.finanzaspersonales.Fragments.Connection"
+        android:label="fragment_connection"
+        tools:layout="@layout/fragment_connection" />
+
+
 </navigation>

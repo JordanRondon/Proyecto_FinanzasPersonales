@@ -25,8 +25,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase_insertar
+import com.example.finanzaspersonales.Clases.isOnline
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
 import java.text.SimpleDateFormat
@@ -46,19 +48,20 @@ class Presupuestos : Fragment() {
     private lateinit var database_categoria: DatabaseReference
     private lateinit var database_presupuesto: DatabaseReference
     private val categoriasList = mutableListOf<Categoria>()
-    private lateinit var textoSeleccionado:String
+    private lateinit var textoSeleccionado: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val username = FirebaseAuth.getInstance().currentUser!!.uid
-
-        database_categoria = FirebaseDatabase.getInstance().getReference("Categoria/$username")
-        database_presupuesto = FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
-
         val view = inflater.inflate(R.layout.fragment_presupuestos, container, false)
+
         val navController = findNavController()
+
+        if (!isOnline(requireContext())) {
+            findNavController().popBackStack()
+            findNavController().navigate(R.id.connection)
+        }
 
         recycler = view.findViewById(R.id.recyclerView)
         spinner = view.findViewById(R.id.spinner)
@@ -66,9 +69,17 @@ class Presupuestos : Fragment() {
         etNombre = view.findViewById(R.id.etNombre)
         etMonto = view.findViewById(R.id.etMonto)
 
+
+        val username = FirebaseAuth.getInstance().currentUser!!.uid
+
+        database_categoria = FirebaseDatabase.getInstance().getReference("Categoria/$username")
+        database_presupuesto =
+            FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
+
+
         recycler.layoutManager = LinearLayoutManager(context)
 
-        adapterPresupuesto = PresupuestoAdapter(presupuestos_firebase,navController)
+        adapterPresupuesto = PresupuestoAdapter(presupuestos_firebase, navController)
 
         recycler.adapter = adapterPresupuesto
 
@@ -80,22 +91,31 @@ class Presupuestos : Fragment() {
             val montoTotalText = etMonto.text.toString()
             var montototal: Double
             if (categoriaSeleccionada == null) {
-                Toast.makeText(context, "ERROR: No hay ninguna categoria", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "ERROR: No hay ninguna categoria", Toast.LENGTH_SHORT)
+                    .show()
                 if (montoTotalText.isEmpty()) {
-                    Toast.makeText(context, "ERROR: Monto total no puede estar vacío", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "ERROR: Monto total no puede estar vacío",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
             }
             try {
                 montototal = montoTotalText.toDouble()
             } catch (e: NumberFormatException) {
-                Toast.makeText(context, "ERROR: Monto total debe ser un número válido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "ERROR: Monto total debe ser un número válido",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            var fecha_siguiente="05/12/2025"
+            var fecha_siguiente = "05/12/2025"
             val calendar = Calendar.getInstance()
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            var currentDate= "05/11/2025"
-            currentDate=simpleDateFormat.format(calendar.time)
+            var currentDate = "05/11/2025"
+            currentDate = simpleDateFormat.format(calendar.time)
 
             Toast.makeText(context, currentDate, Toast.LENGTH_SHORT).show()
 
@@ -106,11 +126,10 @@ class Presupuestos : Fragment() {
 
                 val radioButton: RadioButton = view.findViewById(radioButtonId)
                 textoSeleccionado = radioButton.text.toString()
-                if(textoSeleccionado=="Mensual"){
+                if (textoSeleccionado == "Mensual") {
                     calendar.add(Calendar.MONTH, 1)
                     fecha_siguiente = simpleDateFormat.format(calendar.time)
-                }
-                else{
+                } else {
                     calendar.add(Calendar.WEEK_OF_YEAR, 1)
                     fecha_siguiente = simpleDateFormat.format(calendar.time)
                 }
@@ -120,19 +139,36 @@ class Presupuestos : Fragment() {
                 montototal = montoTotalText.toDouble()
             } catch (e: NumberFormatException) {
                 montototal = Double.NaN
-                Toast.makeText(context, "ERROR: Monto total debe ser un número válido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "ERROR: Monto total debe ser un número válido",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            if (nombrePresupuesto.isNotEmpty()  &&  !montototal.isNaN() && categoriaSeleccionada != null) {
-                val Presupuesto_registro=Presupuesto_Firebase_insertar(categoriaSeleccionada.nombre,true
-                    ,fecha_siguiente,currentDate,0.0,montototal,textoSeleccionado)
-                database_presupuesto.child("Presupuesto ${nombrePresupuesto}").setValue(Presupuesto_registro)
+            if (nombrePresupuesto.isNotEmpty() && !montototal.isNaN() && categoriaSeleccionada != null) {
+                val Presupuesto_registro = Presupuesto_Firebase_insertar(
+                    categoriaSeleccionada.nombre,
+                    true,
+                    fecha_siguiente,
+                    currentDate,
+                    0.0,
+                    montototal,
+                    textoSeleccionado
+                )
+                database_presupuesto.child("Presupuesto ${nombrePresupuesto}")
+                    .setValue(Presupuesto_registro)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             loadPresupuesto()
-                            Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT)
+                                .show()
 
                         } else {
-                            Toast.makeText(context, "Ha ocurrido un error al registrar.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Ha ocurrido un error al registrar.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
             } else {
@@ -147,16 +183,22 @@ class Presupuestos : Fragment() {
         }
         loadCategories()
         loadPresupuesto()
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val emptyCategoriasList = mutableListOf<Categoria>()
-        spinner.adapter = CategoriaAdapter(requireContext(), R.layout.presupuesto_items_spinner, emptyCategoriasList)
+        spinner.adapter = CategoriaAdapter(
+            requireContext(),
+            R.layout.presupuesto_items_spinner,
+            emptyCategoriasList
+        )
 
 
     }
+
     private fun loadCategories() {
         database_categoria.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -181,6 +223,7 @@ class Presupuestos : Fragment() {
             }
         })
     }
+
     private fun loadPresupuesto() {
         database_presupuesto.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

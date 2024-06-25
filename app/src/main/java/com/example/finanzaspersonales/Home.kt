@@ -2,23 +2,17 @@ package com.example.finanzaspersonales
 
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.finanzaspersonales.Clases.TaskViewModel
+import com.example.finanzaspersonales.Clases.isOnline
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -40,7 +34,7 @@ class Home : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolBar: MaterialToolbar
-    private lateinit var custom_title :TextView
+    private lateinit var custom_title: TextView
 
     private val user = FirebaseAuth.getInstance().currentUser
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -48,8 +42,10 @@ class Home : AppCompatActivity() {
     private lateinit var databaseGastoSemanal: DatabaseReference
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
-    private val formatter = DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM 'de' yyyy", Locale("es", "ES"))
-    private val formattedDate = zonedDateTime.format(formatter).lowercase().replaceFirstChar { it.uppercase() }
+    private val formatter =
+        DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM 'de' yyyy", Locale("es", "ES"))
+    private val formattedDate =
+        zonedDateTime.format(formatter).lowercase().replaceFirstChar { it.uppercase() }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,17 +76,16 @@ class Home : AppCompatActivity() {
 
         toggle.syncState()
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
 
-        findViewById<NavigationView>(R.id.navigation_view).setupWithNavController(navController)
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(
-            navController
-        )
-
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
+        navigationView.setupWithNavController(navController)
+
+        //findViewById<NavigationView>(R.id.navigation_view).setupWithNavController(navController)
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(navController)
+
         val header = navigationView.getHeaderView(0)
         val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
 
@@ -108,7 +103,7 @@ class Home : AppCompatActivity() {
 //        deleteUser()
     }
 
-//USAR ESTA FUNCION PARA ELIMINAR EL USUARIO ACTUAL DE TODAS LAS TABLAS
+    //USAR ESTA FUNCION PARA ELIMINAR EL USUARIO ACTUAL DE TODAS LAS TABLAS
     private fun deleteUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
@@ -124,37 +119,40 @@ class Home : AppCompatActivity() {
 
     private fun reiniciarGastoSemanal(gastoSemanlRef: DatabaseReference) {
         //if(user != null){
-            gastoSemanlRef.get().addOnSuccessListener { datos ->
-                val fecha_actual = obtenerFechaActual()
-                val fin_semana = datos.child("fin_semana").value as String
+        gastoSemanlRef.get().addOnSuccessListener { datos ->
+            val fecha_actual = obtenerFechaActual()
+            val fin_semana = datos.child("fin_semana").value as String
 
-                if (fecha_actual.after(convertirFecha(fin_semana))) {
-                    val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
-                    // Actualizar los valores en Firebase
-                    val resultadoActualizado = mapOf(
-                        "domingo" to 0,
-                        "lunes" to 0,
-                        "martes" to 0,
-                        "miercoles" to 0,
-                        "jueves" to 0,
-                        "viernes" to 0,
-                        "sabado" to 0
-                    )
-                    val datosActualizados = mapOf(
-                        "fin_semana" to nuevo_fin_semana,
-                        "inicio_semana" to nuevo_inicio_semana,
-                        "resultado" to resultadoActualizado
-                    )
+            if (fecha_actual.after(convertirFecha(fin_semana))) {
+                val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
+                // Actualizar los valores en Firebase
+                val resultadoActualizado = mapOf(
+                    "domingo" to 0,
+                    "lunes" to 0,
+                    "martes" to 0,
+                    "miercoles" to 0,
+                    "jueves" to 0,
+                    "viernes" to 0,
+                    "sabado" to 0
+                )
+                val datosActualizados = mapOf(
+                    "fin_semana" to nuevo_fin_semana,
+                    "inicio_semana" to nuevo_inicio_semana,
+                    "resultado" to resultadoActualizado
+                )
 
-                    gastoSemanlRef.updateChildren(datosActualizados).addOnCompleteListener { tarea2 ->
-                        if (!tarea2.isSuccessful) {
-                            Log.e("FirebaseError", "Error al actualizar los datos: ${tarea2.exception?.message}")
-                        }
+                gastoSemanlRef.updateChildren(datosActualizados).addOnCompleteListener { tarea2 ->
+                    if (!tarea2.isSuccessful) {
+                        Log.e(
+                            "FirebaseError",
+                            "Error al actualizar los datos: ${tarea2.exception?.message}"
+                        )
                     }
                 }
-            }.addOnFailureListener { exception ->
-                Log.e("FirebaseError", "Error al obtener los datos: ${exception.message}")
             }
+        }.addOnFailureListener { exception ->
+            Log.e("FirebaseError", "Error al obtener los datos: ${exception.message}")
+        }
         //}else{
         //    Log.e("Aplicacion","El usuario no esta autenticado")
         //}
@@ -170,7 +168,7 @@ class Home : AppCompatActivity() {
         return formatoFecha.parse(fechaString)!!
     }
 
-    private  fun obtenerInicioYFinDeSemana(fecha: Date): Pair<String, String> {
+    private fun obtenerInicioYFinDeSemana(fecha: Date): Pair<String, String> {
         val calendar = Calendar.getInstance().apply {
             time = fecha
         }
@@ -191,6 +189,7 @@ class Home : AppCompatActivity() {
 
         return Pair(inicioSemanaStr, finSemanaStr)
     }
+
     //Funcion para verificar presupuesto
     fun verificarPresupuestosVencidos() {
         database = FirebaseDatabase.getInstance().reference
@@ -201,8 +200,10 @@ class Home : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (presupuestoSnapshot in snapshot.children) {
                     val presupuestoId = presupuestoSnapshot.key ?: continue
-                    val fechaVencimiento = presupuestoSnapshot.child("fechaCulminacion").getValue(String::class.java)
-                    val estado = presupuestoSnapshot.child("estado").getValue(Boolean::class.java) ?: true
+                    val fechaVencimiento =
+                        presupuestoSnapshot.child("fechaCulminacion").getValue(String::class.java)
+                    val estado =
+                        presupuestoSnapshot.child("estado").getValue(Boolean::class.java) ?: true
 
                     if (fechaVencimiento != null && estado) {
                         val calendar = Calendar.getInstance()
@@ -211,8 +212,11 @@ class Home : AppCompatActivity() {
 
                         val fechaVencimientoDate = simpleDateFormat.parse(fechaVencimiento)
 
-                        if (fechaVencimientoDate != null && simpleDateFormat.parse(currentDate).after(fechaVencimientoDate)) {
-                            presupuestosReference.child(presupuestoId).child("estado").setValue(false)
+                        if (fechaVencimientoDate != null && simpleDateFormat.parse(currentDate)
+                                .after(fechaVencimientoDate)
+                        ) {
+                            presupuestosReference.child(presupuestoId).child("estado")
+                                .setValue(false)
                                 .addOnSuccessListener {
                                     println("Presupuesto $presupuestoId actualizado a vencido.")
                                 }

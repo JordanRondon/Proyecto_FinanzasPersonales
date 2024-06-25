@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finanzaspersonales.Clases.isOnline
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.GastoHomeAdapter
 import com.example.finanzaspersonales.entidades.EntidadGasto
@@ -21,6 +24,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 class Gastos : Fragment() {
@@ -33,22 +39,37 @@ class Gastos : Fragment() {
 
     private lateinit var txtGastos: TextView
     private lateinit var ivImagen: ImageView
+    private lateinit var ivReload: ImageView
     private lateinit var txtMensaje1: TextView
     private lateinit var txtMensaje2: TextView
+    private lateinit var txtTexto1: TextView
+    private lateinit var txtTexto2: TextView
+
 
     //private lateinit var card: MaterialCardView
 
+    private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
+    val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
 
     private val username = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val database = FirebaseDatabase.getInstance().getReference("Gasto/$username")
-    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
-    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$username")
+    private val contadorReference =
+        FirebaseDatabase.getInstance().getReference("Gasto/$username/contador/ultimo_gasto")
+    private val categoriaReference =
+        FirebaseDatabase.getInstance().getReference("Categoria/$username")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_gastos, container, false)
+
+
+        if (!isOnline(requireContext())) {
+            findNavController().popBackStack()
+            findNavController().navigate(R.id.connection)
+        }
 
         recycle_conteiner = view.findViewById(R.id.recycle_conteiner)
         floating_action_button = view.findViewById(R.id.floating_action_button)
@@ -56,7 +77,6 @@ class Gastos : Fragment() {
         ivImagen = view.findViewById(R.id.ivImagen)
         txtMensaje1 = view.findViewById(R.id.txtMensaje1)
         txtMensaje2 = view.findViewById(R.id.txtMensaje2)
-        //card = view.findViewById(R.id.card)
 
 
         recycle_conteiner.layoutManager = LinearLayoutManager(context)
@@ -66,7 +86,6 @@ class Gastos : Fragment() {
                 database,
                 contadorReference,
                 categoriaReference
-                //card
             )
         recycle_conteiner.adapter = categoria_adapter
 
@@ -75,6 +94,8 @@ class Gastos : Fragment() {
         floating_action_button.setOnClickListener {
             SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
         }
+
+
 
 
         return view
@@ -88,25 +109,27 @@ class Gastos : Fragment() {
                     txtGastos.visibility = View.VISIBLE
                     for (ds: DataSnapshot in dataSnapshot.children) {
                         if (ds.key != "contador") {
-                            val categoriaID = ds.child("categoriaID").value.toString()
-                            val presupuestoID = ds.child("presupuestoID").value.toString()
-                            val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
                             val fechaRegistro = ds.child("fechaRegistro").value.toString()
 
-                            arrayListCategoria.add(
-                                EntidadGasto(
-                                    categoriaID,
-                                    presupuestoID,
-                                    monto,
-                                    fechaRegistro
-                                )
-                            )
+                            if (fechaRegistro == date) {
+                                val categoriaID = ds.child("categoriaID").value.toString()
+                                val presupuestoID = ds.child("presupuestoID").value.toString()
+                                val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
 
+                                arrayListCategoria.add(
+                                    EntidadGasto(
+                                        categoriaID,
+                                        presupuestoID,
+                                        monto,
+                                        fechaRegistro
+                                    )
+                                )
+                            }
                         }
                     }
                     categoria_adapter.notifyDataSetChanged()
                     showImages(arrayListCategoria)
-                }else{
+                } else {
                     txtGastos.visibility = View.INVISIBLE
                     ivImagen.visibility = View.VISIBLE
                     txtMensaje1.visibility = View.VISIBLE
