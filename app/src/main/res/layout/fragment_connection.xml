@@ -48,16 +48,16 @@
 
         </LinearLayout>
 
-<!--        <Button-->
-<!--            android:id="@+id/btn_Reload"-->
-<!--            style="@style/Widget.AppCompat.Button"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/linerLayout"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:text="Recargar"/>-->
+        <Button
+            android:id="@+id/btn_Reload"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/linerLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="10dp"
+            android:text="Recargar"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

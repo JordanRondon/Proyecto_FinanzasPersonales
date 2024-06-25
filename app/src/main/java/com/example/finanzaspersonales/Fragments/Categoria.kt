@@ -15,6 +15,8 @@ import com.example.finanzaspersonales.adaptadores.CrudCategoriaAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 import android.util.Log
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.finanzaspersonales.Clases.isOnline
 import com.google.firebase.auth.FirebaseAuth
 
 class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
@@ -24,6 +26,9 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
     private val categoriasList = mutableListOf<Categoria>()
     private lateinit var btnAgregar: FloatingActionButton
     private lateinit var database: DatabaseReference
+
+    private lateinit var main: ConstraintLayout
+    private lateinit var connection: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,16 +45,25 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
         recyclerView = view.findViewById(R.id.presupuesto_recycle)
         btnAgregar = view.findViewById(R.id.btn_agregar_categoria)
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        adapter = CrudCategoriaAdapter(categoriasList, this)
-        recyclerView.adapter = adapter
+        main = view.findViewById(R.id.main)
+        connection = view.findViewById(R.id.connection)
 
-        btnAgregar.setOnClickListener {
-            findNavController().navigate(R.id.action_categoria_to_nuevaCategoria)
+        if (!isOnline(requireContext())) {
+            connection.visibility = View.VISIBLE
+            main.visibility = View.INVISIBLE
+        } else {
+            connection.visibility = View.INVISIBLE
+            main.visibility = View.VISIBLE
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            adapter = CrudCategoriaAdapter(categoriasList, this)
+            recyclerView.adapter = adapter
+
+            btnAgregar.setOnClickListener {
+                findNavController().navigate(R.id.action_categoria_to_nuevaCategoria)
+            }
+
+            loadCategories()
         }
-
-        loadCategories()
-
         return view
     }
 
