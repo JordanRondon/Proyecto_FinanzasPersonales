@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
@@ -26,6 +28,7 @@ import com.google.firebase.database.ValueEventListener
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase_insertar
 import com.example.finanzaspersonales.Clases.isOnline
@@ -50,6 +53,9 @@ class Presupuestos : Fragment() {
     private val categoriasList = mutableListOf<Categoria>()
     private lateinit var textoSeleccionado: String
 
+    private lateinit var main: ConstraintLayout
+    private lateinit var connection: ConstraintLayout
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,131 +64,136 @@ class Presupuestos : Fragment() {
 
         val navController = findNavController()
 
-        if (!isOnline(requireContext())) {
-            findNavController().popBackStack()
-            findNavController().navigate(R.id.connection)
-        }
-
         recycler = view.findViewById(R.id.recyclerView)
         spinner = view.findViewById(R.id.spinner)
         btnAgregar = view.findViewById(R.id.btnAgregar)
         etNombre = view.findViewById(R.id.etNombre)
         etMonto = view.findViewById(R.id.etMonto)
 
+        main = view.findViewById(R.id.main)
+        connection = view.findViewById(R.id.connection)
 
-        val username = FirebaseAuth.getInstance().currentUser!!.uid
+        if (!isOnline(requireContext())) {
+            connection.visibility = View.VISIBLE
+            main.visibility = View.INVISIBLE
+        } else {
+            connection.visibility = View.INVISIBLE
+            main.visibility = View.VISIBLE
 
-        database_categoria = FirebaseDatabase.getInstance().getReference("Categoria/$username")
-        database_presupuesto =
-            FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
+            val username = FirebaseAuth.getInstance().currentUser!!.uid
+
+            database_categoria = FirebaseDatabase.getInstance().getReference("Categoria/$username")
+            database_presupuesto =
+                FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
 
 
-        recycler.layoutManager = LinearLayoutManager(context)
+            recycler.layoutManager = LinearLayoutManager(context)
 
-        adapterPresupuesto = PresupuestoAdapter(presupuestos_firebase, navController)
+            adapterPresupuesto = PresupuestoAdapter(presupuestos_firebase, navController)
 
-        recycler.adapter = adapterPresupuesto
+            recycler.adapter = adapterPresupuesto
 
 
-        btnAgregar.setOnClickListener {
+            btnAgregar.setOnClickListener {
 
-            val nombrePresupuesto = etNombre.text.toString()
-            val categoriaSeleccionada = spinner.selectedItem as? Categoria
-            val montoTotalText = etMonto.text.toString()
-            var montototal: Double
-            if (categoriaSeleccionada == null) {
-                Toast.makeText(context, "ERROR: No hay ninguna categoria", Toast.LENGTH_SHORT)
-                    .show()
-                if (montoTotalText.isEmpty()) {
+                val nombrePresupuesto = etNombre.text.toString()
+                val categoriaSeleccionada = spinner.selectedItem as? Categoria
+                val montoTotalText = etMonto.text.toString()
+                var montototal: Double
+                if (categoriaSeleccionada == null) {
+                    Toast.makeText(context, "ERROR: No hay ninguna categoria", Toast.LENGTH_SHORT)
+                        .show()
+                    if (montoTotalText.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "ERROR: Monto total no puede estar vacío",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }
+                }
+                try {
+                    montototal = montoTotalText.toDouble()
+                } catch (e: NumberFormatException) {
                     Toast.makeText(
                         context,
-                        "ERROR: Monto total no puede estar vacío",
+                        "ERROR: Monto total debe ser un número válido",
                         Toast.LENGTH_SHORT
                     ).show()
-
                 }
-            }
-            try {
-                montototal = montoTotalText.toDouble()
-            } catch (e: NumberFormatException) {
-                Toast.makeText(
-                    context,
-                    "ERROR: Monto total debe ser un número válido",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            var fecha_siguiente = "05/12/2025"
-            val calendar = Calendar.getInstance()
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            var currentDate = "05/11/2025"
-            currentDate = simpleDateFormat.format(calendar.time)
+                var fecha_siguiente = "05/12/2025"
+                val calendar = Calendar.getInstance()
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                var currentDate = "05/11/2025"
+                currentDate = simpleDateFormat.format(calendar.time)
 
-            Toast.makeText(context, currentDate, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, currentDate, Toast.LENGTH_SHORT).show()
 
-            radioGroup = view.findViewById(R.id.radiogrouppresupuesto)
-            val radioButtonId = radioGroup.checkedRadioButtonId
+                radioGroup = view.findViewById(R.id.radiogrouppresupuesto)
+                val radioButtonId = radioGroup.checkedRadioButtonId
 
-            if (radioButtonId != -1) {
+                if (radioButtonId != -1) {
 
-                val radioButton: RadioButton = view.findViewById(radioButtonId)
-                textoSeleccionado = radioButton.text.toString()
-                if (textoSeleccionado == "Mensual") {
-                    calendar.add(Calendar.MONTH, 1)
-                    fecha_siguiente = simpleDateFormat.format(calendar.time)
-                } else {
-                    calendar.add(Calendar.WEEK_OF_YEAR, 1)
-                    fecha_siguiente = simpleDateFormat.format(calendar.time)
-                }
-            }
-
-            try {
-                montototal = montoTotalText.toDouble()
-            } catch (e: NumberFormatException) {
-                montototal = Double.NaN
-                Toast.makeText(
-                    context,
-                    "ERROR: Monto total debe ser un número válido",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            if (nombrePresupuesto.isNotEmpty() && !montototal.isNaN() && categoriaSeleccionada != null) {
-                val Presupuesto_registro = Presupuesto_Firebase_insertar(
-                    categoriaSeleccionada.nombre,
-                    true,
-                    fecha_siguiente,
-                    currentDate,
-                    0.0,
-                    montototal,
-                    textoSeleccionado
-                )
-                database_presupuesto.child("Presupuesto ${nombrePresupuesto}")
-                    .setValue(Presupuesto_registro)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            loadPresupuesto()
-                            Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT)
-                                .show()
-
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Ha ocurrido un error al registrar.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                    val radioButton: RadioButton = view.findViewById(radioButtonId)
+                    textoSeleccionado = radioButton.text.toString()
+                    if (textoSeleccionado == "Mensual") {
+                        calendar.add(Calendar.MONTH, 1)
+                        fecha_siguiente = simpleDateFormat.format(calendar.time)
+                    } else {
+                        calendar.add(Calendar.WEEK_OF_YEAR, 1)
+                        fecha_siguiente = simpleDateFormat.format(calendar.time)
                     }
-            } else {
-                Toast.makeText(context, "Ha ocurrio un error", Toast.LENGTH_SHORT).show()
+                }
+
+                try {
+                    montototal = montoTotalText.toDouble()
+                } catch (e: NumberFormatException) {
+                    montototal = Double.NaN
+                    Toast.makeText(
+                        context,
+                        "ERROR: Monto total debe ser un número válido",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (nombrePresupuesto.isNotEmpty() && !montototal.isNaN() && categoriaSeleccionada != null) {
+                    val Presupuesto_registro = Presupuesto_Firebase_insertar(
+                        categoriaSeleccionada.nombre,
+                        true,
+                        fecha_siguiente,
+                        currentDate,
+                        0.0,
+                        montototal,
+                        textoSeleccionado
+                    )
+                    database_presupuesto.child("Presupuesto ${nombrePresupuesto}")
+                        .setValue(Presupuesto_registro)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                loadPresupuesto()
+                                Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT)
+                                    .show()
+
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Ha ocurrido un error al registrar.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                } else {
+                    Toast.makeText(context, "Ha ocurrio un error", Toast.LENGTH_SHORT).show()
+                }
+
+
+                adapterPresupuesto.notifyDataSetChanged()
+                etNombre.text.clear()
+                etMonto.text.clear()
+                spinner.setSelection(0)
             }
-
-
-            adapterPresupuesto.notifyDataSetChanged()
-            etNombre.text.clear()
-            etMonto.text.clear()
-            spinner.setSelection(0)
+            loadCategories()
+            loadPresupuesto()
         }
-        loadCategories()
-        loadPresupuesto()
 
         return view
     }
