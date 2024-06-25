@@ -66,4 +66,11 @@
             android:id="@+id/action_nuevaCategoria_to_categoria_item"
             app:destination="@id/categoria_item" />
     </fragment>
+    <fragment
+        android:id="@+id/connection"
+        android:name="com.example.finanzaspersonales.Fragments.Connection"
+        android:label="fragment_connection"
+        tools:layout="@layout/fragment_connection" />
+
+
 </navigation>
