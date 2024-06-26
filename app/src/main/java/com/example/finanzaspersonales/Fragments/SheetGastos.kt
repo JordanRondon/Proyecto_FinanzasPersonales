@@ -88,7 +88,6 @@ class SheetGastos : BottomSheetDialogFragment() {
         const val MI_CANAL_ID = "CanalPresupuesto"
         const val NOTIFICATION_ID = 1
         const val REQUEST_CODE_PERMISSIONS = 1001
-        const val MY_CHANNEL_ID="myChannel"
     }
 
     fun createSimpleNotification(presupuestoId: String, context: Context) {
