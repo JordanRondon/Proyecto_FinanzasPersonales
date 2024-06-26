@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +48,10 @@ class Recordatorio : Fragment() {
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     private val userName = FirebaseAuth.getInstance().currentUser!!.uid
 
+
+    private lateinit var main: CoordinatorLayout
+    private lateinit var connection: ConstraintLayout
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,47 +68,53 @@ class Recordatorio : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!isOnline(requireContext())) {
-            findNavController().popBackStack()
-            findNavController().navigate(R.id.connection)
-        }
 
         //Inicializar vistas
         calendarView = view.findViewById(R.id.calendarView)
         RecyclerViewRecordatorio = view.findViewById(R.id.RVrecordatorios)
         fbAgregarRecordatorio = view.findViewById(R.id.fabAddRecordatorio)
 
+        main = view.findViewById(R.id.main)
+        connection = view.findViewById(R.id.connection)
 
         //Configurar RecyclerView
         RecyclerViewRecordatorio.layoutManager = LinearLayoutManager(requireContext())
         adapter = RecordatorioAdapter(requireContext(), listaRecordatorio)
         RecyclerViewRecordatorio.adapter = adapter
 
-        //Configurar CalendarView
-        calendarView.setOnDayClickListener(CustomDayClickListener(calendarView) { fechaSeleccionada ->
-            obtenerRecordatorios(fechaSeleccionada)
-        })
+        if (!isOnline(requireContext())) {
+            connection.visibility = View.VISIBLE
+            main.visibility = View.INVISIBLE
+        } else {
+            connection.visibility = View.INVISIBLE
+            main.visibility = View.VISIBLE
+
+            //Configurar CalendarView
+            calendarView.setOnDayClickListener(CustomDayClickListener(calendarView) { fechaSeleccionada ->
+                obtenerRecordatorios(fechaSeleccionada)
+            })
 //        Toast.makeText(requireContext(),"HOLa",Toast.LENGTH_SHORT).show()
 
-        //Configurar boton flotante
-        fbAgregarRecordatorio.setOnClickListener {
-            val calendario = Calendar.getInstance()
-            DatePickerDialog(
-                requireContext(),
-                { _, year, month, dayOfMonth ->
-                    val fechaSeleccionada = Calendar.getInstance().apply {
-                        set(year, month, dayOfMonth)
-                    }.time
-                    mostrarDialogoAgregarRecordatorio(fechaSeleccionada)
-                },
-                calendario.get(Calendar.YEAR),
-                calendario.get(Calendar.MONTH),
-                calendario.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
+            //Configurar boton flotante
+            fbAgregarRecordatorio.setOnClickListener {
+                val calendario = Calendar.getInstance()
+                DatePickerDialog(
+                    requireContext(),
+                    { _, year, month, dayOfMonth ->
+                        val fechaSeleccionada = Calendar.getInstance().apply {
+                            set(year, month, dayOfMonth)
+                        }.time
+                        mostrarDialogoAgregarRecordatorio(fechaSeleccionada)
+                    },
+                    calendario.get(Calendar.YEAR),
+                    calendario.get(Calendar.MONTH),
+                    calendario.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            }
 
-        //OBTENER RECORDATORIOS DE FIREBASE
-        obtenerRecordatorios()
+            //OBTENER RECORDATORIOS DE FIREBASE
+            obtenerRecordatorios()
+        }
 
     }
 

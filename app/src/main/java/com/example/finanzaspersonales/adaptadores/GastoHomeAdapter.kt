@@ -43,9 +43,6 @@ class GastoHomeAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.onBind(arrayListCategoria[position])
-        viewHolder.imagen.setOnClickListener {
-            deleteCategoria(position, viewHolder.context)
-        }
 
 //        viewHolder.itemView.setOnClickListener {
 //            viewHolder.bindCard(arrayListCategoria[viewHolder.layoutPosition])
@@ -72,7 +69,6 @@ class GastoHomeAdapter(
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val context: Context = view.context
-        val imagen: ImageView = view.findViewById(R.id.ivDelete)
         val icon: ImageView = view.findViewById(R.id.ivIcon)
         //val imagenGasto : ImageView = cardView.findViewById(R.id.ivCategoria)
 

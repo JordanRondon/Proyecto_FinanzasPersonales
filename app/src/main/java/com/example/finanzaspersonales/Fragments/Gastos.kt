@@ -6,9 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,11 +42,12 @@ class Gastos : Fragment() {
 
     private lateinit var txtGastos: TextView
     private lateinit var ivImagen: ImageView
-    private lateinit var ivReload: ImageView
     private lateinit var txtMensaje1: TextView
     private lateinit var txtMensaje2: TextView
-    private lateinit var txtTexto1: TextView
-    private lateinit var txtTexto2: TextView
+
+
+    private lateinit var main: ConstraintLayout
+    private lateinit var connection: ConstraintLayout
 
 
     //private lateinit var card: MaterialCardView
@@ -58,18 +62,13 @@ class Gastos : Fragment() {
     private val categoriaReference =
         FirebaseDatabase.getInstance().getReference("Categoria/$username")
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_gastos, container, false)
-
-
-        if (!isOnline(requireContext())) {
-            findNavController().popBackStack()
-            findNavController().navigate(R.id.connection)
-        }
 
         recycle_conteiner = view.findViewById(R.id.recycle_conteiner)
         floating_action_button = view.findViewById(R.id.floating_action_button)
@@ -78,26 +77,32 @@ class Gastos : Fragment() {
         txtMensaje1 = view.findViewById(R.id.txtMensaje1)
         txtMensaje2 = view.findViewById(R.id.txtMensaje2)
 
+        main = view.findViewById(R.id.main)
+        connection = view.findViewById(R.id.connection)
 
-        recycle_conteiner.layoutManager = LinearLayoutManager(context)
-        categoria_adapter =
-            GastoHomeAdapter(
-                arrayListCategoria,
-                database,
-                contadorReference,
-                categoriaReference
-            )
-        recycle_conteiner.adapter = categoria_adapter
+        if (!isOnline(requireContext())) {
+            connection.visibility = View.VISIBLE
+            main.visibility = View.INVISIBLE
+        } else {
+            connection.visibility = View.INVISIBLE
+            main.visibility = View.VISIBLE
 
-        getGasto()
+            recycle_conteiner.layoutManager = LinearLayoutManager(context)
+            categoria_adapter =
+                GastoHomeAdapter(
+                    arrayListCategoria,
+                    database,
+                    contadorReference,
+                    categoriaReference
+                )
+            recycle_conteiner.adapter = categoria_adapter
 
-        floating_action_button.setOnClickListener {
-            SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
+            getGasto()
+
+            floating_action_button.setOnClickListener {
+                SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
+            }
         }
-
-
-
-
         return view
     }
 
