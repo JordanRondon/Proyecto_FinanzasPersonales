@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.example.finanzaspersonales.entidades.Notificacion
 import com.google.firebase.Firebase
@@ -87,6 +88,7 @@ class SheetGastos : BottomSheetDialogFragment() {
         const val MI_CANAL_ID = "CanalPresupuesto"
         const val NOTIFICATION_ID = 1
         const val REQUEST_CODE_PERMISSIONS = 1001
+        const val MY_CHANNEL_ID="myChannel"
     }
 
     fun createSimpleNotification(presupuestoId: String, context: Context) {
@@ -127,7 +129,6 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -144,7 +145,6 @@ class SheetGastos : BottomSheetDialogFragment() {
             }
         }
         crearCanalDeNotificacion()
-
         val activity = requireActivity()
         taskViewModel = ViewModelProvider(activity).get(TaskViewModel::class.java)
 
@@ -297,8 +297,8 @@ class SheetGastos : BottomSheetDialogFragment() {
             println("Error al obtener el valor actual: ${exception.message}")
         }
     }
-    private fun saveNotification(presupuestoId: String) {
-        val sdf= SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+    private fun saveNotification(presupuestoId: String, context: Context) {
+        val sdf= SimpleDateFormat("EEE, dd MMM yyyy, h:mma")
         sdf.setTimeZone(TimeZone.getTimeZone("America/Lima"))
         val date = sdf.format(Date()).toString()
         val notification = Notificacion("moneda", "Advertencia","Se notifica que $presupuestoId ha excedido el monto límite",date,false)
@@ -316,28 +316,27 @@ class SheetGastos : BottomSheetDialogFragment() {
         }.addOnFailureListener{
             //Toast.makeText(context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
         }
-        //scheduleNotification()
+        scheduleNotification(context)
     }
 
-    private fun scheduleNotification() {
+    private fun scheduleNotification(context: Context) {
         val calendar: Calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 12)
-            set(Calendar.MINUTE, 50)
+            set(Calendar.HOUR_OF_DAY, 0)
         }
+        Log.d("Schedule","entra0")
         val intent = Intent(context, AlarmNotification::class.java)
             .putExtra("asunto","Gastos")
             .putExtra("descripcion","Recuerda registrar tus gastos con frecuencia :D")
         val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(),
-            AlarmNotification.NOTIFICATION_ID,
+            context,
+            NOTI_ID,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP, calendar.timeInMillis,
-            AlarmManager.INTERVAL_FIFTEEN_MINUTES,pendingIntent)
+        Log.d("Schedule","entra1")
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_DAY,pendingIntent)
 
     }
     private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context) {
@@ -357,7 +356,7 @@ class SheetGastos : BottomSheetDialogFragment() {
             obtenerMontoTotalPresupuesto(presupuestoId) { montoTotal ->
                 if (montoTotal != null) {
                     if (montoTotal <= montoPresupuestoActualizado) {
-                        saveNotification(presupuestoId)
+                        saveNotification(presupuestoId, context)
                         createSimpleNotification(presupuestoId, context)
 
                     }

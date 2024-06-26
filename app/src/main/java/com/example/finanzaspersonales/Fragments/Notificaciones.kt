@@ -1,9 +1,12 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +15,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTIFICATION_ID
+//import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTIFICATION_ID
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.NotificationAdapter
 import com.example.finanzaspersonales.databinding.FragmentNotificacionesBinding
@@ -36,10 +39,10 @@ class Notificaciones : Fragment() {
     private var notificationList = mutableListOf<Notificacion>()
     private lateinit var adapter: NotificationAdapter
     private lateinit var testButton : Button
-    /*companion object{
+    companion object{
         const val MY_CHANNEL_ID="myChannel"
-    }*/
-    /*private fun createChannel(){
+    }
+    private fun createChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
                 MY_CHANNEL_ID,
@@ -52,7 +55,7 @@ class Notificaciones : Fragment() {
             val notificationManager: NotificationManager = requireActivity().getSystemService (Context.NOTIFICATION_SERVICE)as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-    }*/
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
