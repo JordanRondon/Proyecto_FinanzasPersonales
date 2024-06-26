@@ -1,12 +1,5 @@
 package com.example.finanzaspersonales.Fragments
 
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,10 +22,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-
 
 class Notificaciones : Fragment() {
     private lateinit var database: DatabaseReference
@@ -40,7 +29,6 @@ class Notificaciones : Fragment() {
     private lateinit var binding: FragmentNotificacionesBinding
     private var notificationList = mutableListOf<Notificacion>()
     private lateinit var adapter: NotificationAdapter
-    private lateinit var testButton: Button
 
     private lateinit var main: ConstraintLayout
     private lateinit var connection: ConstraintLayout

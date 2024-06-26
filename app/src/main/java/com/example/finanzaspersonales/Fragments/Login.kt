@@ -93,9 +93,8 @@ class Login : Fragment() {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-                    Log.d("User",user?.email.toString()+user?.isEmailVerified)
                     // Validar si el correo del usuario esta verificado
-                    if (user != null) {
+                    if (user != null && user.isEmailVerified) {
                         user.let {
                             // Obtener y registrar el token FCM
                             Firebase.messaging.token.addOnCompleteListener { tokenTask ->
