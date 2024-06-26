@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -99,6 +100,16 @@ class Home : AppCompatActivity() {
 
             true
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (navController.navigateUp()) {
+                    navController.navigateUp()
+                } else {
+                    finishAffinity()
+                }
+            }
+        })
 
 //        deleteUser()
     }
@@ -234,6 +245,7 @@ class Home : AppCompatActivity() {
         })
     }
     //
+
 }
 
 
