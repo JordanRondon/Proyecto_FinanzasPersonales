@@ -1,6 +1,8 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.Spanned
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +38,7 @@ import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.regex.Pattern
 
 
 class Presupuestos : Fragment() {
@@ -69,7 +72,7 @@ class Presupuestos : Fragment() {
         btnAgregar = view.findViewById(R.id.btnAgregar)
         etNombre = view.findViewById(R.id.etNombre)
         etMonto = view.findViewById(R.id.etMonto)
-
+        etMonto.filters = arrayOf(DecimalDigitsInputFilter(5, 2))
         main = view.findViewById(R.id.main)
         connection = view.findViewById(R.id.connection)
 
@@ -233,6 +236,26 @@ class Presupuestos : Fragment() {
                 Log.e("Presupuestos", "Error al obtener las categorías", error.toException())
             }
         })
+    }
+    class DecimalDigitsInputFilter(private val maxDigitsBeforeDecimal: Int, private val maxDigitsAfterDecimal: Int) :
+        InputFilter {
+        private val pattern = Pattern.compile("[0-9]{0,$maxDigitsBeforeDecimal}(\\.[0-9]{0,$maxDigitsAfterDecimal})?")
+
+        override fun filter(
+            source: CharSequence?,
+            start: Int,
+            end: Int,
+            dest: Spanned?,
+            dstart: Int,
+            dend: Int
+        ): CharSequence? {
+            val newString = dest?.substring(0, dstart) + source?.substring(start, end) + dest?.substring(dend)
+            return if (pattern.matcher(newString).matches()) {
+                null
+            } else {
+                ""
+            }
+        }
     }
 
     private fun loadPresupuesto() {
