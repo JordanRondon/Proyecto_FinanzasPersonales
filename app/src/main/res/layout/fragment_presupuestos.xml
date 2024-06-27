@@ -86,7 +86,7 @@
 
                     <EditText
                         android:id="@+id/etMonto"
-                        android:layout_width="151dp"
+                        android:layout_width="142dp"
                         android:layout_height="match_parent"
                         android:background="@drawable/presupuesto_inputs"
                         android:ems="10"
@@ -101,19 +101,19 @@
 
                         <RadioButton
                             android:id="@+id/radio_mensual"
-                            android:layout_width="91dp"
+                            android:layout_width="85dp"
                             android:layout_height="match_parent"
                             android:layout_marginStart="3dp"
                             android:checked="true"
                             android:text="Mensual"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
 
                         <RadioButton
                             android:id="@+id/radio_semanal"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:text="Semanal"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </RadioGroup>
                 </LinearLayout>
 

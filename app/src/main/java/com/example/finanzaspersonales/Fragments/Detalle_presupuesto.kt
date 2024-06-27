@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 
 
 class Detalle_presupuesto : Fragment() {
@@ -95,7 +96,16 @@ class Detalle_presupuesto : Fragment() {
                         val porcentaje_barra=((presupuesto.monto_actual/presupuesto.monto_total)*100).toInt()
                         txt_numero_barra?.text =porcentaje_barra.toString()+"%"
                         progressBar?.progress = porcentaje_barra
+                        if(porcentaje_barra<=40){
 
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso)
+                        }
+                        else if(porcentaje_barra>50 && porcentaje_barra<=75){
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso2)
+                        }
+                        else{
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso3)
+                        }
                         txtmontototal?.text = "S/ "+presupuesto.monto_total.toString()
                         txtmontoactual?.text = "S/ %.2f".format(presupuesto.monto_actual)
 

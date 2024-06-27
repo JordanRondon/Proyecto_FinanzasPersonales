@@ -250,7 +250,11 @@ class SheetGastos : BottomSheetDialogFragment() {
                                     val presupuestoID = ds.key
                                     val categoriaID = ds.child("categoriaID").getValue(String::class.java)
                                     val urlIcon = categoriasMap[categoriaID]
-                                    arrayListPresupuestos.add(CategoriaGastos(presupuestoID ?: "", urlIcon))
+                                    val estado = ds.child("estado").getValue(Boolean::class.java)
+                                    if(estado == true){
+                                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID ?: "", urlIcon))
+                                    }
+
                                 }
                                 presupuestoGastosAdapter.notifyDataSetChanged()
                                 txt_presupuesto.visibility = View.INVISIBLE
