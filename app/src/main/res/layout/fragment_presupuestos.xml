@@ -86,12 +86,13 @@
 
                     <EditText
                         android:id="@+id/etMonto"
-                        android:layout_width="142dp"
+                        android:layout_width="127dp"
                         android:layout_height="match_parent"
                         android:background="@drawable/presupuesto_inputs"
                         android:ems="10"
                         android:hint=" Ingrese el monto"
-                        android:inputType="numberDecimal" />
+                        android:inputType="numberDecimal"
+                        android:textSize="16sp" />
 
                     <RadioGroup
                         android:id="@+id/radiogrouppresupuesto"
