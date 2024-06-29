@@ -1,5 +1,6 @@
 package com.example.finanzaspersonales
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.util.Calendar
+import javax.annotation.Nullable
 
 class GastosFragment : Fragment() {
     private lateinit var tvBuscarGasto: TextInputEditText
@@ -33,7 +35,8 @@ class GastosFragment : Fragment() {
     private lateinit var adaptadorPersonalizado: GastoAdapter
     private lateinit var databaseGasto: DatabaseReference
     private lateinit var databaseCategoria: DatabaseReference
-
+    private var fecha_filtro: String? = null
+    private val gastoListaMonto = mutableListOf<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,6 +59,7 @@ class GastosFragment : Fragment() {
         tvBuscarGasto = view.findViewById(R.id.tvBuscarGasto)
         imageButton_filtroMontoGasto = view.findViewById(R.id.imageButton_filtroMontoGasto)
         imageButton_filtroFecha = view.findViewById(R.id.imageButton_filtroFecha)
+
         RecyclerViewHistorial = view.findViewById(R.id.rvListaGastos)
 
         adaptadorPersonalizado = GastoAdapter(requireContext(), historialGasto, databaseCategoria)
@@ -65,7 +69,7 @@ class GastosFragment : Fragment() {
         tvBuscarGasto.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 //Cada vez que se detecte que se agregó una letra, llama al método filtrar.
-                filtrar(s.toString())
+                filtrarPorCategoria(s.toString())
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -74,7 +78,34 @@ class GastosFragment : Fragment() {
         })
 
         imageButton_filtroMontoGasto.setOnClickListener {
-            //dialog con lista con historial de gastos
+
+            // Convertir la lista de String a un array de Strings
+            val montoArray = gastoListaMonto.toTypedArray()
+            // Array para almacenar los ítems seleccionados
+            val checkedItems = BooleanArray(montoArray.size)
+            // Crea un Dialog para mostrar la lista de montos
+            val ListarMontoDialog: AlertDialog.Builder = AlertDialog.Builder(context)
+            ListarMontoDialog
+                .setTitle("Filtra tus gastos por Monto")
+                .setPositiveButton("Aceptar") { dialog, which ->
+                    val montosSeleccionados = mutableListOf<String>()
+                    for (i in montoArray.indices) {
+                        if (checkedItems[i]) {
+                            montosSeleccionados.add(montoArray[i])
+                        }
+                    }
+                    filtarPorMonto(montosSeleccionados)
+                }
+                .setNegativeButton("Cancelar") { dialog, which ->
+                    filtarPorMonto(mutableListOf())
+                }
+                .setMultiChoiceItems(montoArray, checkedItems) { dialog, which, isChecked ->
+                    // Actualizar el estado del ítem seleccionado
+                    checkedItems[which] = isChecked
+                }
+
+            val dialog: AlertDialog = ListarMontoDialog.create()
+            dialog.show()
         }
 
         imageButton_filtroFecha.setOnClickListener {
@@ -87,17 +118,19 @@ class GastosFragment : Fragment() {
                 val mesActual = month + 1
                 val diaFormateado = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
                 val mesFormateado = if (mesActual < 10) "0$mesActual" else mesActual.toString()
-                Toast.makeText(
-                    requireContext(),
-                    "$diaFormateado/$mesFormateado/$year",
-                    Toast.LENGTH_SHORT
-                ).show()
+                fecha_filtro = "$diaFormateado/$mesFormateado/$year"
+                filtrarPorFecha(fecha_filtro)
             }, anio, mes, dia)
+            recolectarFecha.setOnCancelListener {
+                fecha_filtro = null
+                filtrarPorFecha(fecha_filtro)
+            }
             recolectarFecha.setTitle("Filtra tus gastos por fecha")
             recolectarFecha.show()
         }
 
         obtenerDatosGastos(databaseGasto)
+        obtenerDatosMontoGastos(databaseGasto)
     }
 
     private fun obtenerDatosGastos(gastosRef: DatabaseReference) {
@@ -105,6 +138,7 @@ class GastosFragment : Fragment() {
         gastosRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 historialGasto.clear()
+                val gastoList = mutableListOf<EntidadGasto>()
                 for (gastoSnapshot in snapshot.children) {
                     if (gastoSnapshot.key != "contador") {
                         val categoriaID = gastoSnapshot.child("categoriaID").value.toString()
@@ -118,9 +152,12 @@ class GastosFragment : Fragment() {
                             monto = monto,
                             fechaRegistro = fechaRegistro
                         )
-                        historialGasto.add(entidad)
+                        //historialGasto.add(entidad)
+                        gastoList.add(entidad)
                     }
                 }
+                historialGasto.addAll(gastoList.asReversed())
+                gastoList.clear()
                 adaptadorPersonalizado.notifyDataSetChanged()
             }
 
@@ -130,13 +167,60 @@ class GastosFragment : Fragment() {
         })
     }
 
-    private fun filtrar(texto: String) {
+    private fun obtenerDatosMontoGastos(gastosRef: DatabaseReference) {
+
+        gastosRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                gastoListaMonto.clear()
+                for (gastoSnapshot in snapshot.children) {
+                    if (gastoSnapshot.key != "contador") {
+                        val monto = gastoSnapshot.child("monto").getValue(Float::class.java) ?: 0.0f
+                        if (!gastoListaMonto.contains(monto.toString())) {
+                            // Si no existe el monto en la lista, se agrega
+                            gastoListaMonto.add(monto.toString())
+                        }
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Error al obtener los datos: ${error.message}")
+            }
+        })
+    }
+
+    private fun filtrarPorCategoria(texto: String) {
         historialGastoFiltrado.clear()
         if (texto.isEmpty()) {
             historialGastoFiltrado.addAll(historialGasto)
         } else {
             historialGastoFiltrado.addAll(historialGasto.filter { it.categoriaID.contains(texto, ignoreCase = true) })
         }
+        actualizarAdaptador()
+    }
+
+    private fun filtrarPorFecha(fecha: String?) {
+        historialGastoFiltrado.clear()
+        if (fecha != null) {
+            historialGastoFiltrado.addAll(historialGasto.filter { it.fechaRegistro == fecha })
+        } else {
+            historialGastoFiltrado.addAll(historialGasto)
+        }
+        actualizarAdaptador()
+    }
+
+    private fun filtarPorMonto(montosSeleccionados: MutableList<String>) {
+        historialGastoFiltrado.clear()
+        if (montosSeleccionados.isNotEmpty()) {
+            historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
+                montosSeleccionados.contains(gasto.monto.toString())
+            })
+        } else {
+            historialGastoFiltrado.addAll(historialGasto)
+        }
+        actualizarAdaptador()
+    }
+
+    private fun actualizarAdaptador() {
         adaptadorPersonalizado = GastoAdapter(requireContext(), historialGastoFiltrado, databaseCategoria)
         RecyclerViewHistorial.layoutManager = LinearLayoutManager(requireContext())
         RecyclerViewHistorial.adapter = adaptadorPersonalizado
