@@ -1,5 +1,6 @@
 package com.example.finanzaspersonales
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.entidades.EntidadGasto
@@ -18,9 +21,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.util.Calendar
 
 class GastosFragment : Fragment() {
     private lateinit var tvBuscarGasto: TextInputEditText
+    private lateinit var imageButton_filtroMontoGasto: ImageButton
+    private lateinit var imageButton_filtroFecha: ImageButton
     private lateinit var RecyclerViewHistorial: RecyclerView
     private val historialGasto = mutableListOf<EntidadGasto>()
     private val historialGastoFiltrado = mutableListOf<EntidadGasto>()
@@ -48,6 +54,8 @@ class GastosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         tvBuscarGasto = view.findViewById(R.id.tvBuscarGasto)
+        imageButton_filtroMontoGasto = view.findViewById(R.id.imageButton_filtroMontoGasto)
+        imageButton_filtroFecha = view.findViewById(R.id.imageButton_filtroFecha)
         RecyclerViewHistorial = view.findViewById(R.id.rvListaGastos)
 
         adaptadorPersonalizado = GastoAdapter(requireContext(), historialGasto, databaseCategoria)
@@ -64,6 +72,30 @@ class GastosFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        imageButton_filtroMontoGasto.setOnClickListener {
+            //dialog con lista con historial de gastos
+        }
+
+        imageButton_filtroFecha.setOnClickListener {
+            //dialog data para seleccionar una fecha
+            val calendario: Calendar = Calendar.getInstance()
+            val anio = calendario.get(Calendar.YEAR)
+            val mes = calendario.get(Calendar.MONTH)
+            val dia = calendario.get(Calendar.DAY_OF_MONTH)
+            val recolectarFecha = DatePickerDialog(requireContext(), {_, year, month, dayOfMonth ->
+                val mesActual = month + 1
+                val diaFormateado = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
+                val mesFormateado = if (mesActual < 10) "0$mesActual" else mesActual.toString()
+                Toast.makeText(
+                    requireContext(),
+                    "$diaFormateado/$mesFormateado/$year",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }, anio, mes, dia)
+            recolectarFecha.setTitle("Filtra tus gastos por fecha")
+            recolectarFecha.show()
+        }
 
         obtenerDatosGastos(databaseGasto)
     }
