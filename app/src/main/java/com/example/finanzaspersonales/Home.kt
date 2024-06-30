@@ -129,12 +129,13 @@ class Home : AppCompatActivity() {
     }
 
     private fun reiniciarGastoSemanal(gastoSemanlRef: DatabaseReference) {
-        //if(user != null){
+
         gastoSemanlRef.get().addOnSuccessListener { datos ->
             val fecha_actual = obtenerFechaActual()
             val fin_semana = datos.child("fin_semana").value as String
+            val fin_semana_convertido = convertirFecha(fin_semana)
 
-            if (fecha_actual.after(convertirFecha(fin_semana))) {
+            if (fecha_actual.after(fin_semana_convertido)) {
                 val (nuevo_inicio_semana, nuevo_fin_semana) = obtenerInicioYFinDeSemana(fecha_actual)
                 // Actualizar los valores en Firebase
                 val resultadoActualizado = mapOf(
@@ -164,13 +165,17 @@ class Home : AppCompatActivity() {
         }.addOnFailureListener { exception ->
             Log.e("FirebaseError", "Error al obtener los datos: ${exception.message}")
         }
-        //}else{
-        //    Log.e("Aplicacion","El usuario no esta autenticado")
-        //}
     }
 
     private fun obtenerFechaActual(): Date {
-        val calendar = Calendar.getInstance()
+        // seteo de hora fecha actual para comparacion a media noche
+        // cualquier error, borrar el "apply"
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
         return calendar.time
     }
 
