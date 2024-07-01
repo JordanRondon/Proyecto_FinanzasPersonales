@@ -184,13 +184,14 @@ class SheetGastos : BottomSheetDialogFragment() {
         val presupuestoID = presupuestoGastosAdapter.getCategoriaSelected()?.nombre
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
         val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        val time = zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
         contadorReference.get().addOnSuccessListener { data ->
             val contador = data.getValue(Int::class.java) ?: 0
             val contadorUpdate = contador + 1
 
             if (categoriaID != null && presupuestoID != null && categoriaMonto != null) {
-                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date)
+                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date, time)
 
                 gastoReference.child(contadorUpdate.toString()).setValue(gasto)
                     .addOnSuccessListener {
