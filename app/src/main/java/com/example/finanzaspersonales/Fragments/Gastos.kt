@@ -1,26 +1,19 @@
 package com.example.finanzaspersonales.Fragments
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.isOnline
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.GastoHomeAdapter
 import com.example.finanzaspersonales.entidades.EntidadGasto
-import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -35,7 +28,7 @@ import java.time.format.DateTimeFormatter
 class Gastos : Fragment() {
 
     private lateinit var recycle_conteiner: RecyclerView
-    private lateinit var categoria_adapter: GastoHomeAdapter
+    private lateinit var gasto_adapter: GastoHomeAdapter
     private val arrayListCategoria: ArrayList<EntidadGasto> = ArrayList()
     private lateinit var floating_action_button: FloatingActionButton
 
@@ -88,14 +81,14 @@ class Gastos : Fragment() {
             main.visibility = View.VISIBLE
 
             recycle_conteiner.layoutManager = LinearLayoutManager(context)
-            categoria_adapter =
+            gasto_adapter =
                 GastoHomeAdapter(
                     arrayListCategoria,
                     database,
                     contadorReference,
                     categoriaReference
                 )
-            recycle_conteiner.adapter = categoria_adapter
+            recycle_conteiner.adapter = gasto_adapter
 
             getGasto()
 
@@ -120,19 +113,21 @@ class Gastos : Fragment() {
                                 val categoriaID = ds.child("categoriaID").value.toString()
                                 val presupuestoID = ds.child("presupuestoID").value.toString()
                                 val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
+                                val horaRegistro = ds.child("horaRegistro").value.toString()
 
                                 arrayListCategoria.add(
                                     EntidadGasto(
                                         categoriaID,
                                         presupuestoID,
                                         monto,
-                                        fechaRegistro
+                                        fechaRegistro,
+                                        horaRegistro
                                     )
                                 )
                             }
                         }
                     }
-                    categoria_adapter.notifyDataSetChanged()
+                    gasto_adapter.notifyDataSetChanged()
                     showImages(arrayListCategoria)
                 } else {
                     txtGastos.visibility = View.INVISIBLE
