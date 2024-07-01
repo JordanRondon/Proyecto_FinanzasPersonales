@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class Home : AppCompatActivity() {
 
@@ -168,9 +169,8 @@ class Home : AppCompatActivity() {
     }
 
     private fun obtenerFechaActual(): Date {
-        // seteo de hora fecha actual para comparacion a media noche
-        // cualquier error, borrar el "apply"
-        val calendar = Calendar.getInstance().apply {
+        val timeZone = TimeZone.getTimeZone("America/Lima")
+        val calendar = Calendar.getInstance(timeZone).apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
@@ -181,6 +181,7 @@ class Home : AppCompatActivity() {
 
     private fun convertirFecha(fechaString: String): Date {
         val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        formatoFecha.timeZone = TimeZone.getTimeZone("America/Lima")
         return formatoFecha.parse(fechaString)!!
     }
 
