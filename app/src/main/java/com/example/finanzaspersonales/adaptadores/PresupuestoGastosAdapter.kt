@@ -2,29 +2,24 @@ package com.example.finanzaspersonales.adaptadores
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finanzaspersonales.Fragments.NuevaCategoria
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.entidades.CategoriaGastos
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class CategoriaGastosAdapter(
+class PresupuestoGastosAdapter(
     private val dataSet: ArrayList<CategoriaGastos>,
     private val context: Context,
     private val navController: NavController,
     private val closeBottomSheetCallback: () -> Unit
 ) :
-    RecyclerView.Adapter<CategoriaGastosAdapter.ViewHolder>() {
+    RecyclerView.Adapter<PresupuestoGastosAdapter.ViewHolder>() {
 
     private var selectedPos = RecyclerView.NO_POSITION
 
@@ -67,7 +62,7 @@ class CategoriaGastosAdapter(
 
                 if (selectedPos == 0) {
                     closeBottomSheetCallback()
-                    navController.navigate(R.id.action_gastos_to_nuevaCategoria)
+                    navController.navigate(R.id.action_gastos_to_presupuestos)
                 }
             }
 
