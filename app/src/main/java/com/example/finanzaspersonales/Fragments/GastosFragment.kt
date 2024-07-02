@@ -145,12 +145,14 @@ class GastosFragment : Fragment() {
                         val presupuestoID = gastoSnapshot.child("presupuestoID").value.toString()
                         val monto = gastoSnapshot.child("monto").getValue(Float::class.java) ?: 0.0f
                         val fechaRegistro = gastoSnapshot.child("fechaRegistro").value.toString()
+                        val horaRegistro = gastoSnapshot.child("horaRegistro").value.toString()
 
                         val entidad = EntidadGasto(
                             categoriaID = categoriaID,
                             presupuestoID = presupuestoID,
                             monto = monto,
-                            fechaRegistro = fechaRegistro
+                            fechaRegistro = fechaRegistro,
+                            horaRegistro = horaRegistro
                         )
                         //historialGasto.add(entidad)
                         gastoList.add(entidad)

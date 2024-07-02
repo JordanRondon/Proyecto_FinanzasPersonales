@@ -400,7 +400,13 @@ class SheetGastos : BottomSheetDialogFragment() {
 
     private fun obtenerDiaSemana(): String {
         // Obtener la instancia del calendario actual
-        val calendar = Calendar.getInstance()
+        val timeZone = TimeZone.getTimeZone("America/Lima")
+        val calendar = Calendar.getInstance(timeZone).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
         // Obtener el día de la semana (1=domingo, 2=lunes, ..., 7=sábado)
         val diaSemana = calendar.get(Calendar.DAY_OF_WEEK)
