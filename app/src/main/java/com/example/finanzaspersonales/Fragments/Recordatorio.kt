@@ -2,25 +2,19 @@ package com.example.finanzaspersonales.Fragments
 
 
 import AgregarRecordatorioBottomSheet
+import RecordatorioDialogFragment
 import RecordatorioViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
-import com.example.finanzaspersonales.Clases.isOnline
 import com.example.finanzaspersonales.Listeners.CustomDayClickListener
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.RecordatorioAdapter
@@ -55,7 +49,12 @@ class Recordatorio : Fragment() {
 
         //Configurar RecyclerView
         RecyclerViewRecordatorio.layoutManager = LinearLayoutManager(requireContext())
-        adapter = RecordatorioAdapter(requireContext(), emptyList())
+        adapter = RecordatorioAdapter(requireContext(), emptyList()) { recordatorio, recordatorioId ->
+            val editDialog = RecordatorioDialogFragment(recordatorio, recordatorioId) { recordatorioActualizado, id ->
+                viewModel.actualizarRecordatorio(recordatorioActualizado, id)
+            }
+            editDialog.show(childFragmentManager, editDialog.tag)
+        }
         RecyclerViewRecordatorio.adapter = adapter
 
         //Configurar CalendarView
@@ -67,7 +66,6 @@ class Recordatorio : Fragment() {
         fbAgregarRecordatorio.setOnClickListener {
             val bottomSheet = AgregarRecordatorioBottomSheet { recordatorio ->
                 viewModel.agregarRecordatorio(recordatorio)
-                agregarEvento(recordatorio.fecha)
             }
             bottomSheet.show(childFragmentManager, bottomSheet.tag)
         }
@@ -76,13 +74,13 @@ class Recordatorio : Fragment() {
         viewModel.recordatorios.observe(viewLifecycleOwner, Observer { listaRecordatorio ->
             adapter.actualizarLista(listaRecordatorio)
             eventosCalendario.clear()
-            listaRecordatorio.forEach { agregarEvento(it.fecha) }
+            listaRecordatorio.forEach { agregarEvento(it.second.fecha) }
         })
     }
 
     private fun mostrarRecordatorios(fecha: Date) {
         val recordatoriosFiltrados = viewModel.recordatorios.value?.filter {
-            dateFormat.format(it.fecha) == dateFormat.format(fecha)
+            dateFormat.format(it.second.fecha) == dateFormat.format(fecha)
         } ?: emptyList()
         adapter.actualizarLista(recordatoriosFiltrados)
     }

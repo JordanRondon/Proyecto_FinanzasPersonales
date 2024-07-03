@@ -13,8 +13,8 @@ import com.google.firebase.database.ValueEventListener
 
 class RecordatorioViewModel : ViewModel() {
     private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
-    private val _recordatorios = MutableLiveData<List<Recordatorio>>()
-    val recordatorios: LiveData<List<Recordatorio>> get() = _recordatorios
+    private val _recordatorios = MutableLiveData<List<Pair<String, Recordatorio>>>()
+    val recordatorios: LiveData<List<Pair<String, Recordatorio>>> get() = _recordatorios
 
     private val userName = FirebaseAuth.getInstance().currentUser!!.uid
 
@@ -26,16 +26,16 @@ class RecordatorioViewModel : ViewModel() {
         val refUsuario = database.child("NotificacionPago").child(userName)
         refUsuario.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val listaRecordatorio = mutableListOf<Recordatorio>()
+                val listaRecordatorio = mutableListOf<Pair<String, Recordatorio>>()
                 for (recordatorioSnapshot in snapshot.children) {
                     if (recordatorioSnapshot.key != "contador") {
                         val recordatorio = recordatorioSnapshot.getValue(Recordatorio::class.java)
                         if (recordatorio != null) {
-                            listaRecordatorio.add(recordatorio)
+                            listaRecordatorio.add(Pair(recordatorioSnapshot.key!!, recordatorio))
                         }
                     }
                 }
-                _recordatorios.value = listaRecordatorio
+                _recordatorios.value = listaRecordatorio.sortedByDescending { it.second.fecha }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -57,15 +57,24 @@ class RecordatorioViewModel : ViewModel() {
             val refNuevoRecordatorio = refUsuario.child(nuevoContador.toString())
             refNuevoRecordatorio.setValue(recordatorio).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val nuevaLista = _recordatorios.value?.toMutableList() ?: mutableListOf()
-                    nuevaLista.add(recordatorio)
-                    _recordatorios.value = nuevaLista
+                    // No need to update LiveData manually; it will be updated through the ValueEventListener in obtenerRecordatorios().
                 } else {
                     Log.e("Recordatorio", "Error al agregar recordatorio: ${task.exception}")
                 }
             }
         }.addOnFailureListener {
             Log.e("Recordatorio", "Error al obtener el contador", it)
+        }
+    }
+
+    fun actualizarRecordatorio(recordatorio: Recordatorio, recordatorioId: String) {
+        val refUsuario = database.child("NotificacionPago").child(userName).child(recordatorioId)
+        refUsuario.setValue(recordatorio).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // No need to update LiveData manually; it will be updated through the ValueEventListener in obtenerRecordatorios().
+            } else {
+                Log.e("Recordatorio", "Error al actualizar recordatorio: ${task.exception}")
+            }
         }
     }
 }

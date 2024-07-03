@@ -5,44 +5,45 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
-
     <TextView
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
         android:layout_marginTop="20dp"
         android:text="Descripción:"
         android:textSize="17sp" />
-
     <EditText
         android:id="@+id/etDescripcion"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="17dp"
+        android:layout_marginTop="15dp"
         android:background="@android:color/transparent"
         android:imeOptions="actionDone"
         android:text=""
-        android:hint="Ingrese descripción del recordatorio"
+        android:hint="Descripción del recordatorio"
         android:inputType="text" />
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="17dp">
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp"
+
+        android:gravity="center_vertical">
 
         <TextView
             style="@style/TextAppearance.AppCompat.Title"
+
             android:id="@+id/tvFechaSeleccionada"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="7dp"
-            android:text="Seleccionar Fecha:"
-            android:textSize="17sp" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Seleccionar Fecha"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/ivCalendario"
@@ -54,14 +55,32 @@
             app:tint="@color/naranja" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnGuardarRecordatorio"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/piel"
-        android:text="GUARDAR"
-        android:textColor="@color/white" />
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingTop="16dp">
 
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:id="@+id/tvCancelar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:textSize="18sp"
+            android:paddingEnd="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/piel" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:id="@+id/tvGuardar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/piel" />
+    </LinearLayout>
 </LinearLayout>
