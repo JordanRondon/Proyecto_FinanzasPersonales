@@ -16,8 +16,7 @@ import com.example.finanzaspersonales.entidades.CategoriaGastos
 class PresupuestoGastosAdapter(
     private val dataSet: ArrayList<CategoriaGastos>,
     private val context: Context,
-    private val navController: NavController,
-    private val closeBottomSheetCallback: () -> Unit
+    private val navController: NavController
 ) :
     RecyclerView.Adapter<PresupuestoGastosAdapter.ViewHolder>() {
 
@@ -71,7 +70,7 @@ class PresupuestoGastosAdapter(
                 notifyItemChanged(selectedPos)
 
                 if (selectedPos == 0) {
-                    closeBottomSheetCallback()
+                    presupuestoClickListener.onPresupuestoClick(selectedPos)
                     navController.navigate(R.id.action_gastos_to_presupuestos)
                 }
             }

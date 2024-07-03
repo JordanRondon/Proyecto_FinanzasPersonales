@@ -52,7 +52,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
 
-class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.CategoriaClickListener, PresupuestoGastosAdapter.PresupuestoClickListener {
+class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.CategoriaClickListener,
+    PresupuestoGastosAdapter.PresupuestoClickListener {
 
     private lateinit var binding: FragmentSheetGastosBinding
     private lateinit var taskViewModel: TaskViewModel
@@ -92,6 +93,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
 
     private val DEFAULT_CATEGORIA = CategoriaGastos("Agregar", "ic_add_circle")
     private val DEFAULT_PRESUPUESTO = CategoriaGastos("Agregar", "ic_add_circle")
+    private val SIN_PRESUPUESTO = CategoriaGastos("Sin presupuesto", "ic_not")
 
     private lateinit var adapter: CategoriaGastosAdapter
 
@@ -169,9 +171,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         categoriaGastosAdapter =
             CategoriaGastosAdapter(arrayListCategoria, requireContext(), navController)
         presupuestoGastosAdapter =
-            PresupuestoGastosAdapter(arrayListPresupuestos, requireContext(), navController) {
-                dismiss()
-            }
+            PresupuestoGastosAdapter(arrayListPresupuestos, requireContext(), navController)
         recyclerViewCategoria.adapter = categoriaGastosAdapter
         recyclerViewPresupuestos.adapter = presupuestoGastosAdapter
 
@@ -180,7 +180,6 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
 
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
-            dismiss()
         }
 
         loadCategoriasYPresupuestos()
@@ -218,10 +217,12 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
                         Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT)
                             .show()
 
+                        if (presupuestoID != "Sin presupuesto") {
+                            setGastoSemanal_dia(categoriaMonto)
+                            setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext())
+                            binding.etMonto.text.clear()
+                        }
 
-                        setGastoSemanal_dia(categoriaMonto)
-                        setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext())
-                        binding.etMonto.text.clear()
                         dismiss()
                     }
                     .addOnFailureListener {
@@ -271,6 +272,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
                             arrayListPresupuestos.clear()
 
                             arrayListPresupuestos.add(DEFAULT_PRESUPUESTO)
+                            arrayListPresupuestos.add(SIN_PRESUPUESTO)
 
                             if (data.exists() && data.hasChildren()) {
                                 for (ds: DataSnapshot in data.children) {
