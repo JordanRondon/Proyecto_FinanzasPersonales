@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import com.example.finanzaspersonales.Clases.Categoria
 import com.example.finanzaspersonales.entidades.EntidadGasto
@@ -31,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class GraficosFragment : Fragment() {
+    private lateinit var textView_TotalSemana: TextView
     private lateinit var graficoBarra: BarChart
     private lateinit var graficoCategoria: PieChart
     private lateinit var database: DatabaseReference
@@ -64,8 +66,13 @@ class GraficosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textView_TotalSemana = view.findViewById(R.id.textView_TotalSemana)
         graficoBarra = view.findViewById(R.id.graficoSemana)
         graficoCategoria = view.findViewById(R.id.graficoCategoria)
+
+        obtenerTotalSemana(database) { total ->
+            textView_TotalSemana.text = total.toString()
+        }
 
         obtenerGastoSemanal(database) { datos ->
             graficoBarraSemana(graficoBarra, datos)
@@ -152,6 +159,28 @@ class GraficosFragment : Fragment() {
 
     }
 
+    private fun obtenerTotalSemana(gastoSemanalRef: DatabaseReference, callback: (Float) -> Unit) {
+
+        gastoSemanalRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val resultadoNode = dataSnapshot.child("resultado") //referencia de resultado
+                var total: Float = 0f
+
+                resultadoNode.children.forEach {
+                    val valor = it.getValue(Float::class.java)?: 0F
+                    total += valor
+                }
+
+                callback(total)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Error al obtener los datos: ${error.message}")
+            }
+        })
+
+    }
+
     private fun obtenerCategoriasYMontos(gastoRef: DatabaseReference, callback: (MutableMap<String, Float>) -> Unit) {
         val listaGastos = mutableListOf<EntidadGasto>()
         // Una vez que las categorías se han cargado, carga los gastos
@@ -195,7 +224,7 @@ class GraficosFragment : Fragment() {
         val pieData = PieData(pieDataSet)
         pieChart.data = pieData
         pieChart.description.isEnabled = false
-        pieChart.centerText = "Gasto"
+        pieChart.centerText = "Gasto (S./)"
         pieChart.setEntryLabelColor(Color.WHITE)
         pieChart.setEntryLabelTextSize(12f)
         pieChart.animateY(1000)
