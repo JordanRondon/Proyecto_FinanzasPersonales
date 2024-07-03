@@ -39,6 +39,10 @@ class GastosFragment : Fragment() {
     private lateinit var databaseCategoria: DatabaseReference
     private var fecha_filtro: String? = null
     private val gastoListaMonto = mutableListOf<String>()
+
+    private var filtroCategoria: String = ""
+    private var filtroFecha: String? = null
+    private var filtroMontosSeleccionados: MutableList<String> = mutableListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -196,13 +200,16 @@ class GastosFragment : Fragment() {
         })
     }
 
-    private fun filtrarPorCategoria(texto: String) {
+    private fun aplicarFiltros() {
         historialGastoFiltrado.clear()
-        if (texto.isEmpty()) {
-            historialGastoFiltrado.addAll(historialGasto)
-        } else {
-            historialGastoFiltrado.addAll(historialGasto.filter { it.categoriaID.contains(texto, ignoreCase = true) })
-        }
+
+        historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
+            val coincideCategoria = filtroCategoria.isEmpty() || gasto.categoriaID.contains(filtroCategoria, ignoreCase = true)
+            val coincideFecha = filtroFecha == null || gasto.fechaRegistro == filtroFecha
+            val coincideMonto = filtroMontosSeleccionados.isEmpty() || filtroMontosSeleccionados.contains(gasto.monto.toString())
+
+            coincideCategoria && coincideFecha && coincideMonto
+        })
 
         if (historialGastoFiltrado.isEmpty()) {
             mostrar_mensajeSinDatos()
@@ -211,42 +218,21 @@ class GastosFragment : Fragment() {
         }
 
         actualizarAdaptador()
+    }
+
+    private fun filtrarPorCategoria(texto: String) {
+        filtroCategoria = texto
+        aplicarFiltros()
     }
 
     private fun filtrarPorFecha(fecha: String?) {
-        historialGastoFiltrado.clear()
-        if (fecha != null) {
-            historialGastoFiltrado.addAll(historialGasto.filter { it.fechaRegistro == fecha })
-        } else {
-            historialGastoFiltrado.addAll(historialGasto)
-        }
-
-        if (historialGastoFiltrado.isEmpty()) {
-            mostrar_mensajeSinDatos()
-        } else {
-            ocultar_mensajeSinDatos()
-        }
-
-        actualizarAdaptador()
+        filtroFecha = fecha
+        aplicarFiltros()
     }
 
     private fun filtarPorMonto(montosSeleccionados: MutableList<String>) {
-        historialGastoFiltrado.clear()
-        if (montosSeleccionados.isNotEmpty()) {
-            historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
-                montosSeleccionados.contains(gasto.monto.toString())
-            })
-        } else {
-            historialGastoFiltrado.addAll(historialGasto)
-        }
-
-        if (historialGastoFiltrado.isEmpty()) {
-            mostrar_mensajeSinDatos()
-        } else {
-            ocultar_mensajeSinDatos()
-        }
-
-        actualizarAdaptador()
+        filtroMontosSeleccionados = montosSeleccionados
+        aplicarFiltros()
     }
 
     private fun actualizarAdaptador() {

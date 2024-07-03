@@ -195,7 +195,7 @@ class GraficosFragment : Fragment() {
         val pieData = PieData(pieDataSet)
         pieChart.data = pieData
         pieChart.description.isEnabled = false
-        pieChart.centerText = "Gasto"
+        pieChart.centerText = "Gasto (S./)"
         pieChart.setEntryLabelColor(Color.WHITE)
         pieChart.setEntryLabelTextSize(12f)
         pieChart.animateY(1000)
