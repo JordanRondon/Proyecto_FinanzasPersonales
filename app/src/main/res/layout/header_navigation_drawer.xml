@@ -13,15 +13,18 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="start"
+        android:backgroundTint="#3498DB"
         app:cardCornerRadius="50dp">
 
-        <ImageView
+        <TextView
+            android:id="@+id/txtInicial"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:padding="10dp"
-            android:src="@drawable/logo" />
+            android:gravity="center"
+            android:textSize="40sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:text="A" />
 
     </androidx.cardview.widget.CardView>
 

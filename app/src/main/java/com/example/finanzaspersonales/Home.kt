@@ -90,8 +90,10 @@ class Home : AppCompatActivity() {
 
         val header = navigationView.getHeaderView(0)
         val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
+        val txtLetra = header.findViewById<TextView>(R.id.txtInicial)
 
         txtCorreo.text = user?.email
+        txtLetra.text = user?.email?.substring(0, 1)?.uppercase()
         val menu = navigationView.menu[4]
 
         menu.setOnMenuItemClickListener {
