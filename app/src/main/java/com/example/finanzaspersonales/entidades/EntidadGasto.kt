@@ -5,5 +5,6 @@ class EntidadGasto (
     var presupuestoID: String = "",
     var monto: Float = 0.0f,
     var fechaRegistro: String = "",
-    var horaRegistro: String = ""
+    var horaRegistro: String = "",
+    var descripcion: String = ""
 )

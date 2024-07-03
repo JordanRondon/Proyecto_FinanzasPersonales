@@ -35,11 +35,13 @@ class GastoDialogFragment(
         val imagenGasto: ImageView = view.findViewById(R.id.ivCategoria)
         val horaRegistro = LocalTime.parse(entidadGasto.horaRegistro, DateTimeFormatter.ofPattern("HH:mm:ss")).format(
             DateTimeFormatter.ofPattern("hh:mm a"))
+        val descripcion: TextView = view.findViewById(R.id.txt_descripcion)
 
         categoria.text = entidadGasto.categoriaID
         presupuesto.text = entidadGasto.presupuestoID
         montoGasto.text = entidadGasto.monto.toString()
         fechaRegistro.text = "${entidadGasto.fechaRegistro} - ${horaRegistro}"
+        descripcion.text = entidadGasto.descripcion
 
         getIconCategoria(imagenGasto, entidadGasto.categoriaID, requireContext())
 
