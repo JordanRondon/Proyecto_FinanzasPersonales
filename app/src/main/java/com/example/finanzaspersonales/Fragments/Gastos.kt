@@ -115,6 +115,7 @@ class Gastos : Fragment() {
                                 val presupuestoID = ds.child("presupuestoID").value.toString()
                                 val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
                                 val horaRegistro = ds.child("horaRegistro").value.toString()
+                                val descripcion = ds.child("descripcion").value.toString()
 
                                 arrayListCategoria.add(
                                     EntidadGasto(
@@ -122,7 +123,8 @@ class Gastos : Fragment() {
                                         presupuestoID,
                                         monto,
                                         fechaRegistro,
-                                        horaRegistro
+                                        horaRegistro,
+                                        descripcion
                                     )
                                 )
                             }

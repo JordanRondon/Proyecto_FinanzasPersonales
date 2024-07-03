@@ -35,10 +35,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
 import com.example.finanzaspersonales.adaptadores.PresupuestoGastosAdapter
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.example.finanzaspersonales.entidades.Notificacion
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseError
@@ -77,7 +79,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
     private val notiticationCounterReference =
         FirebaseDatabase.getInstance().getReference("Notificacion").child(user).child("contador")
             .child("ultima_notificacion")
-    //
+
 
     private lateinit var database: DatabaseReference
 
@@ -86,16 +88,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
     private lateinit var categoriaGastosAdapter: CategoriaGastosAdapter
     private lateinit var presupuestoGastosAdapter: PresupuestoGastosAdapter
 
-    private lateinit var txt_categoria: TextView
-    private lateinit var txt_presupuesto: TextView
-
     private lateinit var navController: NavController
 
     private val DEFAULT_CATEGORIA = CategoriaGastos("Agregar", "ic_add_circle")
     private val DEFAULT_PRESUPUESTO = CategoriaGastos("Agregar", "ic_add_circle")
     private val SIN_PRESUPUESTO = CategoriaGastos("Sin presupuesto", "ic_not")
-
-    private lateinit var adapter: CategoriaGastosAdapter
 
     companion object {
         const val MI_CANAL_ID = "CanalPresupuesto"
@@ -156,6 +153,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
                 )
             }
         }
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(view.parent as View)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior.isHideable = false
+
         crearCanalDeNotificacion()
         val activity = requireActivity()
         navController = findNavController()
@@ -168,6 +170,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         recyclerViewCategoria.layoutManager = GridLayoutManager(requireContext(), 3)
         recyclerViewPresupuestos.layoutManager = GridLayoutManager(requireContext(), 3)
 
+
         categoriaGastosAdapter =
             CategoriaGastosAdapter(arrayListCategoria, requireContext(), navController)
         presupuestoGastosAdapter =
@@ -175,8 +178,6 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         recyclerViewCategoria.adapter = categoriaGastosAdapter
         recyclerViewPresupuestos.adapter = presupuestoGastosAdapter
 
-        txt_categoria = view.findViewById(R.id.txt_categoria)
-        txt_presupuesto = view.findViewById(R.id.txt_presupuesto)
 
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
@@ -204,18 +205,33 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
         val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
         val time = zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+        var descripcion = binding.txtDescripcion.text.toString()
 
         contadorReference.get().addOnSuccessListener { data ->
             val contador = data.getValue(Int::class.java) ?: 0
             val contadorUpdate = contador + 1
 
             if (categoriaID != null && presupuestoID != null && categoriaMonto != null) {
-                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date, time)
+                if (descripcion.isEmpty()) {
+                    descripcion = if (presupuestoID == "Sin presupuesto") {
+                        categoriaID.substringAfter(' ')
+                    } else {
+                        presupuestoID.substringAfter(' ')
+                    }
+                }
+
+                val gasto = EntidadGasto(
+                    categoriaID,
+                    presupuestoID,
+                    categoriaMonto,
+                    date,
+                    time,
+                    descripcion
+                )
 
                 gastoReference.child(contadorUpdate.toString()).setValue(gasto)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT).show()
 
                         if (presupuestoID != "Sin presupuesto") {
                             setGastoSemanal_dia(categoriaMonto)
@@ -226,11 +242,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
                         dismiss()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT)
-                            .show()
-
+                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT).show()
                     }
                 contadorReference.setValue(contadorUpdate)
+
+
             } else {
                 Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
                     .show()
@@ -243,67 +259,58 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
     private fun loadCategoriasYPresupuestos() {
         categoriaReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(categoriaSnapshot: DataSnapshot) {
-                if (categoriaSnapshot.exists()) {
-                    val categoriasMap = mutableMapOf<String, String>()
 
-                    arrayListCategoria.clear()
+                val categoriasMap = mutableMapOf<String, String>()
 
-                    arrayListCategoria.add(DEFAULT_CATEGORIA)
+                arrayListCategoria.clear()
 
-                    for (catSnap: DataSnapshot in categoriaSnapshot.children) {
-                        val categoriaID = catSnap.key
-                        val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
-                        if (categoriaID != null) {
-                            categoriasMap[categoriaID] = urlIcon
+                arrayListCategoria.add(DEFAULT_CATEGORIA)
 
-                            arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
+                for (catSnap: DataSnapshot in categoriaSnapshot.children) {
+                    val categoriaID = catSnap.key
+                    val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
+                    if (categoriaID != null) {
+                        categoriasMap[categoriaID] = urlIcon
+
+                        arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
+                    }
+                }
+
+                categoriaGastosAdapter.notifyDataSetChanged()
+
+                presupuestoReference.addListenerForSingleValueEvent(object :
+                    ValueEventListener {
+                    override fun onDataChange(data: DataSnapshot) {
+
+                        arrayListPresupuestos.clear()
+
+                        arrayListPresupuestos.add(DEFAULT_PRESUPUESTO)
+                        arrayListPresupuestos.add(SIN_PRESUPUESTO)
+
+
+                        for (ds: DataSnapshot in data.children) {
+                            val presupuestoID = ds.key
+                            val categoriaID =
+                                ds.child("categoriaID").getValue(String::class.java)
+                            val urlIcon = categoriasMap[categoriaID]
+                            val estado = ds.child("estado").getValue(Boolean::class.java)
+                            if (estado == true) {
+                                arrayListPresupuestos.add(
+                                    CategoriaGastos(
+                                        presupuestoID ?: "", urlIcon
+                                    )
+                                )
+                            }
+
                         }
+                        presupuestoGastosAdapter.notifyDataSetChanged()
                     }
 
-                    categoriaGastosAdapter.notifyDataSetChanged()
-                    txt_categoria.visibility =
-                        if (arrayListCategoria.isEmpty()) View.VISIBLE else View.INVISIBLE
+                    override fun onCancelled(error: DatabaseError) {
+                        // Manejar el error
+                    }
+                })
 
-
-                    presupuestoReference.addListenerForSingleValueEvent(object :
-                        ValueEventListener {
-                        override fun onDataChange(data: DataSnapshot) {
-
-                            arrayListPresupuestos.clear()
-
-                            arrayListPresupuestos.add(DEFAULT_PRESUPUESTO)
-                            arrayListPresupuestos.add(SIN_PRESUPUESTO)
-
-                            if (data.exists() && data.hasChildren()) {
-                                for (ds: DataSnapshot in data.children) {
-                                    val presupuestoID = ds.key
-                                    val categoriaID =
-                                        ds.child("categoriaID").getValue(String::class.java)
-                                    val urlIcon = categoriasMap[categoriaID]
-                                    val estado = ds.child("estado").getValue(Boolean::class.java)
-                                    if (estado == true) {
-                                        arrayListPresupuestos.add(
-                                            CategoriaGastos(
-                                                presupuestoID ?: "", urlIcon
-                                            )
-                                        )
-                                    }
-
-                                }
-                                presupuestoGastosAdapter.notifyDataSetChanged()
-                                txt_presupuesto.visibility = View.INVISIBLE
-                            } else {
-                                txt_presupuesto.visibility = View.VISIBLE
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            // Manejar el error
-                        }
-                    })
-                } else {
-                    txt_categoria.visibility = View.VISIBLE
-                }
             }
 
             override fun onCancelled(error: DatabaseError) {
