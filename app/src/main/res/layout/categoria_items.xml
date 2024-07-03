@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="120dp"
     android:orientation="horizontal"
     android:background="@drawable/presupuesto_estilo4"
     >
@@ -10,25 +10,54 @@
     <ImageView
         android:id="@+id/img_icono_crud"
         android:layout_width="70dp"
-        android:layout_height="match_parent"
+        android:layout_height="70dp"
         android:layout_gravity="center"
         app:srcCompat="@drawable/icono_agua"
         android:layout_marginLeft="14dp"/>
 
-    <TextView
-        android:id="@+id/txt_nombre_categoria_crud"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="3dp"
-        android:text="Categoria 1"
-        android:textSize="18dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingRight="3dp"
+        android:paddingStart="5dp">
+
+        <TextView
+            android:id="@+id/txt_nombre_categoria_crud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="3dp"
+            android:text="Categoria 1"
+            android:textSize="18dp" />
+        <TextView
+            android:id="@+id/label_descripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="2dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="3dp"
+            android:text="DESCRIPCION:"
+            android:textSize="15dp" />
+        <TextView
+            android:id="@+id/txt_descripcion_crud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="3dp"
+            android:text="NULL"
+            android:textColor="#b5b5b5"
+            android:textSize="15dp" />
+    </LinearLayout>
 
     <Space
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
+    <!--
     <ImageButton
         android:id="@+id/boton_categoria_opciones"
         android:layout_width="wrap_content"
@@ -39,7 +68,7 @@
         android:textSize="13dp"
         android:background="?attr/selectableItemBackgroundBorderless"
          />
-
+    -->
 
 
 </LinearLayout>

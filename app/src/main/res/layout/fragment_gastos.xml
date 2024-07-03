@@ -6,196 +6,134 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.Gastos">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+        <TextView
+            android:id="@+id/txtGastos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="40dp"
+            android:text="Gastos"
+            android:textColor="?attr/android:textColor"
+            android:textSize="25sp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycle_conteiner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/txtGastos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginEnd="40dp"
-                    android:text="Gastos"
-                    android:textColor="?attr/android:textColor"
-                    android:textSize="25sp"
-                    android:visibility="invisible"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/ivImagen"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/ic_person_gastos"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.429" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycle_conteiner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="80dp"
-                    android:layout_marginEnd="10dp"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/txtMensaje1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="monospace"
+            android:text="Hoy no hubo gastos"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivImagen" />
 
-                <ImageView
-                    android:id="@+id/ivImagen"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:src="@drawable/ic_person_gastos"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.497"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.429" />
+        <TextView
+            android:id="@+id/txtMensaje2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="Haga clic en + para agregar un gasto"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtMensaje1" />
 
-                <TextView
-                    android:id="@+id/txtMensaje1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:fontFamily="monospace"
-                    android:text="No hubo gastos esta semana"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ivImagen" />
-
-                <TextView
-                    android:id="@+id/txtMensaje2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:text="Haga clic en + para agregar un gasto"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtMensaje1" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:contentDescription="Añadir Gastos"
             app:backgroundTint="@color/piel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:shapeAppearance="@style/Widget.Design.FloatingActionButton"
             app:srcCompat="@drawable/ic_add"
             app:tint="@color/black" />
 
-<!--        <com.google.android.material.card.MaterialCardView-->
-<!--            android:id="@+id/card"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_width="300dp"-->
-<!--            style="?attr/materialCardViewElevatedStyle"-->
-<!--            android:visibility="gone"-->
-<!--            android:layout_height="wrap_content"-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--            android:layout_margin="8dp">-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/connection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
 
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
+        <ImageView
+            android:id="@+id/ivReload"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="180dp"
+            android:src="@drawable/ic_autorenew"
+            app:layout_constraintBottom_toTopOf="@+id/linerLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.663" />
 
-<!--                &lt;!&ndash; Media &ndash;&gt;-->
-<!--                <ImageView-->
-<!--                    android:id="@+id/ivCategoria"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="80dp" />-->
-<!--d-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="vertical"-->
-<!--                    android:padding="16dp">-->
+        <LinearLayout
+            android:id="@+id/linerLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="304dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-<!--                    &lt;!&ndash; Title, secondary and supporting text &ndash;&gt;-->
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="Categoria"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyMedium"  />-->
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Algo salio mal" />
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/txt_categoria"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="5dp"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyLarge" />-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Compruebe su conexion a internet" />
 
-<!--                    <com.google.android.material.divider.MaterialDivider-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"/>-->
+        </LinearLayout>
 
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="8dp"-->
-<!--                        android:text="Presupuesto"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyMedium"  />-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/txt_presupuesto"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="5dp"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyLarge" />-->
-
-<!--                    <com.google.android.material.divider.MaterialDivider-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"/>-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="8dp"-->
-<!--                        android:text="Monto"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyMedium" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txt_monto_gasto"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="5dp"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyLarge" />-->
-
-<!--                    <com.google.android.material.divider.MaterialDivider-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"/>-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="8dp"-->
-<!--                        android:text="Fecha Registro"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyMedium" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/txt_fecha_gasto"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="5dp"-->
-<!--                        android:textAppearance="?attr/textAppearanceBodyLarge" />-->
-<!--                </LinearLayout>-->
-<!--            </LinearLayout>-->
-
-<!--        </com.google.android.material.card.MaterialCardView>-->
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </FrameLayout>

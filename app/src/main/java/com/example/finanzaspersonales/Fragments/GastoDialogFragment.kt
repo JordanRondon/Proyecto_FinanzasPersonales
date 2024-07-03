@@ -17,6 +17,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class GastoDialogFragment(
     private val entidadGasto: EntidadGasto,
@@ -31,11 +33,13 @@ class GastoDialogFragment(
         val montoGasto: TextView = view.findViewById(R.id.txt_monto_gasto)
         val fechaRegistro: TextView = view.findViewById(R.id.txt_fecha_gasto)
         val imagenGasto: ImageView = view.findViewById(R.id.ivCategoria)
+        val horaRegistro = LocalTime.parse(entidadGasto.horaRegistro, DateTimeFormatter.ofPattern("HH:mm:ss")).format(
+            DateTimeFormatter.ofPattern("hh:mm a"))
 
         categoria.text = entidadGasto.categoriaID
         presupuesto.text = entidadGasto.presupuestoID
         montoGasto.text = entidadGasto.monto.toString()
-        fechaRegistro.text = entidadGasto.fechaRegistro
+        fechaRegistro.text = "${entidadGasto.fechaRegistro} - ${horaRegistro}"
 
         getIconCategoria(imagenGasto, entidadGasto.categoriaID, requireContext())
 

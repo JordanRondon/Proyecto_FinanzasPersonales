@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finanzaspersonales.dialogs.GastoDialogFragment
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class GastoAdapter(
     private val context: Context,
@@ -24,6 +28,7 @@ class GastoAdapter(
         val tvFecha: TextView = view.findViewById(R.id.tvFecha)
         val tvValorSoles: TextView = view.findViewById(R.id.tvValorSoles)
         val ivIcono: ImageView = view.findViewById(R.id.ivIcono)
+        val tvHoraGasto: TextView = view.findViewById(R.id.textViewHoraGasto)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -55,6 +60,12 @@ class GastoAdapter(
         holder.tvCategoria.text = item.categoriaID.toString()
         holder.tvFecha.text = item.fechaRegistro.toString()
         holder.tvValorSoles.text = item.monto.toString()
+        holder.tvHoraGasto.text = LocalTime.parse(item.horaRegistro, DateTimeFormatter.ofPattern("HH:mm:ss")).format(DateTimeFormatter.ofPattern("hh:mm a"))
+
+        holder.itemView.setOnClickListener {
+            val gastoDialog = GastoDialogFragment(historialGastos[holder.layoutPosition], database)
+            gastoDialog.show((context as AppCompatActivity).supportFragmentManager, "GastoDialog")
+        }
     }
 
     override fun getItemCount() = historialGastos.size

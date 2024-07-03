@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 
 
 class Detalle_presupuesto : Fragment() {
@@ -28,6 +30,7 @@ class Detalle_presupuesto : Fragment() {
 
     private lateinit var database: DatabaseReference
     private lateinit var database_categoria: DatabaseReference
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -93,25 +96,36 @@ class Detalle_presupuesto : Fragment() {
                         val porcentaje_barra=((presupuesto.monto_actual/presupuesto.monto_total)*100).toInt()
                         txt_numero_barra?.text =porcentaje_barra.toString()+"%"
                         progressBar?.progress = porcentaje_barra
+                        if(porcentaje_barra<=40){
 
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso)
+                        }
+                        else if(porcentaje_barra>50 && porcentaje_barra<=75){
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso2)
+                        }
+                        else{
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso3)
+                        }
                         txtmontototal?.text = "S/ "+presupuesto.monto_total.toString()
-                        txtmontoactual?.text = "S/ "+presupuesto.monto_actual.toString()
+                        txtmontoactual?.text = "S/ %.2f".format(presupuesto.monto_actual)
+
                         txtcategoria?.text = presupuesto.categoriaID
                         txtperiodo?.text = presupuesto.periodo
                         txtfecharegistro?.text = presupuesto.fechaInicio
                         txtfechavencimiento?.text = presupuesto.fechaCulminacion
-                        txtestado?.text = presupuesto.estado.toString()
+                        if(presupuesto.estado== true){
+                            txtestado?.text = "El periodo del presupuesto esta activo"
+                        }else{
+                            txtestado?.text = "El periodo del presupuesto esta vencido"
+                        }
+                        //txtestado?.text = presupuesto.estado.toString()
                         imgDescartarDetallePresupuesto.setOnClickListener {
+                            try {
+                                MostrarAlertDialog(username, presupuesto_id)
+                            } catch (e: NumberFormatException) {
+                                Toast.makeText(context, "ERROR: No se pudo eliminar el presupuesto", Toast.LENGTH_SHORT).show()
+                            }
 
-                            eliminarPresupuesto(username, presupuesto_id,
-                                onSuccess = {
-                                    Toast.makeText(context, "Presupuesto eliminado exitosamente", Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(R.id.action_detalle_presupuesto_to_presupuestos)
-                                },
-                                onFailure = { exception ->
-                                    Toast.makeText(context, "Error al eliminar el presupuesto: ${exception.message}", Toast.LENGTH_LONG).show()
-                                }
-                            )
 
                         }
 
@@ -127,6 +141,30 @@ class Detalle_presupuesto : Fragment() {
 
 
 
+    }
+    private fun MostrarAlertDialog(username: String, presupuesto_id: String) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Eliminación Presupuesto")
+        builder.setMessage("¿Esta seguro que desea eliminar un presupuesto?.")
+
+        builder.setPositiveButton("Aceptar") { dialog, _ ->
+            eliminarPresupuesto(username, presupuesto_id,
+                onSuccess = {
+                    Toast.makeText(context, "Presupuesto eliminado exitosamente", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_detalle_presupuesto_to_presupuestos)
+                },
+                onFailure = { exception ->
+                    Toast.makeText(context, "Error al eliminar el presupuesto: ${exception.message}", Toast.LENGTH_LONG).show()
+                }
+            )
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+
+            dialog.dismiss()
+        }
+        builder.create().show()
     }
     private fun eliminarPresupuesto(username: String, presupuestoId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         val databaseReference = FirebaseDatabase.getInstance().getReference("Presupuesto/$username/$presupuestoId")

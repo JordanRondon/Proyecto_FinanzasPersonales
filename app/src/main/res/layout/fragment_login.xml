@@ -6,28 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.Login">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="602dp"
-            android:orientation="vertical"
-            android:paddingHorizontal="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="40dp">
 
             <ImageView
                 android:id="@+id/ivAplicacion"
-                android:layout_width="120dp"
-                android:layout_height="113dp"
-                android:layout_marginLeft="105dp"
-                app:srcCompat="@drawable/moneda" />
+                android:layout_width="144dp"
+                android:layout_height="147dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                app:srcCompat="@drawable/logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tvNombreAplicacion"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/tvNombreAplicacion"
@@ -37,28 +36,42 @@
                 android:layout_marginBottom="35dp"
                 android:gravity="center"
                 android:text="@string/NombreAplicaionLogin"
-                android:textSize="16dp" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/ivAplicacion"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/tvLogin"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:text="@string/tvLogin"
-                android:textSize="25dp" />
+                android:textSize="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvNombreAplicacion" />
 
             <TextView
                 android:id="@+id/tvLoginMensaje"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/LoginMensaje" />
+                android:text="@string/LoginMensaje"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLogin" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/textInputLayoutCorreo"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:hint="Correo"
-                app:endIconMode="clear_text">
+                app:endIconMode="clear_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLoginMensaje">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tvCorreo"
@@ -68,12 +81,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/textInputLayoutContrasenia"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:hint="Contraseña"
                 app:endIconMode="password_toggle"
-                tools:ignore="MissingConstraints">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCorreo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tvContrasenia"
@@ -85,46 +101,66 @@
             <Button
                 android:id="@+id/btnInicioSecion"
                 style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginVertical="20dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/btnloginInicioSecion"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 app:backgroundTint="@color/piel"
-                app:elevation="10dp" />
+                app:elevation="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutContrasenia"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="38dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp">
+            <TextView
+                android:id="@+id/tvMensaje1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿No tienes cuenta?"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/btnInicioSecion"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="20dp"/>
 
-                <TextView
-                    android:id="@+id/tvRecuperarCuenta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:height="30dp"
-                    android:onClick="recuperarCuenta"
-                    android:text="@string/tvLoginRecupCuenta"
-                    android:textSize="16dp" />
+            <TextView
+                android:id="@+id/tvRegistrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="registrate"
+                android:text="@string/tvLoginRegistrar"
+                android:textColor="#3D9AEC"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/tvMensaje1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-                <TextView
-                    android:id="@+id/tvRegistrate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:height="30dp"
-                    android:onClick="registrate"
-                    android:text="@string/tvLoginRegistrar"
-                    android:textColor="#3D9AEC"
-                    android:textSize="16sp" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tvMensaje2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvLoginRecupCuenta"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/tvRegistrate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"/>
 
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvRecuperarCuenta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recupéralo"
+                android:textColor="#3D9AEC"
+                android:textSize="16sp"
+                android:onClick="recuperarCuenta"
+                app:layout_constraintTop_toBottomOf="@+id/tvMensaje2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </FrameLayout>
+

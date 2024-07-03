@@ -21,6 +21,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class GastoHomeAdapter(
     private val arrayListCategoria: ArrayList<EntidadGasto>,
@@ -43,9 +47,6 @@ class GastoHomeAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.onBind(arrayListCategoria[position])
-        viewHolder.imagen.setOnClickListener {
-            deleteCategoria(position, viewHolder.context)
-        }
 
 //        viewHolder.itemView.setOnClickListener {
 //            viewHolder.bindCard(arrayListCategoria[viewHolder.layoutPosition])
@@ -72,7 +73,6 @@ class GastoHomeAdapter(
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val context: Context = view.context
-        val imagen: ImageView = view.findViewById(R.id.ivDelete)
         val icon: ImageView = view.findViewById(R.id.ivIcon)
         //val imagenGasto : ImageView = cardView.findViewById(R.id.ivCategoria)
 
@@ -80,11 +80,14 @@ class GastoHomeAdapter(
             val nombre: TextView = view.findViewById(R.id.txt_nombre)
             val monto: TextView = view.findViewById(R.id.txt_monto)
             val fecha: TextView = view.findViewById(R.id.txt_fecha)
+            val hora: TextView = view.findViewById(R.id.txt_hora)
 
 
             nombre.text = entidadGasto.categoriaID
             monto.text = entidadGasto.monto.toString()
             fecha.text = entidadGasto.fechaRegistro
+            hora.text = LocalTime.parse(entidadGasto.horaRegistro, DateTimeFormatter.ofPattern("HH:mm:ss")).format(DateTimeFormatter.ofPattern("hh:mm a"))
+
         }
 
 //        fun bindCard(entidadGasto: EntidadGasto) {

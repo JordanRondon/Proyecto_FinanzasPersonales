@@ -6,27 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.NuevaCategoria">
 
-    <ScrollView
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:backgroundTint="#F58C27"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp">
+            android:layout_marginRight="15dp"
+            android:backgroundTint="#F58C27"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:text="NUEVA CATEGORIA"
                 android:textSize="24dp"
 
-                android:text="NUEVA CATEGORIA" />
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -34,16 +34,16 @@
 
                 android:layout_marginTop="25dp"
                 android:background="@drawable/presupuesto_estilo2"
-                android:padding="15dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="15dp">
 
                 <TextView
                     android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
+                    android:text="Nombre:"
                     android:textSize="20dp"
-                    android:text="Nombre:" />
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/txt_nombre_nueva_categoria"
@@ -56,31 +56,32 @@
                     android:inputType="text" />
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="275dp"
                 android:layout_marginTop="30dp"
-                android:padding="10dp"
                 android:background="@drawable/presupuesto_estilo2"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/textView13"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="20dp"
                     android:layout_marginLeft="5dp"
-                    android:text="Iconos" />
+                    android:text="Iconos"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
-                <ScrollView
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+                        android:orientation="vertical">
 
 
                         <LinearLayout
@@ -91,32 +92,50 @@
 
                             <ImageView
                                 android:id="@+id/icono_agua"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
-
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
                                 android:src="@drawable/icono_agua" />
+
                             <ImageView
                                 android:id="@+id/icono_antena"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_antena" />
+
                             <ImageView
                                 android:id="@+id/icono_barco"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_barco" />
+
                             <ImageView
                                 android:id="@+id/icono_bebe"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_bebe" />
+
                             <ImageView
                                 android:id="@+id/icono_bicicleta"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_bicicleta" />
                         </LinearLayout>
@@ -125,34 +144,54 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_boleta"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_boleta" />
+
                             <ImageView
                                 android:id="@+id/icono_reloj"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_reloj" />
+
                             <ImageView
                                 android:id="@+id/icono_bus"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_bus" />
+
                             <ImageView
                                 android:id="@+id/icono_carro2"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_carro2" />
+
                             <ImageView
                                 android:id="@+id/icono_casa"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_casa" />
 
@@ -162,34 +201,54 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_casco_moto"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_casco_moto" />
+
                             <ImageView
                                 android:id="@+id/icono_comer_fuera"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_comer_fuera" />
+
                             <ImageView
                                 android:id="@+id/icono_comida"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_comida" />
+
                             <ImageView
                                 android:id="@+id/icono_comida_chatarra"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_comida_chatarra" />
+
                             <ImageView
                                 android:id="@+id/icono_computadora"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_computadora" />
 
@@ -199,34 +258,54 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_corazon"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_corazon" />
+
                             <ImageView
                                 android:id="@+id/icono_diente"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_diente" />
+
                             <ImageView
                                 android:id="@+id/icono_ejercicio"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_ejercicio" />
+
                             <ImageView
                                 android:id="@+id/icono_fijo"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_fijo" />
+
                             <ImageView
                                 android:id="@+id/icono_fijo2"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_fijo2" />
                         </LinearLayout>
@@ -235,34 +314,54 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_fuego"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_fuego" />
+
                             <ImageView
                                 android:id="@+id/icono_gadget"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_gadget" />
+
                             <ImageView
                                 android:id="@+id/icono_gasolina"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_gasolina" />
+
                             <ImageView
                                 android:id="@+id/icono_gel"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_gel" />
+
                             <ImageView
                                 android:id="@+id/icono_graduacion"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_graduacion" />
                         </LinearLayout>
@@ -271,171 +370,290 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_grifo"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_grifo" />
+
                             <ImageView
                                 android:id="@+id/icono_hamburguesa"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_hamburguesa" />
+
                             <ImageView
                                 android:id="@+id/icono_libros"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_libros" />
+
                             <ImageView
                                 android:id="@+id/icono_limpieza"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_limpieza" />
+
                             <ImageView
                                 android:id="@+id/icono_luz"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_luz" />
 
 
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_maletin_primeros_aux"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_maletin_primeros_aux" />
+
                             <ImageView
                                 android:id="@+id/icono_mapa"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_mapa" />
+
                             <ImageView
                                 android:id="@+id/icono_mascota"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_mascota" />
+
                             <ImageView
                                 android:id="@+id/icono_medicina"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_medicina" />
+
                             <ImageView
                                 android:id="@+id/icono_mochila"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_mochila" />
 
 
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_perro"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_perro" />
+
                             <ImageView
                                 android:id="@+id/icono_play"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_play" />
+
                             <ImageView
                                 android:id="@+id/icono_raqueta"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_raqueta" />
+
                             <ImageView
                                 android:id="@+id/icono_red"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_red" />
+
                             <ImageView
                                 android:id="@+id/icono_salud"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_salud" />
 
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_timon"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_timon" />
+
                             <ImageView
                                 android:id="@+id/icono_tren"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_tren" />
+
                             <ImageView
                                 android:id="@+id/icono_viaje"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_viaje" />
+
                             <ImageView
                                 android:id="@+id/icono_videojuegos"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_videojuegos" />
+
                             <ImageView
                                 android:id="@+id/icono_vuelo2"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_vuelo2" />
 
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
+
                             <ImageView
                                 android:id="@+id/icono_wifi"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_wifi" />
+
                             <ImageView
                                 android:id="@+id/icono_xbox"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
 
                                 android:src="@drawable/icono_xbox" />
+                            <ImageView
+                                android:id="@+id/asd"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
+
+                                 />
+                            <ImageView
+                                android:id="@+id/asdfh"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
+
+                                 />
+                            <ImageView
+                                android:id="@+id/asdf"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
+
+                                 />
 
 
                         </LinearLayout>
 
                     </LinearLayout>
 
-                </ScrollView>
+                </androidx.core.widget.NestedScrollView>
 
             </LinearLayout>
 
@@ -443,18 +661,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="30dp"
-                android:orientation="vertical"
-                android:padding="15dp"
                 android:background="@drawable/presupuesto_estilo2"
-                >
+                android:orientation="vertical"
+                android:padding="15dp">
 
                 <TextView
                     android:id="@+id/textView14"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
+                    android:text="Descripción:"
                     android:textSize="20dp"
-                    android:text="Descripción:" />
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/txt_descripcion"
@@ -471,21 +688,19 @@
             <Button
                 android:id="@+id/btn_guardar_categoria"
                 android:layout_width="match_parent"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="80dp"
                 android:layout_height="wrap_content"
-                android:text="Guardar"
-
-
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="10dp"
                 android:backgroundTint="#F58C27"
-                />
+
+
+                android:text="Guardar" />
 
 
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-
-    </ScrollView>
 
 </FrameLayout>

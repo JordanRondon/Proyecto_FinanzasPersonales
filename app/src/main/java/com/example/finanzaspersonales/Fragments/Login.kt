@@ -22,6 +22,7 @@ import com.google.firebase.messaging.ktx.messaging
 class Login : Fragment() {
 
     private lateinit var btnInicioSecion: Button
+    private lateinit var tvRecuperarCuenta: TextView
     private lateinit var tvRegistrate: TextView
     private lateinit var tvCorreo: TextView
     private lateinit var tvContrasenia: TextView
@@ -36,6 +37,7 @@ class Login : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
+        tvRecuperarCuenta = view.findViewById(R.id.tvRecuperarCuenta)
         tvRegistrate = view.findViewById(R.id.tvRegistrate)
         tvCorreo = view.findViewById(R.id.tvCorreo)
         tvContrasenia = view.findViewById(R.id.tvContrasenia)
@@ -67,8 +69,13 @@ class Login : Fragment() {
             }
         }
 
+        tvRecuperarCuenta.setOnClickListener {
+            findNavController().navigate(R.id.action_login_to_recuperarCuenta)
+        }
+
         tvRegistrate.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_register)
+
         }
 
         btnInicioSecion.setOnClickListener {
@@ -85,26 +92,31 @@ class Login : Fragment() {
         if (email.isNotEmpty() && password.isNotEmpty()) {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-
                     val user = auth.currentUser
-                    user?.let {
-                        // Obtener y registrar el token FCM
-                        Firebase.messaging.token.addOnCompleteListener { tokenTask ->
-                            if (!tokenTask.isSuccessful) {
-                                Log.w(
-                                    "FCM",
-                                    "Fetching FCM registration token failed",
-                                    tokenTask.exception
-                                )
-                                return@addOnCompleteListener
-                            }
+                    // Validar si el correo del usuario esta verificado
+                    if (user != null && user.isEmailVerified) {
+                        user.let {
+                            // Obtener y registrar el token FCM
+                            Firebase.messaging.token.addOnCompleteListener { tokenTask ->
+                                if (!tokenTask.isSuccessful) {
+                                    Log.w(
+                                        "FCM",
+                                        "Fetching FCM registration token failed",
+                                        tokenTask.exception
+                                    )
+                                    return@addOnCompleteListener
+                                }
 
-                            val token = tokenTask.result
-                            registrarToken(it.uid, token)
+                                val token = tokenTask.result
+                                registrarToken(it.uid, token)
+                            }
                         }
+                        Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_login_to_home2)
+                    } else {
+                        Toast.makeText(requireContext(), "Verifique su correo electrónico.", Toast.LENGTH_SHORT).show()
+                        auth.signOut()
                     }
-                    Toast.makeText(requireContext(), "BIENVENIDO", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_login_to_home2)
                 } else {
                     Toast.makeText(requireContext(), "DATOS INCORRECTOS", Toast.LENGTH_SHORT).show()
                 }

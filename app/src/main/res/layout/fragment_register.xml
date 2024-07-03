@@ -6,39 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.Register">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="478dp"
-            android:orientation="vertical"
-            android:paddingHorizontal="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.417">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="40dp">
 
             <TextView
                 android:id="@+id/tvRegistro"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="130dp"
                 android:text="@string/tvRegistro"
-                android:textSize="25sp" />
+                android:textSize="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/textInputLayoutCorreo"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:hint="Correo"
-                app:endIconMode="clear_text">
+                app:endIconMode="clear_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvRegistro">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tvCorreoRegistro"
@@ -48,12 +46,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/textInputLayoutContrasenia"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:hint="Contraseña"
                 app:endIconMode="password_toggle"
-                tools:ignore="MissingConstraints">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCorreo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tvContraseniaRegistro"
@@ -63,11 +64,14 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
+                android:id="@+id/linearLayoutTerminos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginTop="20dp"
-                android:orientation="horizontal">
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutContrasenia">
 
                 <CheckBox
                     android:id="@+id/cbRegistroTerminos"
@@ -77,7 +81,7 @@
 
                 <TextView
                     android:id="@+id/textView"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tvRegistroTerminos"
                     android:textSize="15sp" />
@@ -86,45 +90,37 @@
             <Button
                 android:id="@+id/btnRegistro"
                 style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:layout_gravity="center"
                 android:layout_marginVertical="20dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
                 android:text="@string/btnRegistro"
                 android:textColor="@color/white"
-                app:backgroundTint="@color/piel" />
+                app:backgroundTint="@color/piel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutTerminos" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="38dp"
-                android:orientation="horizontal"
-                android:paddingHorizontal="20dp">
+            <TextView
+                android:id="@+id/tvRegistroPregunta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvRegistroPregunta"
+                android:textSize="16sp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnRegistro" />
 
-                <TextView
-                    android:id="@+id/tvRegistroPregunta"
-                    android:layout_width="43dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight="1"
-                    android:height="48dp"
-                    android:text="@string/tvRegistroPregunta"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvRegistroInicio"
-                    android:layout_width="1dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:height="48dp"
-                    android:onClick="inicioSecion"
-                    android:text="@string/tvRegistroLogin"
-                    android:textColor="#3D9AEC"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+            <TextView
+                android:id="@+id/tvRegistroInicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvRegistroLogin"
+                android:textColor="#3D9AEC"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvRegistroPregunta" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </FrameLayout>

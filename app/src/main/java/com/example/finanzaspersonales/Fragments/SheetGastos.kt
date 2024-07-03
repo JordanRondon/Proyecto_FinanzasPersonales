@@ -1,12 +1,17 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.Manifest
+import android.app.Activity
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,14 +33,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
 import com.example.finanzaspersonales.entidades.EntidadGasto
+import com.example.finanzaspersonales.entidades.Notificacion
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 class SheetGastos : BottomSheetDialogFragment() {
 
@@ -46,11 +58,19 @@ class SheetGastos : BottomSheetDialogFragment() {
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-
-    private val contadorReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
+    private val user = Firebase.auth.currentUser!!.uid
+    private val contadorReference =
+        FirebaseDatabase.getInstance().getReference("Gasto/$userId/contador/ultimo_gasto")
     private val gastoReference = FirebaseDatabase.getInstance().getReference("Gasto/$userId")
-    private val categoriaReference = FirebaseDatabase.getInstance().getReference("Categoria/$userId")
-    private val presupuestoReference = FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
+    private val categoriaReference =
+        FirebaseDatabase.getInstance().getReference("Categoria/$userId")
+    private val presupuestoReference =
+        FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
+
+    ///notificaciones
+    private val notificationReference = FirebaseDatabase.getInstance().getReference("Notificacion").child(user)
+    private val notiticationCounterReference  = FirebaseDatabase.getInstance().getReference("Notificacion").child(user).child("contador").child("ultima_notificacion")
+    //
 
     private lateinit var database: DatabaseReference
 
@@ -62,7 +82,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     private lateinit var txt_categoria: TextView
     private lateinit var txt_presupuesto: TextView
 
-    private val categoriasMap: MutableMap<String, String?> = mutableMapOf()
+    private var categoriasMap: MutableMap<String, String?> = mutableMapOf()
 
     companion object {
         const val MI_CANAL_ID = "CanalPresupuesto"
@@ -70,24 +90,24 @@ class SheetGastos : BottomSheetDialogFragment() {
         const val REQUEST_CODE_PERMISSIONS = 1001
     }
 
-    fun createSimpleNotification(presupuestoid: String) {
-        val builder = NotificationCompat.Builder(requireContext(), MI_CANAL_ID)
-            .setSmallIcon(R.drawable.moneda)
+    fun createSimpleNotification(presupuestoId: String, context: Context) {
+        val builder = NotificationCompat.Builder(context, MI_CANAL_ID)
+            .setSmallIcon(R.drawable.logo)
             .setContentTitle("Notificación de LooKash")
-            .setContentText("Se notifica que el presupuesto $presupuestoid ha excedido el monto límite")
+            .setContentText("Se notifica que $presupuestoId ha excedido el monto límite")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
+                context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            with(NotificationManagerCompat.from(requireContext())) {
+            with(NotificationManagerCompat.from(context)) {
                 notify(NOTIFICATION_ID, builder.build())
             }
         } else {
             ActivityCompat.requestPermissions(
-                requireActivity(),
+                (context as Activity),
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                 REQUEST_CODE_PERMISSIONS
             )
@@ -108,7 +128,6 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -125,7 +144,6 @@ class SheetGastos : BottomSheetDialogFragment() {
             }
         }
         crearCanalDeNotificacion()
-
         val activity = requireActivity()
         taskViewModel = ViewModelProvider(activity).get(TaskViewModel::class.java)
 
@@ -148,7 +166,7 @@ class SheetGastos : BottomSheetDialogFragment() {
             saveGastos()
         }
 
-
+        loadCategoriasYPresupuestos()
     }
 
     override fun onCreateView(
@@ -156,11 +174,6 @@ class SheetGastos : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSheetGastosBinding.inflate(inflater, container, false)
-
-
-        getCategorias()
-        getPresupuestos()
-
 
         return binding.root
     }
@@ -171,13 +184,14 @@ class SheetGastos : BottomSheetDialogFragment() {
         val presupuestoID = presupuestoGastosAdapter.getCategoriaSelected()?.nombre
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
         val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        val time = zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
         contadorReference.get().addOnSuccessListener { data ->
             val contador = data.getValue(Int::class.java) ?: 0
             val contadorUpdate = contador + 1
 
             if (categoriaID != null && presupuestoID != null && categoriaMonto != null) {
-                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date)
+                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date, time)
 
                 gastoReference.child(contadorUpdate.toString()).setValue(gasto)
                     .addOnSuccessListener {
@@ -186,7 +200,7 @@ class SheetGastos : BottomSheetDialogFragment() {
 
 
                         setGastoSemanal_dia(categoriaMonto)
-                        setGastoPresupuesto(categoriaMonto, presupuestoID)
+                        setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext())
                         binding.etMonto.text.clear()
                         dismiss()
                     }
@@ -195,69 +209,75 @@ class SheetGastos : BottomSheetDialogFragment() {
                             .show()
 
                     }
+                contadorReference.setValue(contadorUpdate)
             } else {
                 Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
                     .show()
             }
 
-            contadorReference.setValue(contadorUpdate)
+
         }
     }
 
-    private fun getCategorias() {
-        categoriaReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                arrayListCategoria.clear()
-                if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
-                    for (ds: DataSnapshot in dataSnapshot.children) {
-                        val categoriaNombre = ds.key
-                        val urlIcon = ds.child("urlicono").getValue(String::class.java)
+    private fun loadCategoriasYPresupuestos() {
+        categoriaReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(categoriaSnapshot: DataSnapshot) {
+                if (categoriaSnapshot.exists()) {
+                    val categoriasMap = mutableMapOf<String, String>()
 
-                        if (categoriaNombre != null) {
-                            arrayListCategoria.add(CategoriaGastos(categoriaNombre, urlIcon))
-                            categoriasMap[categoriaNombre] = urlIcon
+                    arrayListCategoria.clear()
+
+                    for (catSnap: DataSnapshot in categoriaSnapshot.children) {
+                        val categoriaID = catSnap.key
+                        val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
+                        if (categoriaID != null) {
+                            categoriasMap[categoriaID] = urlIcon
+
+                            arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
                         }
                     }
-                    categoriaGastosAdapter.notifyDataSetChanged()
-                    txt_categoria.visibility = View.INVISIBLE
 
+                    categoriaGastosAdapter.notifyDataSetChanged()
+                    txt_categoria.visibility = if (arrayListCategoria.isEmpty()) View.VISIBLE else View.INVISIBLE
+
+
+                    presupuestoReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(data: DataSnapshot) {
+
+                            arrayListPresupuestos.clear()
+
+                            if (data.exists() && data.hasChildren()) {
+                                for (ds: DataSnapshot in data.children) {
+                                    val presupuestoID = ds.key
+                                    val categoriaID = ds.child("categoriaID").getValue(String::class.java)
+                                    val urlIcon = categoriasMap[categoriaID]
+                                    val estado = ds.child("estado").getValue(Boolean::class.java)
+                                    if(estado == true){
+                                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID ?: "", urlIcon))
+                                    }
+
+                                }
+                                presupuestoGastosAdapter.notifyDataSetChanged()
+                                txt_presupuesto.visibility = View.INVISIBLE
+                            } else {
+                                txt_presupuesto.visibility = View.VISIBLE
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Manejar el error
+                        }
+                    })
                 } else {
                     txt_categoria.visibility = View.VISIBLE
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle possible errors.
-            }
-        })
-    }
-
-    private fun getPresupuestos() {
-        presupuestoReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(data: DataSnapshot) {
-                if (data.exists() && data.hasChildren()) {
-                    for (ds: DataSnapshot in data.children) {
-                        val presupuestoID = ds.key
-                        val categoriaID = ds.child("categoriaID").getValue(String::class.java)
-                        val urlIcon = categoriasMap[categoriaID]
-
-                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID, urlIcon))
-                    }
-
-                    presupuestoGastosAdapter.notifyDataSetChanged()
-                    txt_presupuesto.visibility = View.INVISIBLE
-
-                } else {
-                    txt_presupuesto.visibility = View.VISIBLE
-                }
-            }
-
             override fun onCancelled(error: DatabaseError) {
-
+                // Manejar el error
             }
         })
     }
-
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
         database = FirebaseDatabase.getInstance().reference
@@ -281,56 +301,112 @@ class SheetGastos : BottomSheetDialogFragment() {
             println("Error al obtener el valor actual: ${exception.message}")
         }
     }
-
-    private fun setGastoPresupuesto(NuevoGastoMonto: Float, presuesto_id: String) {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
-
-        val gasto_presupuesto =
-            FirebaseDatabase.getInstance()
-                .getReference("Presupuesto/$user/$presuesto_id/monto_actual")
-
-        //obtiene el valor actual del monto actual
-        gasto_presupuesto.get().addOnSuccessListener { data ->
-            val monto_Actual = data.getValue(Float::class.java) ?: 0f
-            val monto_presupuestoActualizado = monto_Actual + NuevoGastoMonto
-            if (obtenermontototal_presupuesto(presuesto_id)!! <= monto_presupuestoActualizado) {
-                createSimpleNotification(presuesto_id)
+    private fun saveNotification(presupuestoId: String, context: Context) {
+        val sdf= SimpleDateFormat("EEE, dd MMM yyyy, h:mma")
+        sdf.setTimeZone(TimeZone.getTimeZone("America/Lima"))
+        val date = sdf.format(Date()).toString()
+        val notification = Notificacion("moneda", "Advertencia","Se notifica que $presupuestoId ha excedido el monto límite",date,false)
+        notificationReference.get().addOnSuccessListener {dataSnapshot->
+            var  nextNumNotification = 1// default
+            if(dataSnapshot.exists()){
+                for(i in dataSnapshot.children)
+                    if(i.key != "contador") nextNumNotification += 1
             }
-            //actualiza monto del dia
-            gasto_presupuesto.setValue(monto_presupuestoActualizado)
-                .addOnCompleteListener { tarea ->
-                    if (!tarea.isSuccessful) {
-                        println("Error al actualizar el valor: ${tarea.exception?.message}")
+
+            notiticationCounterReference.setValue(nextNumNotification)
+            notificationReference.child(nextNumNotification.toString()).setValue(notification).addOnSuccessListener {
+            }.addOnFailureListener{
+            }
+        }.addOnFailureListener{
+            //Toast.makeText(context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
+        }
+        scheduleNotification(context)
+    }
+
+    private fun scheduleNotification(context: Context) {
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 0)
+        }
+        Log.d("Schedule","entra0")
+        val intent = Intent(context, AlarmNotification::class.java)
+            .putExtra("asunto","Gastos")
+            .putExtra("descripcion","Recuerda registrar tus gastos con frecuencia :D")
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            NOTI_ID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        Log.d("Schedule","entra1")
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_DAY,pendingIntent)
+
+    }
+    private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context) {
+        val user = FirebaseAuth.getInstance().currentUser?.uid
+        if (user == null) {
+            println("Usuario no autenticado")
+            return
+        }
+
+        val gastoPresupuestoRef = FirebaseDatabase.getInstance()
+            .getReference("Presupuesto/$user/$presupuestoId/monto_actual")
+
+        gastoPresupuestoRef.get().addOnSuccessListener { data ->
+            val montoActual = data.getValue(Float::class.java) ?: 0f
+            val montoPresupuestoActualizado = montoActual + nuevoGastoMonto
+
+            obtenerMontoTotalPresupuesto(presupuestoId) { montoTotal ->
+                if (montoTotal != null) {
+                    if (montoTotal <= montoPresupuestoActualizado) {
+                        saveNotification(presupuestoId, context)
+                        createSimpleNotification(presupuestoId, context)
+
                     }
+                } else {
+                    println("No se pudo obtener el monto total del presupuesto")
                 }
+                gastoPresupuestoRef.setValue(montoPresupuestoActualizado)
+                    .addOnCompleteListener { tarea ->
+                        if (!tarea.isSuccessful) {
+                            println("Error al actualizar el valor: ${tarea.exception?.message}")
+                        }
+                    }
+            }
         }.addOnFailureListener { exception ->
             println("Error al obtener el valor actual: ${exception.message}")
         }
     }
 
-    private fun obtenermontototal_presupuesto(presuesto_id: String): Float? {
-        database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser!!.uid
-        var monto_total: Float? = 0.0f
-        val gasto_presupuesto =
-            FirebaseDatabase.getInstance()
-                .getReference("Presupuesto/$user/$presuesto_id/monto_total")
-
-        //obtiene el valor actual del monto actual
-        gasto_presupuesto.get().addOnSuccessListener { data ->
-            monto_total = data.getValue(Float::class.java) ?: 0f
-
-
+    private fun obtenerMontoTotalPresupuesto(presupuestoId: String, callback: (Float?) -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser?.uid
+        if (user == null) {
+            println("Usuario no autenticado")
+            callback(null)
+            return
+        }
+        val gastoPresupuestoRef = FirebaseDatabase.getInstance()
+            .getReference("Presupuesto/$user/$presupuestoId/monto_total")
+        gastoPresupuestoRef.get().addOnSuccessListener { data ->
+            val montoTotal = data.getValue(Float::class.java) ?: 0f
+            callback(montoTotal)
         }.addOnFailureListener { exception ->
             println("Error al obtener el valor actual: ${exception.message}")
+            callback(null)
         }
-        return monto_total
     }
+
 
     private fun obtenerDiaSemana(): String {
         // Obtener la instancia del calendario actual
-        val calendar = Calendar.getInstance()
+        val timeZone = TimeZone.getTimeZone("America/Lima")
+        val calendar = Calendar.getInstance(timeZone).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
         // Obtener el día de la semana (1=domingo, 2=lunes, ..., 7=sábado)
         val diaSemana = calendar.get(Calendar.DAY_OF_WEEK)

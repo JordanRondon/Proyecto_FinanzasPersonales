@@ -9,6 +9,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.inappmessaging.FirebaseInAppMessaging
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import java.text.SimpleDateFormat
@@ -26,6 +27,8 @@ class Aplicacion: Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+        FirebaseInAppMessaging.getInstance().isAutomaticDataCollectionEnabled = true
+        Log.i("FIAM.Headless", "In-App Messaging runtime initialized")
         //userName = FirebaseAuth.getInstance().currentUser?.uid
         database=FirebaseDatabase.getInstance().reference
 
@@ -45,6 +48,8 @@ class Aplicacion: Application() {
             println("El token es $token")
         }
         createNotificationChannel()
+        val instanceId = FirebaseApp.getInstance().getOptions().getProjectId()
+        Log.i("FIAM.Headless", "Starting InAppMessaging runtime with Installation ID $instanceId")
     }
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
