@@ -8,46 +8,34 @@
     android:orientation="vertical"
     android:padding="25dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="start"
-            app:cardCornerRadius="50dp">
+    <androidx.cardview.widget.CardView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="start"
+        android:backgroundTint="#3498DB"
+        app:cardCornerRadius="50dp">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_person" />
+        <TextView
+            android:id="@+id/txtInicial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="40sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:text="A" />
 
-        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    </RelativeLayout>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="Nombre"
-        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/android:textColor"
-        android:textSize="20sp"
-        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/txtCorreo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Correo Electronico"
-        android:textAppearance="?attr/textAppearanceTitleSmall"
+        style="@style/TextAppearance.AppCompat.Menu"
         android:textColor="?attr/android:textColor" />
 
 </LinearLayout>
