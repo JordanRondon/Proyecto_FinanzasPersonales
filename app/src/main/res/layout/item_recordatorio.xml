@@ -18,12 +18,20 @@
             android:layout_height="60dp"
             android:orientation="horizontal"
             android:padding="6dp">
-
+            <ImageView
+                android:id="@+id/ivBandera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_bandera"
+                android:padding="8dp"
+                app:tint="@color/verde" />
             <TextView
                 android:id="@+id/tvDescripcion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_toEndOf="@+id/ivBandera"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="10dp"
