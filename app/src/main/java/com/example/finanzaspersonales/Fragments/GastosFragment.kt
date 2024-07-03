@@ -11,7 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.entidades.EntidadGasto
@@ -23,9 +24,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.util.Calendar
-import javax.annotation.Nullable
 
 class GastosFragment : Fragment() {
+    private lateinit var imageView_sinDatos: ImageView
+    private lateinit var textView_SinDatos: TextView
     private lateinit var tvBuscarGasto: TextInputEditText
     private lateinit var imageButton_filtroMontoGasto: ImageButton
     private lateinit var imageButton_filtroFecha: ImageButton
@@ -55,6 +57,10 @@ class GastosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        imageView_sinDatos = view.findViewById(R.id.imageView_sinDatos)
+        textView_SinDatos = view.findViewById(R.id.textView_SinDatos)
+        ocultar_mensajeSinDatos()
 
         tvBuscarGasto = view.findViewById(R.id.tvBuscarGasto)
         imageButton_filtroMontoGasto = view.findViewById(R.id.imageButton_filtroMontoGasto)
@@ -197,6 +203,13 @@ class GastosFragment : Fragment() {
         } else {
             historialGastoFiltrado.addAll(historialGasto.filter { it.categoriaID.contains(texto, ignoreCase = true) })
         }
+
+        if (historialGastoFiltrado.isEmpty()) {
+            mostrar_mensajeSinDatos()
+        } else {
+            ocultar_mensajeSinDatos()
+        }
+
         actualizarAdaptador()
     }
 
@@ -207,6 +220,13 @@ class GastosFragment : Fragment() {
         } else {
             historialGastoFiltrado.addAll(historialGasto)
         }
+
+        if (historialGastoFiltrado.isEmpty()) {
+            mostrar_mensajeSinDatos()
+        } else {
+            ocultar_mensajeSinDatos()
+        }
+
         actualizarAdaptador()
     }
 
@@ -219,6 +239,13 @@ class GastosFragment : Fragment() {
         } else {
             historialGastoFiltrado.addAll(historialGasto)
         }
+
+        if (historialGastoFiltrado.isEmpty()) {
+            mostrar_mensajeSinDatos()
+        } else {
+            ocultar_mensajeSinDatos()
+        }
+
         actualizarAdaptador()
     }
 
@@ -226,5 +253,15 @@ class GastosFragment : Fragment() {
         adaptadorPersonalizado = GastoAdapter(requireContext(), historialGastoFiltrado, databaseCategoria)
         RecyclerViewHistorial.layoutManager = LinearLayoutManager(requireContext())
         RecyclerViewHistorial.adapter = adaptadorPersonalizado
+    }
+
+    private fun mostrar_mensajeSinDatos() {
+        imageView_sinDatos.visibility = View.VISIBLE
+        textView_SinDatos.visibility = View.VISIBLE
+    }
+
+    private fun ocultar_mensajeSinDatos() {
+        imageView_sinDatos.visibility = View.GONE
+        textView_SinDatos.visibility = View.GONE
     }
 }

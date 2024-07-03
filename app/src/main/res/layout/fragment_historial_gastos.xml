@@ -65,4 +65,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
         app:layout_constraintVertical_bias="0.011" />
+
+    <ImageView
+        android:id="@+id/imageView_sinDatos"
+        android:layout_width="343dp"
+        android:layout_height="234dp"
+        android:layout_marginTop="92dp"
+        android:src="@drawable/sin_datos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView_SinDatos"
+        android:layout_width="266dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Lo siento, no se encontraron gastos."
+        android:fontFamily="monospace"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_sinDatos" />
 </androidx.constraintlayout.widget.ConstraintLayout>
