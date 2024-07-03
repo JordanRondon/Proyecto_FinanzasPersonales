@@ -23,6 +23,16 @@ class PresupuestoGastosAdapter(
 
     private var selectedPos = RecyclerView.NO_POSITION
 
+    private lateinit var presupuestoClickListener: PresupuestoClickListener
+
+    interface PresupuestoClickListener {
+        fun onPresupuestoClick(position: Int)
+    }
+
+    fun setPresupuestoClickListener(listener: PresupuestoClickListener) {
+        this.presupuestoClickListener = listener
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cardView: CardView = view.findViewById(R.id.cardView)
         val ivCategoria: ImageView = view.findViewById(R.id.ivCategoria)

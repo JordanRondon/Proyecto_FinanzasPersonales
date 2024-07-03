@@ -1,5 +1,6 @@
 package com.example.finanzaspersonales.adaptadores
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
@@ -21,12 +23,20 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class CategoriaGastosAdapter(
     private val dataSet: ArrayList<CategoriaGastos>,
     private val context: Context,
-    private val navController: NavController,
-    private val closeBottomSheetCallback: () -> Unit
+    private val navController: NavController
 ) :
     RecyclerView.Adapter<CategoriaGastosAdapter.ViewHolder>() {
 
     private var selectedPos = RecyclerView.NO_POSITION
+    private lateinit var categoriaClickListener: CategoriaClickListener
+
+    interface CategoriaClickListener {
+        fun onCategoriaClick(position: Int)
+    }
+
+    fun setCategoriaClickListener(listener: CategoriaClickListener) {
+        this.categoriaClickListener = listener
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cardView: CardView = view.findViewById(R.id.cardView)
@@ -66,7 +76,7 @@ class CategoriaGastosAdapter(
                 notifyItemChanged(selectedPos)
 
                 if (selectedPos == 0) {
-                    closeBottomSheetCallback()
+                    categoriaClickListener.onCategoriaClick(selectedPos)
                     navController.navigate(R.id.action_gastos_to_nuevaCategoria)
                 }
             }

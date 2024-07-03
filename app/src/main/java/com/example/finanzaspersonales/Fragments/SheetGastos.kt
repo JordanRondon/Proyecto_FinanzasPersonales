@@ -52,7 +52,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
 
-class SheetGastos : BottomSheetDialogFragment() {
+class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.CategoriaClickListener, PresupuestoGastosAdapter.PresupuestoClickListener {
 
     private lateinit var binding: FragmentSheetGastosBinding
     private lateinit var taskViewModel: TaskViewModel
@@ -167,9 +167,7 @@ class SheetGastos : BottomSheetDialogFragment() {
         recyclerViewPresupuestos.layoutManager = GridLayoutManager(requireContext(), 3)
 
         categoriaGastosAdapter =
-            CategoriaGastosAdapter(arrayListCategoria, requireContext(), navController) {
-                dismiss()
-            }
+            CategoriaGastosAdapter(arrayListCategoria, requireContext(), navController)
         presupuestoGastosAdapter =
             PresupuestoGastosAdapter(arrayListPresupuestos, requireContext(), navController) {
                 dismiss()
@@ -186,6 +184,9 @@ class SheetGastos : BottomSheetDialogFragment() {
         }
 
         loadCategoriasYPresupuestos()
+
+        categoriaGastosAdapter.setCategoriaClickListener(this)
+        presupuestoGastosAdapter.setPresupuestoClickListener(this)
     }
 
     override fun onCreateView(
@@ -460,5 +461,12 @@ class SheetGastos : BottomSheetDialogFragment() {
         return diasSemana[diaSemana - 1]
     }
 
+    override fun onCategoriaClick(position: Int) {
+        dismiss()
+    }
+
+    override fun onPresupuestoClick(position: Int) {
+        dismiss()
+    }
 
 }

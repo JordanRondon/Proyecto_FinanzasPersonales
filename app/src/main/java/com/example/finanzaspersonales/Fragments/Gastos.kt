@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.isOnline
@@ -93,7 +94,7 @@ class Gastos : Fragment() {
             getGasto()
 
             floating_action_button.setOnClickListener {
-                SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
+                SheetGastos().show((requireContext() as FragmentActivity).supportFragmentManager, "newTaskGastos")
             }
         }
         return view
