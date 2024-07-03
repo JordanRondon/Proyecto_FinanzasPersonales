@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
 import com.example.finanzaspersonales.adaptadores.PresupuestoGastosAdapter
+import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID2
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.example.finanzaspersonales.entidades.Notificacion
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -182,7 +183,8 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
         }
-
+        setAlarm(requireContext(),14,0, NOTI_ID," ☀ Date un momento y registra tus gastos del día para mantener tus finanzas al día! (•‿•)")//alarma a las 2 de la tarde
+        setAlarm(requireContext(),23,0, NOTI_ID2,"☾⋆⁺₊✧ Antes de dormir, tus gastos has de escribir ¡regístralos! ⋆⁺₊⋆ ☾ ")//alarmar a las 11 de la noche
         loadCategoriasYPresupuestos()
 
         categoriaGastosAdapter.setCategoriaClickListener(this)
@@ -370,32 +372,34 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         }.addOnFailureListener {
             //Toast.makeText(context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
         }
-        scheduleNotification(context)
+        //scheduleNotification(context)
     }
 
-    private fun scheduleNotification(context: Context) {
-        val calendar: Calendar = Calendar.getInstance().apply {
+    private fun setAlarm(context: Context, hour: Int, minute: Int, id: Int, descripcion : String) {
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Lima")).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+        }
+        //verificar que la alarma se lance a la hora especificada si no se pasa al dia siguiente en vez de lanzarse inmediatamente
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
         Log.d("Schedule", "entra0")
         val intent = Intent(context, AlarmNotification::class.java)
-            .putExtra("asunto", "Gastos")
-            .putExtra("descripcion", "Recuerda registrar tus gastos con frecuencia :D")
+            .putExtra("asunto","LooKash")
+            .putExtra("descripcion",descripcion)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            NOTI_ID,
+            id,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        Log.d("Schedule", "entra1")
+        Log.d("Schedule","entra alarma de hora: "+hour + " y minuto : "+minute)
+        Log.d("Schedule","calendar: "+calendar.timeInMillis)
+        Log.d("Schedule","System  : "+System.currentTimeMillis())
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            AlarmManager.INTERVAL_HALF_DAY,
-            pendingIntent
-        )
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_DAY,pendingIntent)
 
     }
 
@@ -460,7 +464,13 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
 
     private fun obtenerDiaSemana(): String {
         // Obtener la instancia del calendario actual
-        val calendar = Calendar.getInstance()
+        val timeZone = TimeZone.getTimeZone("America/Lima")
+        val calendar = Calendar.getInstance(timeZone).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
         // Obtener el día de la semana (1=domingo, 2=lunes, ..., 7=sábado)
         val diaSemana = calendar.get(Calendar.DAY_OF_WEEK)

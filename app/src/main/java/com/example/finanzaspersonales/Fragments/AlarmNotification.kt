@@ -16,6 +16,7 @@ import com.example.finanzaspersonales.entidades.Notificacion
 class AlarmNotification(): BroadcastReceiver() {
     companion object{
         const val NOTI_ID=6
+        const val NOTI_ID2=7
     }
     override fun onReceive(context: Context, intent: Intent?) {
         val asunto = intent!!.getStringExtra("asunto")
@@ -31,7 +32,7 @@ class AlarmNotification(): BroadcastReceiver() {
         Log.d("Schedule","entra3 flag: "+flag)
         val pendingIntent : PendingIntent = PendingIntent.getActivity(context,0, intent,flag)
         val notification= NotificationCompat.Builder(context, SheetGastos.MI_CANAL_ID)
-            .setSmallIcon(R.drawable.moneda)
+            .setSmallIcon(R.drawable.logo)
             .setContentTitle(asunto)
             .setContentText(descripcion)
             .setContentIntent(pendingIntent)
