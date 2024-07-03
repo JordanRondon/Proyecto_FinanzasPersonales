@@ -34,6 +34,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
+import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID2
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.example.finanzaspersonales.entidades.Notificacion
 import com.google.firebase.Firebase
@@ -165,7 +166,8 @@ class SheetGastos : BottomSheetDialogFragment() {
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
         }
-
+        setAlarm(requireContext(),14,0, NOTI_ID," ☀ Date un momento y registra tus gastos del día para mantener tus finanzas al día! (•‿•)")//alarma a las 2 de la tarde
+        setAlarm(requireContext(),23,0, NOTI_ID2,"☾⋆⁺₊✧ Antes de dormir, tus gastos has de escribir ¡regístralos! ⋆⁺₊⋆ ☾ ")//alarmar a las 11 de la noche
         loadCategoriasYPresupuestos()
     }
 
@@ -320,27 +322,34 @@ class SheetGastos : BottomSheetDialogFragment() {
         }.addOnFailureListener{
             //Toast.makeText(context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
         }
-        scheduleNotification(context)
+        //scheduleNotification(context)
     }
 
-    private fun scheduleNotification(context: Context) {
-        val calendar: Calendar = Calendar.getInstance().apply {
+    private fun setAlarm(context: Context, hour: Int, minute: Int, id: Int, descripcion : String) {
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Lima")).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+        }
+        //verificar que la alarma se lance a la hora especificada si no se pasa al dia siguiente en vez de lanzarse inmediatamente
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
         Log.d("Schedule","entra0")
         val intent = Intent(context, AlarmNotification::class.java)
-            .putExtra("asunto","Gastos")
-            .putExtra("descripcion","Recuerda registrar tus gastos con frecuencia :D")
+            .putExtra("asunto","LooKash")
+            .putExtra("descripcion",descripcion)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            NOTI_ID,
+            id,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        Log.d("Schedule","entra1")
+        Log.d("Schedule","entra alarma de hora: "+hour + " y minuto : "+minute)
+        Log.d("Schedule","calendar: "+calendar.timeInMillis)
+        Log.d("Schedule","System  : "+System.currentTimeMillis())
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_DAY,pendingIntent)
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_DAY,pendingIntent)
 
     }
     private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context) {
