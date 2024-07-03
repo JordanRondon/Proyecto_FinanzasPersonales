@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.isOnline
@@ -93,7 +94,7 @@ class Gastos : Fragment() {
             getGasto()
 
             floating_action_button.setOnClickListener {
-                SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
+                SheetGastos().show((requireContext() as FragmentActivity).supportFragmentManager, "newTaskGastos")
             }
         }
         return view
@@ -114,6 +115,7 @@ class Gastos : Fragment() {
                                 val presupuestoID = ds.child("presupuestoID").value.toString()
                                 val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
                                 val horaRegistro = ds.child("horaRegistro").value.toString()
+                                val descripcion = ds.child("descripcion").value.toString()
 
                                 arrayListCategoria.add(
                                     EntidadGasto(
@@ -121,7 +123,8 @@ class Gastos : Fragment() {
                                         presupuestoID,
                                         monto,
                                         fechaRegistro,
-                                        horaRegistro
+                                        horaRegistro,
+                                        descripcion
                                     )
                                 )
                             }

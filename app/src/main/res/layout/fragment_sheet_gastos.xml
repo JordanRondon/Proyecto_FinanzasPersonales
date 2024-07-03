@@ -1,119 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     tools:context=".Fragments.SheetGastos">
-
-    <TextView
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Categoría"
-        android:textSize="17sp" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewCategoriaGastos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:orientation="horizontal" />
-
-        <TextView
-            android:id="@+id/txt_categoria"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="No hay categorias registradas"
-            android:visibility="invisible" />
-    </RelativeLayout>
-
-    <TextView
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Monto"
-        android:textSize="17sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="17dp"
-        android:gravity="center">
+        android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="S/. "
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Categoría"
             android:textSize="17sp" />
 
-        <EditText
-            android:id="@+id/etMonto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:hint="Ingrese un monto"
-            android:inputType="numberDecimal"
-            android:text=""
-            android:textAlignment="center"
-            android:imeOptions="actionDone"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-
-    <TextView
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Presupuesto"
-        android:textSize="17sp" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewPresupuestos"
+            android:id="@+id/recyclerViewCategoriaGastos"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_height="100dp"
+            android:layout_marginHorizontal="20dp"
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:orientation="horizontal" />
 
         <TextView
-            android:id="@+id/txt_presupuesto"
-            android:layout_width="wrap_content"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="No hay categorias registradas"
-            android:visibility="invisible" />
-    </RelativeLayout>
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Monto"
+            android:textSize="17sp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center">
 
-    <Button
-        android:id="@+id/btnGuardarCategoria"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/piel"
-        android:text="GUARDAR"
-        android:textColor="@color/white" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S/. "
+                android:textSize="17sp" />
 
-</LinearLayout>
+            <EditText
+                android:id="@+id/etMonto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="Ingrese un monto"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:textAlignment="center"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Presupuesto"
+            android:textSize="17sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewPresupuestos"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginHorizontal="20dp"
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:orientation="horizontal" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Descripcion"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/txt_descripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:imeOptions="actionDone" />
+
+        <Button
+            android:id="@+id/btnGuardarCategoria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="50dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/piel"
+            android:text="GUARDAR"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,41 +1,35 @@
 package com.example.finanzaspersonales.adaptadores
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finanzaspersonales.Fragments.NuevaCategoria
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.entidades.CategoriaGastos
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class CategoriaGastosAdapter(
+class PresupuestoGastosAdapter(
     private val dataSet: ArrayList<CategoriaGastos>,
     private val context: Context,
     private val navController: NavController
 ) :
-    RecyclerView.Adapter<CategoriaGastosAdapter.ViewHolder>() {
+    RecyclerView.Adapter<PresupuestoGastosAdapter.ViewHolder>() {
 
     private var selectedPos = RecyclerView.NO_POSITION
-    private lateinit var categoriaClickListener: CategoriaClickListener
 
-    interface CategoriaClickListener {
-        fun onCategoriaClick(position: Int)
+    private lateinit var presupuestoClickListener: PresupuestoClickListener
+
+    interface PresupuestoClickListener {
+        fun onPresupuestoClick(position: Int)
     }
 
-    fun setCategoriaClickListener(listener: CategoriaClickListener) {
-        this.categoriaClickListener = listener
+    fun setPresupuestoClickListener(listener: PresupuestoClickListener) {
+        this.presupuestoClickListener = listener
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -76,8 +70,8 @@ class CategoriaGastosAdapter(
                 notifyItemChanged(selectedPos)
 
                 if (selectedPos == 0) {
-                    categoriaClickListener.onCategoriaClick(selectedPos)
-                    navController.navigate(R.id.action_gastos_to_nuevaCategoria)
+                    presupuestoClickListener.onPresupuestoClick(selectedPos)
+                    navController.navigate(R.id.action_gastos_to_presupuestos)
                 }
             }
 
