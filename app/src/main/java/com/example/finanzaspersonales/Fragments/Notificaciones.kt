@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finanzaspersonales.Clases.isOnline
-//import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTIFICATION_ID
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.adaptadores.NotificationAdapter
 import com.example.finanzaspersonales.databinding.FragmentNotificacionesBinding
@@ -31,24 +30,6 @@ class Notificaciones : Fragment() {
 
     private lateinit var main: ConstraintLayout
     private lateinit var connection: ConstraintLayout
-
-    /*companion object{
-        const val MY_CHANNEL_ID="myChannel"
-    }*/
-    /*private fun createChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channel = NotificationChannel(
-                MY_CHANNEL_ID,
-                "MySuperChannel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply{
-                description = "Descripcion del canal"
-            }
-
-            val notificationManager: NotificationManager = requireActivity().getSystemService (Context.NOTIFICATION_SERVICE)as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,11 +64,6 @@ class Notificaciones : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        /*testButton = view.findViewById<Button>(R.id.testButton)
-        //createChannel()
-        testButton.setOnClickListener{
-            //createNotification()
-        }*/
     }
 
     private fun getNotifications() {
@@ -127,53 +103,6 @@ class Notificaciones : Fragment() {
         binding.rwNotificaciones.layoutManager = LinearLayoutManager(this.context)
         binding.rwNotificaciones.adapter = adapter
     }
-
-    /*private fun createNotification() {
-        val sdf= SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
-        val date = sdf.format(Date()).toString()
-        val notification = Notificacion("agua_icono", "Gastos","Registra tus gastos no lo olvides!",date,false)
-        database.get().addOnSuccessListener {dataSnapshot->
-            var  nextNumNotification = 1// default
-            for(i in dataSnapshot.children)
-                if(i.key != "contador") nextNumNotification += 1
-            Toast.makeText(this.context,"Numero de ultima notificacion: "+nextNumNotification,Toast.LENGTH_SHORT).show()
-
-            contador.setValue(nextNumNotification)
-            database.child(nextNumNotification.toString()).setValue(notification).addOnSuccessListener {
-                Toast.makeText(this.context,"Notificacion creada",Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener{
-                Toast.makeText(this.context,"Error al crear la notificacion",Toast.LENGTH_SHORT).show()
-            }
-        }.addOnFailureListener{
-            Toast.makeText(this.context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
-        }
-        notificationList.add(notification)
-        //createNotification(notification)
-
-        scheduleNotification(notification)
-
-        adapter.notifyItemInserted(notificationList.size-1)
-    }*/
-
-    /*private fun scheduleNotification(notificacion: Notificacion) {
-        val calendar: Calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 17)
-        }
-        val intent = Intent(this.context, AlarmNotification::class.java)
-            .putExtra("asunto",notificacion.asunto)
-            .putExtra("descripcion",notificacion.descripcion)
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(),
-            NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val alarmManager = this.requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_HOUR,pendingIntent)
-
-    }*/
-
     private fun onNotificationSelected(notificacion: Notificacion) {
         Toast.makeText(this.context, notificacion.asunto, Toast.LENGTH_SHORT).show()
     }

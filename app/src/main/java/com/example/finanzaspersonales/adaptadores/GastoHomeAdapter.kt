@@ -81,12 +81,14 @@ class GastoHomeAdapter(
             val monto: TextView = view.findViewById(R.id.txt_monto)
             val fecha: TextView = view.findViewById(R.id.txt_fecha)
             val hora: TextView = view.findViewById(R.id.txt_hora)
+            val descripcion: TextView = view.findViewById(R.id.txt_descripcion)
 
 
             nombre.text = entidadGasto.categoriaID
             monto.text = entidadGasto.monto.toString()
             fecha.text = entidadGasto.fechaRegistro
             hora.text = LocalTime.parse(entidadGasto.horaRegistro, DateTimeFormatter.ofPattern("HH:mm:ss")).format(DateTimeFormatter.ofPattern("hh:mm a"))
+            descripcion.text = entidadGasto.descripcion
 
         }
 

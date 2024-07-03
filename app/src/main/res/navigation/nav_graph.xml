@@ -9,7 +9,14 @@
         android:id="@+id/gastos"
         android:name="com.example.finanzaspersonales.Fragments.Gastos"
         android:label="fragment_gastos"
-        tools:layout="@layout/fragment_gastos" />
+        tools:layout="@layout/fragment_gastos">
+        <action
+            android:id="@+id/action_gastos_to_nuevaCategoria"
+            app:destination="@id/nuevaCategoria" />
+        <action
+            android:id="@+id/action_gastos_to_presupuestos"
+            app:destination="@id/presupuestos" />
+    </fragment>
     <fragment
         android:id="@+id/presupuestos"
         android:name="com.example.finanzaspersonales.Fragments.Presupuestos"
@@ -61,10 +68,11 @@
         android:id="@+id/nuevaCategoria"
         android:name="com.example.finanzaspersonales.Fragments.NuevaCategoria"
         android:label="fragment_nueva_categoria"
-        tools:layout="@layout/fragment_nueva_categoria" >
+        tools:layout="@layout/fragment_nueva_categoria">
         <action
             android:id="@+id/action_nuevaCategoria_to_categoria_item"
             app:destination="@id/categoria_item" />
     </fragment>
+
 
 </navigation>
