@@ -9,6 +9,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -46,6 +47,9 @@ import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -188,6 +192,8 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
 
         categoriaGastosAdapter.setCategoriaClickListener(this)
         presupuestoGastosAdapter.setPresupuestoClickListener(this)
+
+        tutorial()
     }
 
     override fun onCreateView(
@@ -403,6 +409,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_DAY,pendingIntent)
 
     }
+
     private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context, categoriaID: String) {
         val user = FirebaseAuth.getInstance().currentUser?.uid
         if (user == null) {
@@ -485,6 +492,120 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
 
     override fun onPresupuestoClick(position: Int) {
         dismiss()
+    }
+
+
+    private fun tutorial() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_sheet", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_sheet", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.recyclerViewCategoriaGastos)
+            .setSecondaryText("Agregue y visualice sus categorias")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.etMonto)
+            .setSecondaryText("Ingrese un monto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showThreePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showThreePrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.recyclerViewPresupuestos)
+            .setSecondaryText("Visualice y agregue sus presupuestos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFourPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFourPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.txt_descripcion)
+            .setSecondaryText("Agregue una descripcion si desea")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFivePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFivePrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.btnGuardarCategoria)
+            .setSecondaryText("Guarde su gasto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_sheet", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_sheet", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
     }
 
 }

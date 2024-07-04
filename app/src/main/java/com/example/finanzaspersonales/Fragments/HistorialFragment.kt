@@ -1,5 +1,7 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +13,9 @@ import com.example.finanzaspersonales.GastosFragment
 import com.example.finanzaspersonales.GraficosFragment
 import com.example.finanzaspersonales.R
 import com.google.android.material.button.MaterialButtonToggleGroup
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 
 class HistorialFragment : Fragment() {
 
@@ -58,6 +63,9 @@ class HistorialFragment : Fragment() {
             if (savedInstanceState == null) {
                 toggleGroup.check(R.id.btnGastos)
             }
+
         }
     }
+
+
 }

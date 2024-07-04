@@ -1,5 +1,8 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.app.Activity
+import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
@@ -35,6 +38,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.finanzaspersonales.Clases.Presupuesto_Firebase_insertar
 import com.example.finanzaspersonales.Clases.isOnline
 import com.google.firebase.auth.FirebaseAuth
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 import java.util.Calendar
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -64,6 +70,13 @@ class Presupuestos : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_presupuestos, container, false)
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
 
         val navController = findNavController()
 
@@ -96,6 +109,12 @@ class Presupuestos : Fragment() {
 
             recycler.adapter = adapterPresupuesto
 
+            val emptyCategoriasList = mutableListOf<Categoria>()
+            spinner.adapter = CategoriaAdapter(
+                requireContext(),
+                R.layout.presupuesto_items_spinner,
+                emptyCategoriasList
+            )
 
             btnAgregar.setOnClickListener {
 
@@ -196,20 +215,13 @@ class Presupuestos : Fragment() {
             }
             loadCategories()
             loadPresupuesto()
+
+            if (presupuestos_firebase.isNotEmpty()) {
+                tutorialDetalle()
+            }
+
+            tutorial()
         }
-
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val emptyCategoriasList = mutableListOf<Categoria>()
-        spinner.adapter = CategoriaAdapter(
-            requireContext(),
-            R.layout.presupuesto_items_spinner,
-            emptyCategoriasList
-        )
-
 
     }
 
@@ -279,5 +291,150 @@ class Presupuestos : Fragment() {
         })
     }
 
+
+    private fun tutorial() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_presupuesto", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_presupuesto", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.etNombre)
+            .setSecondaryText("Coloca un nombre a tu presupuesto")
+            .setPromptBackground(RectanglePromptBackground())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.etMonto)
+            .setSecondaryText("Ingresa un monto para tu presupuesto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showThreePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showThreePrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.radiogrouppresupuesto)
+            .setSecondaryText("Elija el periodo para su presupuesto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFourPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFourPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(spinner)
+            .setSecondaryText("Elija una categoria")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFivePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFivePrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(btnAgregar)
+            .setSecondaryText("Guarde su presupuesto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSixPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSixPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.recyclerView)
+            .setSecondaryText("Visualice sus presupuestos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_presupuesto", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_presupuesto", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun tutorialDetalle() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_detalle_presupuesto", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_detalle_presupuesto", false)
+
+        if (!tutorialShown) {
+            if (adapterPresupuesto.itemCount > 0) {
+                recycler.post {
+                    val holder = recycler.findViewHolderForAdapterPosition(0) as? PresupuestoAdapter.PresupuestoViewHolder
+                    holder?.let {
+                        showFirstPromptDetalle(it.textViewDetalles)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showFirstPromptDetalle(targetView: View) {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(targetView)
+            .setSecondaryText("Mire los detalles de su presupuesto")
+            .setPromptBackground(RectanglePromptBackground())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_detalle_presupuesto", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_detalle_presupuesto", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
 
 }
