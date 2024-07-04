@@ -262,6 +262,10 @@ class GastosFragment : Fragment() {
     }
 
 
+    fun Fragment.isAttachedToActivity(): Boolean {
+        return this.isAdded && this.activity != null
+    }
+
     private fun tutorial() {
         val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_gastos", Context.MODE_PRIVATE)
         val tutorialShown = sharedPreferences.getBoolean("tutorial_historial", false)
@@ -272,88 +276,98 @@ class GastosFragment : Fragment() {
     }
 
     private fun showFirstPrompt() {
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.btnGastos)
-            .setSecondaryText("Busque sus gastos")
-            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setSecondaryTextColour(resources.getColor(R.color.white))
-            .setPromptBackground(RectanglePromptBackground())
-            .setPromptFocal(RectanglePromptFocal())
-            .setPromptStateChangeListener { _, state ->
-                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
-                    showSecondPrompt()
+        if (isAttachedToActivity()) {
+            MaterialTapTargetPrompt.Builder(requireActivity())
+                .setTarget(R.id.btnGastos)
+                .setSecondaryText("Busque sus gastos")
+                .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+                .setSecondaryTextColour(resources.getColor(R.color.white))
+                .setPromptBackground(RectanglePromptBackground())
+                .setPromptFocal(RectanglePromptFocal())
+                .setPromptStateChangeListener { _, state ->
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                        showSecondPrompt()
+                    }
                 }
-            }
-            .show()
+                .show()
+        }
     }
 
     private fun showSecondPrompt() {
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.tvBuscarGasto)
-            .setSecondaryText("Busque sus gastos")
-            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setSecondaryTextColour(resources.getColor(R.color.white))
-            .setPromptBackground(RectanglePromptBackground())
-            .setPromptFocal(RectanglePromptFocal())
-            .setPromptStateChangeListener { _, state ->
-                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
-                    showThreePrompt()
+        if (isAttachedToActivity()) {
+            MaterialTapTargetPrompt.Builder(requireActivity())
+                .setTarget(R.id.BtnGraficos)
+                .setSecondaryText("Visualice sus gastos mediante graficos")
+                .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+                .setSecondaryTextColour(resources.getColor(R.color.white))
+                .setPromptBackground(RectanglePromptBackground())
+                .setPromptFocal(RectanglePromptFocal())
+                .setPromptStateChangeListener { _, state ->
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                        showThreePrompt()
+                    }
                 }
-            }
-            .show()
-
+                .show()
+        }
     }
 
     private fun showThreePrompt() {
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.imageButton_filtroMontoGasto)
-            .setSecondaryText("Filtre sus gastos por montos")
-            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setSecondaryTextColour(resources.getColor(R.color.white))
-            .setPromptBackground(RectanglePromptBackground())
-            .setPromptFocal(RectanglePromptFocal())
-            .setPromptStateChangeListener { _, state ->
-                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
-                    showFourPrompt()
+        if (isAttachedToActivity()) {
+            MaterialTapTargetPrompt.Builder(requireActivity())
+                .setTarget(R.id.tvBuscarGasto)
+                .setSecondaryText("Busque sus gastos")
+                .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+                .setSecondaryTextColour(resources.getColor(R.color.white))
+                .setPromptBackground(RectanglePromptBackground())
+                .setPromptFocal(RectanglePromptFocal())
+                .setPromptStateChangeListener { _, state ->
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                        showFourPrompt()
+                    }
                 }
-            }
-            .show()
+                .show()
+        }
     }
 
     private fun showFourPrompt() {
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.imageButton_filtroFecha)
-            .setSecondaryText("Filtre sus gastos por fecha")
-            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setSecondaryTextColour(resources.getColor(R.color.white))
-            .setPromptBackground(RectanglePromptBackground())
-            .setPromptFocal(RectanglePromptFocal())
-            .setPromptStateChangeListener { _, state ->
-                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
-                    showFivePrompt()
+        if (isAttachedToActivity()) {
+            MaterialTapTargetPrompt.Builder(requireActivity())
+                .setTarget(R.id.imageButton_filtroMontoGasto)
+                .setSecondaryText("Filtre sus gastos por montos")
+                .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+                .setSecondaryTextColour(resources.getColor(R.color.white))
+                .setPromptBackground(RectanglePromptBackground())
+                .setPromptFocal(RectanglePromptFocal())
+                .setPromptStateChangeListener { _, state ->
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                        showFivePrompt()
+                    }
                 }
-            }
-            .show()
+                .show()
+        }
     }
 
     private fun showFivePrompt() {
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.BtnGraficos)
-            .setSecondaryText("Visualice sus gastos mediante graficos")
-            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setSecondaryTextColour(resources.getColor(R.color.white))
-            .setPromptBackground(RectanglePromptBackground())
-            .setPromptFocal(RectanglePromptFocal())
-            .setPromptStateChangeListener { _, state ->
-                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
-                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_gastos", Context.MODE_PRIVATE)
-                    with(sharedPreferences.edit()) {
-                        putBoolean("tutorial_historial", true)
-                        apply()
+        if (isAttachedToActivity()) {
+            MaterialTapTargetPrompt.Builder(requireActivity())
+                .setTarget(R.id.imageButton_filtroFecha)
+                .setSecondaryText("Filtre sus gastos por fecha")
+                .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+                .setSecondaryTextColour(resources.getColor(R.color.white))
+                .setPromptBackground(RectanglePromptBackground())
+                .setPromptFocal(RectanglePromptFocal())
+                .setPromptStateChangeListener { _, state ->
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_gastos", Context.MODE_PRIVATE)
+                        with(sharedPreferences.edit()) {
+                            putBoolean("tutorial_historial", true)
+                            apply()
+                        }
                     }
                 }
-            }
-            .show()
+                .show()
+        }
     }
+
 
 }
