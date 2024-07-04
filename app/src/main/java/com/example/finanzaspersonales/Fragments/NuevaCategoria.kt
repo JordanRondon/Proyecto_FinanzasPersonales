@@ -1,6 +1,8 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
@@ -17,6 +20,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import androidx.appcompat.app.AlertDialog
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 
 class NuevaCategoria : Fragment() {
     private lateinit var iconoAgua: ImageView ;private lateinit var iconoAntena: ImageView ;private lateinit var iconoBarco: ImageView
@@ -39,6 +45,7 @@ class NuevaCategoria : Fragment() {
     private lateinit var database: DatabaseReference
     private lateinit var btnguardarcategoria: Button
     private lateinit var txtnombre: EditText
+    private lateinit var linearIconos: LinearLayout
     private lateinit var txtdescripcion: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +62,7 @@ class NuevaCategoria : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_nueva_categoria, container, false)
         txtnombre = view.findViewById(R.id.txt_nombre_nueva_categoria)
+        linearIconos = view.findViewById(R.id.linearIconos)
         txtdescripcion = view.findViewById(R.id.txt_descripcion)
         btnguardarcategoria = view.findViewById(R.id.btn_guardar_categoria)
         iconoAgua = view.findViewById(R.id.icono_agua);iconoAntena = view.findViewById(R.id.icono_antena)
@@ -99,6 +107,9 @@ class NuevaCategoria : Fragment() {
         btnguardarcategoria.setOnClickListener {
             MostrarAlertDialog()
         }
+
+        tutorial()
+
         return view
 
     }
@@ -154,5 +165,79 @@ class NuevaCategoria : Fragment() {
             Toast.makeText(context, "Llene todos los campos requeridos", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+
+    private fun tutorial() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_shown", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(txtnombre)
+            .setSecondaryText("Coloca un nombre a la categoria")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(linearIconos)
+            .setSecondaryText("Elige el icono para tu categoria")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showThreePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showThreePrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(txtdescripcion)
+            .setSecondaryText("Coloca una descripcion a tu categoria")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFourPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFourPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(btnguardarcategoria)
+            .setSecondaryText("Guarda tu categoria")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_shown", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
     }
 }

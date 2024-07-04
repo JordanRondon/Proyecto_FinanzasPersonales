@@ -1,23 +1,32 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.Clases.Categoria
-import com.example.finanzaspersonales.adaptadores.CrudCategoriaAdapter
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.database.*
-import android.util.Log
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.finanzaspersonales.Clases.isOnline
+import com.example.finanzaspersonales.adaptadores.CrudCategoriaAdapter
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.getkeepsafe.taptargetview.TapTargetView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.example.finanzaspersonales.R
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
+
 
 class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
 
@@ -63,6 +72,8 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
             }
 
             loadCategories()
+
+            tutorial()
         }
         return view
     }
@@ -91,4 +102,45 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
             }
         })
     }
+
+    private fun tutorial() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_shown", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(recyclerView)
+            .setSecondaryText("En este apartado podrá visualizar sus categorías")
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(btnAgregar)
+            .setSecondaryText("Aquí podrá agregar más categorías")
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_shown", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
+
+
 }
