@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.Categoria
@@ -48,6 +49,42 @@ class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>,pr
         }
 
         holder.textViewNombre.text = presupuesto.nombre
+        holder.textfecha.text = presupuesto.fechaInicio
+        val porcentaje_barra=((presupuesto.monto_actual/presupuesto.monto_total)*100).toInt()
+
+        if(porcentaje_barra<=50 ){
+            holder.imgesfera.setImageDrawable(
+                ContextCompat.getDrawable(holder.itemView.context, R.drawable.esfera_indicador_presu2)
+            )
+        }
+        else if(porcentaje_barra>50 && porcentaje_barra<=75){
+            holder.imgesfera.setImageDrawable(
+                ContextCompat.getDrawable(holder.itemView.context, R.drawable.esfera_indicador_presu3)
+            )
+        }
+        else{
+            holder.imgesfera.setImageDrawable(
+                ContextCompat.getDrawable(holder.itemView.context, R.drawable.esfera_indicador_presu4)
+            )
+        }
+        if(!presupuesto.estado){
+
+            holder.imgesfera.setImageDrawable(
+                ContextCompat.getDrawable(holder.itemView.context, R.drawable.esfera_indicador_presu)
+            )
+
+            holder.textViewNombre.alpha = 0.3f
+            holder.textfecha.alpha = 0.3f
+            holder.imageView.alpha=0.3f
+            holder.textViewDetalles.alpha=0.3f
+
+        }
+        else{
+            holder.textViewNombre.alpha = 1.0f
+            holder.textfecha.alpha = 1.0f
+            holder.imageView.alpha=1.0f
+            holder.textViewDetalles.alpha=1.0f
+        }
     }
 
     override fun getItemCount(): Int {
@@ -57,7 +94,9 @@ class PresupuestoAdapter(private val presupuestos: List<Presupuesto_Firebase>,pr
     class PresupuestoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView4)
         val textViewNombre: TextView = itemView.findViewById(R.id.textView2)
+        val textfecha: TextView = itemView.findViewById(R.id.txt_fecha)
         val textViewDetalles: TextView = itemView.findViewById(R.id.textView6)
+        val imgesfera: ImageView = itemView.findViewById(R.id.esfera_presu)
     }
 
     private fun getIconResource(iconName: String): Int {

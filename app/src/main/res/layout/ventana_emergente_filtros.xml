@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/estilo_filtro_presupuesto"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:padding="0.5dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:textStyle="bold"
+        android:textSize="16dp"
+
+        android:text="Filtros:" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="0.5dp"
+        android:background="@drawable/estilo_filtro_botones"
+        >
+
+        <Button
+            android:id="@+id/btnOpcion1"
+
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:backgroundTint="@color/white"
+            style="@style/FiamUI.Card.ActionBar.Button"
+            android:textColor="@color/black"
+            android:text="Listar"
+             />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="0.5dp"
+        android:background="@drawable/estilo_filtro_botones"
+        >
+        <Button
+            android:id="@+id/btnOpcion2"
+
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            style="@style/FiamUI.Card.ActionBar.Button"
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            android:text="Por Limite" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="0.5dp"
+        android:background="@drawable/estilo_filtro_botones"
+        >
+        <Button
+            android:id="@+id/btnOpcion3"
+            android:layout_width="130dp"
+
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            style="@style/FiamUI.Card.ActionBar.Button"
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            android:text="Activos" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="0.5dp"
+        android:background="@drawable/estilo_filtro_botones"
+        >
+        <Button
+            android:id="@+id/btnOpcion4"
+            android:layout_width="130dp"
+            android:textSize="15dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            style="@style/FiamUI.Card.ActionBar.Button"
+            android:textColor="@color/black"
+            android:text="Inactivos" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,8 +1,10 @@
 package com.example.finanzaspersonales.Fragments
 
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -39,6 +41,13 @@ import java.util.Calendar
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.regex.Pattern
+import android.widget.PopupWindow
+import android.view.Gravity
+import android.view.animation.AnimationUtils
+import com.example.finanzaspersonales.GastoAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 
 class Presupuestos : Fragment() {
@@ -50,7 +59,9 @@ class Presupuestos : Fragment() {
     private lateinit var etMonto: EditText
     private lateinit var radioGroup: RadioGroup
     private lateinit var adapterPresupuesto: PresupuestoAdapter
-    private val presupuestos_firebase = mutableListOf<Presupuesto_Firebase>()
+    private var presupuestos_firebase = mutableListOf<Presupuesto_Firebase>()
+    private var presupuestos_firebase_2 = mutableListOf<Presupuesto_Firebase>()
+    private lateinit var tvBuscarpresupuesto: TextInputEditText
     private lateinit var database_categoria: DatabaseReference
     private lateinit var database_presupuesto: DatabaseReference
     private val categoriasList = mutableListOf<Categoria>()
@@ -66,11 +77,18 @@ class Presupuestos : Fragment() {
         val view = inflater.inflate(R.layout.fragment_presupuestos, container, false)
 
         val navController = findNavController()
-
+        val iconoFiltro: ImageView = view.findViewById(R.id.icono_filtro)
+        val iconoBuscar: ImageView = view.findViewById(R.id.icono_buscar)
+        tvBuscarpresupuesto = view.findViewById(R.id.tvBuscarPresupuesto)
+        val buscador: TextInputLayout = view.findViewById(R.id.textInputLayout2)
         recycler = view.findViewById(R.id.recyclerView)
         spinner = view.findViewById(R.id.spinner)
         btnAgregar = view.findViewById(R.id.btnAgregar)
         etNombre = view.findViewById(R.id.etNombre)
+        val contenedorPresupuesto: LinearLayout = view.findViewById(R.id.contenedor_presupuesto)
+        val btnAgregarPresupuesto: FloatingActionButton = view.findViewById(R.id.btn_agregar_presupuesto)
+        val fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+        val fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
         etMonto = view.findViewById(R.id.etMonto)
         etMonto.filters = arrayOf(DecimalDigitsInputFilter(5, 2))
         main = view.findViewById(R.id.main)
@@ -88,6 +106,9 @@ class Presupuestos : Fragment() {
             database_categoria = FirebaseDatabase.getInstance().getReference("Categoria/$username")
             database_presupuesto =
                 FirebaseDatabase.getInstance().getReference("Presupuesto/$username")
+            iconoFiltro.setOnClickListener {
+                showPopupWindow(it)
+            }
 
 
             recycler.layoutManager = LinearLayoutManager(context)
@@ -97,6 +118,30 @@ class Presupuestos : Fragment() {
             recycler.adapter = adapterPresupuesto
 
 
+            btnAgregarPresupuesto.setOnClickListener {
+                if (contenedorPresupuesto.visibility == View.GONE) {
+                    contenedorPresupuesto.startAnimation(fadeIn)
+                    contenedorPresupuesto.visibility = View.VISIBLE
+                }
+            }
+            iconoBuscar.setOnClickListener {
+                tvBuscarpresupuesto.text?.clear()
+                if (buscador.visibility == View.GONE) {
+                    buscador.visibility = View.VISIBLE
+                }else {
+                    buscador.visibility = View.GONE
+                }
+            }
+            tvBuscarpresupuesto.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    //Cada vez que se detecte que se agregó una letra, llama al método filtrar.
+                    filtrarPorNombrePresupuesto(s.toString())
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
             btnAgregar.setOnClickListener {
 
                 val nombrePresupuesto = etNombre.text.toString()
@@ -193,9 +238,16 @@ class Presupuestos : Fragment() {
                 etNombre.text.clear()
                 etMonto.text.clear()
                 spinner.setSelection(0)
+                if (contenedorPresupuesto.visibility == View.VISIBLE) {
+                    contenedorPresupuesto.startAnimation(fadeOut)
+                    contenedorPresupuesto.visibility = View.GONE
+                }
+
             }
+
             loadCategories()
             loadPresupuesto()
+
         }
 
         return view
@@ -261,6 +313,7 @@ class Presupuestos : Fragment() {
     private fun loadPresupuesto() {
         database_presupuesto.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                presupuestos_firebase_2.clear()
                 presupuestos_firebase.clear()
                 for (presupuestoSnapshot in snapshot.children) {
                     val nombrePresupuesto = presupuestoSnapshot.key
@@ -268,6 +321,9 @@ class Presupuestos : Fragment() {
                     if (presupuesto != null && nombrePresupuesto != null) {
                         presupuesto.nombre = nombrePresupuesto
                         presupuestos_firebase.add(presupuesto)
+                        presupuestos_firebase_2.add(presupuesto)
+                        ordenarPresupuestosPorEstadoYFechaDesc(presupuestos_firebase)
+
                     }
                 }
                 adapterPresupuesto.notifyDataSetChanged()
@@ -279,5 +335,126 @@ class Presupuestos : Fragment() {
         })
     }
 
+
+    fun ordenarPresupuestosPorEstadoYFechaDesc(presupuestos: MutableList<Presupuesto_Firebase>) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        presupuestos.sortWith(compareByDescending<Presupuesto_Firebase> { it.estado }
+            .thenByDescending { dateFormat.parse(it.fechaInicio) })
+    }
+
+    fun ordenarFiltroEstadoYFechaDesc(presupuestos: MutableList<Presupuesto_Firebase>): List<Presupuesto_Firebase> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        // Ordenar la lista completa
+        val sortedList = presupuestos.sortedWith(compareByDescending<Presupuesto_Firebase> { it.estado }
+            .thenByDescending { dateFormat.parse(it.fechaInicio) })
+
+        // Retornar la lista ordenada
+        return sortedList
+    }
+
+
+
+
+
+    fun ordenarPresupuestosPorEstadoYFechaAsc(presupuestos: MutableList<Presupuesto_Firebase>) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        presupuestos.sortWith(compareByDescending<Presupuesto_Firebase> { it.estado }
+            .thenBy { dateFormat.parse(it.fechaInicio) })
+    }
+    fun ordenarFiltroFalseYFechaDesc2(presupuestos: MutableList<Presupuesto_Firebase>): List<Presupuesto_Firebase> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        return presupuestos.filter { !it.estado } // Filtra los presupuestos con estado false
+            .sortedWith(compareByDescending<Presupuesto_Firebase> { dateFormat.parse(it.fechaInicio) })
+    }
+    fun ordenarFiltroTrueYFechaDesc(presupuestos: MutableList<Presupuesto_Firebase>): List<Presupuesto_Firebase> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        return presupuestos.filter { it.estado } // Filtra los presupuestos con estado false
+            .sortedWith(compareByDescending<Presupuesto_Firebase> { dateFormat.parse(it.fechaInicio) })
+    }
+
+    fun ordenarFiltroporLimite(presupuestos: MutableList<Presupuesto_Firebase>): List<Presupuesto_Firebase> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        return presupuestos.sortedWith(compareByDescending<Presupuesto_Firebase> { it.estado }
+            .thenByDescending {
+                if (it.monto_total != 0.0) (it.monto_actual / it.monto_total) else 0.0
+            }
+            .thenByDescending { dateFormat.parse(it.fechaInicio) })
+    }
+    private fun showPopupWindow(view: View) {
+        // Inflate el diseño de la ventana emergente
+
+        val inflater: LayoutInflater = layoutInflater
+        val popupView = inflater.inflate(R.layout.ventana_emergente_filtros, null)
+
+        // Crear la ventana emergente
+        val popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
+
+        // Establecer los botones dentro de la ventana emergente
+        val btnOpcion1: Button = popupView.findViewById(R.id.btnOpcion1)
+        val btnOpcion2: Button = popupView.findViewById(R.id.btnOpcion2)
+        val btnOpcion3: Button = popupView.findViewById(R.id.btnOpcion3)
+        val btnOpcion4: Button = popupView.findViewById(R.id.btnOpcion4)
+
+        // Manejar los clics de los botones
+        btnOpcion1.setOnClickListener {
+
+            val presupuestosFiltradosYOrdenados =ordenarFiltroEstadoYFechaDesc(presupuestos_firebase_2)
+            adapterPresupuesto.updateList(presupuestosFiltradosYOrdenados)
+            adapterPresupuesto.notifyDataSetChanged()
+            popupWindow.dismiss()
+        }
+
+        btnOpcion2.setOnClickListener {
+
+            val presupuestosFiltradosYOrdenados =ordenarFiltroporLimite(presupuestos_firebase_2)
+            adapterPresupuesto.updateList(presupuestosFiltradosYOrdenados)
+            adapterPresupuesto.notifyDataSetChanged()
+            popupWindow.dismiss()
+        }
+
+        btnOpcion3.setOnClickListener {
+
+
+
+            val presupuestosFiltradosYOrdenados = ordenarFiltroTrueYFechaDesc(presupuestos_firebase_2)
+            adapterPresupuesto.updateList(presupuestosFiltradosYOrdenados)
+            adapterPresupuesto.notifyDataSetChanged()
+            popupWindow.dismiss()
+        }
+
+        btnOpcion4.setOnClickListener {
+            val presupuestosFiltradosYOrdenados = ordenarFiltroFalseYFechaDesc2(presupuestos_firebase_2)
+
+            adapterPresupuesto.updateList(presupuestosFiltradosYOrdenados)
+            adapterPresupuesto.notifyDataSetChanged()
+
+            popupWindow.dismiss()
+
+        }
+
+        // Mostrar la ventana emergente
+        popupWindow.showAsDropDown(view, 0, 9, Gravity.END)
+    }
+    fun PresupuestoAdapter.updateList(newList: List<Presupuesto_Firebase>) {
+        presupuestos_firebase.clear()
+        presupuestos_firebase.addAll(newList)
+
+    }
+    private fun filtrarPorNombrePresupuesto(texto: String) {
+
+        presupuestos_firebase.clear()
+        if (texto.isEmpty()) {
+            presupuestos_firebase.addAll(presupuestos_firebase_2)
+        } else {
+            presupuestos_firebase.addAll(presupuestos_firebase_2.filter { it.nombre.contains(texto, ignoreCase = true) })
+        }
+        adapterPresupuesto.notifyDataSetChanged()
+    }
 
 }
