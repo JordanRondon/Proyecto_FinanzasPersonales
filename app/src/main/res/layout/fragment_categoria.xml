@@ -57,14 +57,18 @@
             android:id="@+id/btn_agregar_categoria"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add"
+            android:contentDescription="Añadir Gastos"
             app:backgroundTint="@color/piel"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearance="@style/Widget.Design.FloatingActionButton"
+            app:srcCompat="@drawable/ic_add"
+            app:tint="@color/black"  />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+</androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/connection"
         android:layout_width="match_parent"

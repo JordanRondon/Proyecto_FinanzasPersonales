@@ -241,11 +241,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
                         Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT).show()
 
                         if (presupuestoID != "Sin presupuesto") {
-                            setGastoSemanal_dia(categoriaMonto)
+
                             setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext(), categoriaID)
                             binding.etMonto.text.clear()
                         }
-
+                        setGastoSemanal_dia(categoriaMonto)
                         dismiss()
                     }
                     .addOnFailureListener {
