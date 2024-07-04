@@ -211,22 +211,6 @@ class GastosFragment : Fragment() {
 
     private fun aplicarFiltros() {
         historialGastoFiltrado.clear()
-        if (texto.isEmpty()) {
-            historialGastoFiltrado.addAll(historialGasto)
-        } else {
-            historialGastoFiltrado.addAll(historialGasto.filter {
-                it.categoriaID.contains(
-                    texto,
-                    ignoreCase = true
-                )
-            })
-        }
-
-        if (historialGastoFiltrado.isEmpty()) {
-            mostrar_mensajeSinDatos()
-        } else {
-            ocultar_mensajeSinDatos()
-        }
 
         historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
             val coincideCategoria = filtroCategoria.isEmpty() || gasto.categoriaID.contains(filtroCategoria, ignoreCase = true)
