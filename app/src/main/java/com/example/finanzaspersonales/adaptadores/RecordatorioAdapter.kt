@@ -14,7 +14,8 @@ import java.util.Locale
 class RecordatorioAdapter(
     private val context: Context,
     private var recordatorios: List<Pair<String, Recordatorio>>,
-    private val onRecordatorioClick: (Recordatorio, String) -> Unit
+    private val onRecordatorioClick: (Recordatorio, String) -> Unit,
+    private val onRecordatorioLongClick: (String) -> Unit
 ) : RecyclerView.Adapter<RecordatorioAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -38,6 +39,10 @@ class RecordatorioAdapter(
 
         holder.itemView.setOnClickListener {
             onRecordatorioClick(recordatorio, recordatorioId)
+        }
+        holder.itemView.setOnLongClickListener {
+            onRecordatorioLongClick(recordatorioId)
+            true
         }
     }
 
