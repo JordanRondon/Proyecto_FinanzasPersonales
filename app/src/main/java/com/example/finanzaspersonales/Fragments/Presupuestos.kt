@@ -481,8 +481,8 @@ class Presupuestos : Fragment() {
 
     private fun showFirstPrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.etNombre)
-            .setSecondaryText("Coloca un nombre a tu presupuesto")
+            .setTarget(R.id.icono_buscar)
+            .setSecondaryText("Busque sus presupuestos")
             .setPromptBackground(RectanglePromptBackground())
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
@@ -497,8 +497,8 @@ class Presupuestos : Fragment() {
 
     private fun showSecondPrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.etMonto)
-            .setSecondaryText("Ingresa un monto para tu presupuesto")
+            .setTarget(R.id.icono_filtro)
+            .setSecondaryText("Filtre sus presupuestos")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
@@ -513,8 +513,8 @@ class Presupuestos : Fragment() {
 
     private fun showThreePrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.radiogrouppresupuesto)
-            .setSecondaryText("Elija el periodo para su presupuesto")
+            .setTarget(R.id.recyclerView)
+            .setSecondaryText("Visualice sus presupuestos")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
@@ -529,12 +529,11 @@ class Presupuestos : Fragment() {
 
     private fun showFourPrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(spinner)
-            .setSecondaryText("Elija una categoria")
+            .setTarget(R.id.btn_agregar_presupuesto)
+            .setSecondaryText("Agregue sus presupuestos")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
             .setSecondaryTextColour(resources.getColor(R.color.white))
-            .setPromptBackground(RectanglePromptBackground())
-            .setPromptFocal(RectanglePromptFocal())
+            .setFocalRadius(androidx.appcompat.R.dimen.abc_dropdownitem_icon_width)
             .setPromptStateChangeListener { _, state ->
                 if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
                     showFivePrompt()
@@ -545,8 +544,8 @@ class Presupuestos : Fragment() {
 
     private fun showFivePrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(btnAgregar)
-            .setSecondaryText("Guarde su presupuesto")
+            .setTarget(R.id.etNombre)
+            .setSecondaryText("Agregue un nombre a su presupuesto")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
@@ -561,8 +560,55 @@ class Presupuestos : Fragment() {
 
     private fun showSixPrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.recyclerView)
-            .setSecondaryText("Visualice sus presupuestos")
+            .setTarget(R.id.etMonto)
+            .setSecondaryText("Ingrese un monto para su presupuesto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSevenPrompt()
+                }
+            }
+            .show()
+    }
+    private fun showSevenPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.radiogrouppresupuesto)
+            .setSecondaryText("Seleccione el periodo de su presupuesto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showEightPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showEightPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.spinner)
+            .setSecondaryText("Elija la categoria")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showNinePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showNinePrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.btnAgregar)
+            .setSecondaryText("Guarde su presupuesto")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
@@ -578,6 +624,8 @@ class Presupuestos : Fragment() {
             }
             .show()
     }
+
+
 
     private fun tutorialDetalle() {
         val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_detalle_presupuesto", Context.MODE_PRIVATE)
