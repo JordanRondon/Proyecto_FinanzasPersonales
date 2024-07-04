@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CustomButtonStyle">
-        <item name="android:background">@drawable/estilo_filtro_botones</item>
+
+    <style name="RoundedDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:background">@drawable/rounded_dialog</item>
+        <item name="android:windowBackground">@drawable/rounded_dialog</item>
+
     </style>
 </resources>

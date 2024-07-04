@@ -9,9 +9,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +22,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.TaskViewModel
 import com.example.finanzaspersonales.R
@@ -33,14 +35,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
+import com.example.finanzaspersonales.adaptadores.PresupuestoGastosAdapter
+import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID2
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.example.finanzaspersonales.entidades.Notificacion
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -49,7 +58,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
 
-class SheetGastos : BottomSheetDialogFragment() {
+class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.CategoriaClickListener,
+    PresupuestoGastosAdapter.PresupuestoClickListener {
 
     private lateinit var binding: FragmentSheetGastosBinding
     private lateinit var taskViewModel: TaskViewModel
@@ -68,21 +78,25 @@ class SheetGastos : BottomSheetDialogFragment() {
         FirebaseDatabase.getInstance().getReference("Presupuesto/$userId")
 
     ///notificaciones
-    private val notificationReference = FirebaseDatabase.getInstance().getReference("Notificacion").child(user)
-    private val notiticationCounterReference  = FirebaseDatabase.getInstance().getReference("Notificacion").child(user).child("contador").child("ultima_notificacion")
-    //
+    private val notificationReference =
+        FirebaseDatabase.getInstance().getReference("Notificacion").child(user)
+    private val notiticationCounterReference =
+        FirebaseDatabase.getInstance().getReference("Notificacion").child(user).child("contador")
+            .child("ultima_notificacion")
+
 
     private lateinit var database: DatabaseReference
 
     private lateinit var recyclerViewCategoria: RecyclerView
     private lateinit var recyclerViewPresupuestos: RecyclerView
     private lateinit var categoriaGastosAdapter: CategoriaGastosAdapter
-    private lateinit var presupuestoGastosAdapter: CategoriaGastosAdapter
+    private lateinit var presupuestoGastosAdapter: PresupuestoGastosAdapter
 
-    private lateinit var txt_categoria: TextView
-    private lateinit var txt_presupuesto: TextView
+    private lateinit var navController: NavController
 
-    private var categoriasMap: MutableMap<String, String?> = mutableMapOf()
+    private val DEFAULT_CATEGORIA = CategoriaGastos("Agregar", "ic_add_circle")
+    private val DEFAULT_PRESUPUESTO = CategoriaGastos("Agregar", "ic_add_circle")
+    private val SIN_PRESUPUESTO = CategoriaGastos("Sin presupuesto", "ic_not")
 
     companion object {
         const val MI_CANAL_ID = "CanalPresupuesto"
@@ -93,7 +107,7 @@ class SheetGastos : BottomSheetDialogFragment() {
     fun createSimpleNotification(presupuestoId: String, context: Context) {
         val builder = NotificationCompat.Builder(context, MI_CANAL_ID)
             .setSmallIcon(R.drawable.logo)
-            .setContentTitle("Notificación de LooKash")
+            .setContentTitle("Notificación de LooKCash")
             .setContentText("Se notifica que $presupuestoId ha excedido el monto límite")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
@@ -143,8 +157,15 @@ class SheetGastos : BottomSheetDialogFragment() {
                 )
             }
         }
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(view.parent as View)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior.isHideable = false
+
         crearCanalDeNotificacion()
         val activity = requireActivity()
+        navController = findNavController()
+
         taskViewModel = ViewModelProvider(activity).get(TaskViewModel::class.java)
 
         recyclerViewCategoria = view.findViewById(R.id.recyclerViewCategoriaGastos)
@@ -153,20 +174,26 @@ class SheetGastos : BottomSheetDialogFragment() {
         recyclerViewCategoria.layoutManager = GridLayoutManager(requireContext(), 3)
         recyclerViewPresupuestos.layoutManager = GridLayoutManager(requireContext(), 3)
 
-        categoriaGastosAdapter = CategoriaGastosAdapter(arrayListCategoria, requireContext())
-        presupuestoGastosAdapter = CategoriaGastosAdapter(arrayListPresupuestos, requireContext())
 
+        categoriaGastosAdapter =
+            CategoriaGastosAdapter(arrayListCategoria, requireContext(), navController)
+        presupuestoGastosAdapter =
+            PresupuestoGastosAdapter(arrayListPresupuestos, requireContext(), navController)
         recyclerViewCategoria.adapter = categoriaGastosAdapter
         recyclerViewPresupuestos.adapter = presupuestoGastosAdapter
 
-        txt_categoria = view.findViewById(R.id.txt_categoria)
-        txt_presupuesto = view.findViewById(R.id.txt_presupuesto)
 
         binding.btnGuardarCategoria.setOnClickListener {
             saveGastos()
         }
-
+        setAlarm(requireContext(),14,0, NOTI_ID," ☀ Date un momento y registra tus gastos del día para mantener tus finanzas al día! (•‿•)")//alarma a las 2 de la tarde
+        setAlarm(requireContext(),23,0, NOTI_ID2,"☾⋆⁺₊✧ Antes de dormir, tus gastos has de escribir ¡regístralos! ⋆⁺₊⋆ ☾ ")//alarmar a las 11 de la noche
         loadCategoriasYPresupuestos()
+
+        categoriaGastosAdapter.setCategoriaClickListener(this)
+        presupuestoGastosAdapter.setPresupuestoClickListener(this)
+
+        tutorial()
     }
 
     override fun onCreateView(
@@ -185,31 +212,48 @@ class SheetGastos : BottomSheetDialogFragment() {
         val categoriaMonto = binding.etMonto.text.toString().toFloatOrNull()
         val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
         val time = zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+        var descripcion = binding.txtDescripcion.text.toString()
 
         contadorReference.get().addOnSuccessListener { data ->
             val contador = data.getValue(Int::class.java) ?: 0
             val contadorUpdate = contador + 1
 
             if (categoriaID != null && presupuestoID != null && categoriaMonto != null) {
-                val gasto = EntidadGasto(categoriaID, presupuestoID, categoriaMonto, date, time)
+                if (descripcion.isEmpty()) {
+                    descripcion = if (presupuestoID == "Sin presupuesto") {
+                        categoriaID.substringAfter(' ')
+                    } else {
+                        presupuestoID.substringAfter(' ')
+                    }
+                }
+
+                val gasto = EntidadGasto(
+                    categoriaID,
+                    presupuestoID,
+                    categoriaMonto,
+                    date,
+                    time,
+                    descripcion
+                )
 
                 gastoReference.child(contadorUpdate.toString()).setValue(gasto)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(context, "Gasto guardado exitosamente", Toast.LENGTH_SHORT).show()
 
+                        if (presupuestoID != "Sin presupuesto") {
+                            setGastoSemanal_dia(categoriaMonto)
+                            setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext(), categoriaID)
+                            binding.etMonto.text.clear()
+                        }
 
-                        setGastoSemanal_dia(categoriaMonto)
-                        setGastoPresupuesto(categoriaMonto, presupuestoID, requireContext())
-                        binding.etMonto.text.clear()
                         dismiss()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT)
-                            .show()
-
+                        Toast.makeText(context, "Error al guardar el gasto", Toast.LENGTH_SHORT).show()
                     }
                 contadorReference.setValue(contadorUpdate)
+
+
             } else {
                 Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
                     .show()
@@ -222,61 +266,66 @@ class SheetGastos : BottomSheetDialogFragment() {
     private fun loadCategoriasYPresupuestos() {
         categoriaReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(categoriaSnapshot: DataSnapshot) {
-                if (categoriaSnapshot.exists()) {
-                    val categoriasMap = mutableMapOf<String, String>()
 
-                    arrayListCategoria.clear()
+                val categoriasMap = mutableMapOf<String, String>()
 
-                    for (catSnap: DataSnapshot in categoriaSnapshot.children) {
-                        val categoriaID = catSnap.key
-                        val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
-                        if (categoriaID != null) {
-                            categoriasMap[categoriaID] = urlIcon
+                arrayListCategoria.clear()
 
-                            arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
+                arrayListCategoria.add(DEFAULT_CATEGORIA)
+
+                for (catSnap: DataSnapshot in categoriaSnapshot.children) {
+                    val categoriaID = catSnap.key
+                    val urlIcon = catSnap.child("urlicono").getValue(String::class.java) ?: ""
+                    if (categoriaID != null) {
+                        categoriasMap[categoriaID] = urlIcon
+
+                        arrayListCategoria.add(CategoriaGastos(categoriaID, urlIcon))
+                    }
+                }
+
+                categoriaGastosAdapter.notifyDataSetChanged()
+
+                presupuestoReference.addListenerForSingleValueEvent(object :
+                    ValueEventListener {
+                    override fun onDataChange(data: DataSnapshot) {
+
+                        arrayListPresupuestos.clear()
+
+                        arrayListPresupuestos.add(DEFAULT_PRESUPUESTO)
+                        arrayListPresupuestos.add(SIN_PRESUPUESTO)
+
+
+                        for (ds: DataSnapshot in data.children) {
+                            val presupuestoID = ds.key
+                            val categoriaID =
+                                ds.child("categoriaID").getValue(String::class.java)
+                            val urlIcon = categoriasMap[categoriaID]
+                            val estado = ds.child("estado").getValue(Boolean::class.java)
+                            if (estado == true) {
+                                arrayListPresupuestos.add(
+                                    CategoriaGastos(
+                                        presupuestoID ?: "", urlIcon
+                                    )
+                                )
+                            }
+
                         }
+                        presupuestoGastosAdapter.notifyDataSetChanged()
                     }
 
-                    categoriaGastosAdapter.notifyDataSetChanged()
-                    txt_categoria.visibility = if (arrayListCategoria.isEmpty()) View.VISIBLE else View.INVISIBLE
+                    override fun onCancelled(error: DatabaseError) {
+                        // Manejar el error
+                    }
+                })
 
-
-                    presupuestoReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(data: DataSnapshot) {
-
-                            arrayListPresupuestos.clear()
-
-                            if (data.exists() && data.hasChildren()) {
-                                for (ds: DataSnapshot in data.children) {
-                                    val presupuestoID = ds.key
-                                    val categoriaID = ds.child("categoriaID").getValue(String::class.java)
-                                    val urlIcon = categoriasMap[categoriaID]
-                                    val estado = ds.child("estado").getValue(Boolean::class.java)
-                                    if(estado == true){
-                                        arrayListPresupuestos.add(CategoriaGastos(presupuestoID ?: "", urlIcon))
-                                    }
-
-                                }
-                                presupuestoGastosAdapter.notifyDataSetChanged()
-                                txt_presupuesto.visibility = View.INVISIBLE
-                            } else {
-                                txt_presupuesto.visibility = View.VISIBLE
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            // Manejar el error
-                        }
-                    })
-                } else {
-                    txt_categoria.visibility = View.VISIBLE
-                }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Manejar el error
             }
         })
+
+
     }
 
     private fun setGastoSemanal_dia(NuevoGastoMonto: Float) {
@@ -301,11 +350,24 @@ class SheetGastos : BottomSheetDialogFragment() {
             println("Error al obtener el valor actual: ${exception.message}")
         }
     }
-    private fun saveNotification(presupuestoId: String, context: Context) {
+    private fun obtenerIconoCategoria(categoriaID : String,callback: (String) -> Unit){
+        //referenciar a la categoria del gasto
+        val categoriaRef = FirebaseDatabase.getInstance()
+            .getReference("Categoria/$user/$categoriaID/urlicono")
+        //obtener icono categoria excedida
+        categoriaRef.get().addOnSuccessListener { data->
+            val ico_categoria_excedida =data.getValue(String::class.java) ?:"No se encontro"
+            callback(ico_categoria_excedida)
+        }.addOnFailureListener { exception ->
+            println("Error al obtener el icono: ${exception.message}")
+            callback("Error al obtener el icono")
+        }
+    }
+    private fun saveNotification(presupuestoId: String, icono : String, context: Context) {
         val sdf= SimpleDateFormat("EEE, dd MMM yyyy, h:mma")
         sdf.setTimeZone(TimeZone.getTimeZone("America/Lima"))
         val date = sdf.format(Date()).toString()
-        val notification = Notificacion("moneda", "Advertencia","Se notifica que $presupuestoId ha excedido el monto límite",date,false)
+        val notification = Notificacion(icono, "Advertencia","Se notifica que $presupuestoId ha excedido el monto límite",date,false)
         notificationReference.get().addOnSuccessListener {dataSnapshot->
             var  nextNumNotification = 1// default
             if(dataSnapshot.exists()){
@@ -315,35 +377,40 @@ class SheetGastos : BottomSheetDialogFragment() {
 
             notiticationCounterReference.setValue(nextNumNotification)
             notificationReference.child(nextNumNotification.toString()).setValue(notification).addOnSuccessListener {
-            }.addOnFailureListener{
+            }.addOnFailureListener{exception ->
+                println("Error al actualizar registro: ${exception.message}")
             }
-        }.addOnFailureListener{
-            //Toast.makeText(context,"Error al obtener el numero de notificaciones",Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener{exception ->
+            println("Error al obtener el valor actual: ${exception.message}")
         }
-        scheduleNotification(context)
     }
 
-    private fun scheduleNotification(context: Context) {
-        val calendar: Calendar = Calendar.getInstance().apply {
+    private fun setAlarm(context: Context, hour: Int, minute: Int, id: Int, descripcion : String) {
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Lima")).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
         }
-        Log.d("Schedule","entra0")
+        //verificar que la alarma se lance a la hora especificada si no se pasa al dia siguiente en vez de lanzarse inmediatamente
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
         val intent = Intent(context, AlarmNotification::class.java)
-            .putExtra("asunto","Gastos")
-            .putExtra("descripcion","Recuerda registrar tus gastos con frecuencia :D")
+            .putExtra("asunto","LookCash")
+            .putExtra("descripcion",descripcion)
+            .putExtra("id",id)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            NOTI_ID,
+            id,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        Log.d("Schedule","entra1")
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_HALF_DAY,pendingIntent)
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,AlarmManager.INTERVAL_DAY,pendingIntent)
 
     }
-    private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context) {
+
+    private fun setGastoPresupuesto(nuevoGastoMonto: Float, presupuestoId: String, context: Context, categoriaID: String) {
         val user = FirebaseAuth.getInstance().currentUser?.uid
         if (user == null) {
             println("Usuario no autenticado")
@@ -360,7 +427,10 @@ class SheetGastos : BottomSheetDialogFragment() {
             obtenerMontoTotalPresupuesto(presupuestoId) { montoTotal ->
                 if (montoTotal != null) {
                     if (montoTotal <= montoPresupuestoActualizado) {
-                        saveNotification(presupuestoId, context)
+                        //obtener icono de la categoria del presupuesto excedido
+                        obtenerIconoCategoria(categoriaID) { icoCategoria ->
+                            saveNotification(presupuestoId, icoCategoria, context)
+                        }
                         createSimpleNotification(presupuestoId, context)
 
                     }
@@ -416,5 +486,126 @@ class SheetGastos : BottomSheetDialogFragment() {
         return diasSemana[diaSemana - 1]
     }
 
+    override fun onCategoriaClick(position: Int) {
+        dismiss()
+    }
+
+    override fun onPresupuestoClick(position: Int) {
+        dismiss()
+    }
+
+
+    private fun tutorial() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_sheet", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_sheet", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.recyclerViewCategoriaGastos)
+            .setSecondaryText("Agregue y visualice sus categorias")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.etMonto)
+            .setSecondaryText("Ingrese un monto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showThreePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showThreePrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.recyclerViewPresupuestos)
+            .setSecondaryText("Visualice y agregue sus presupuestos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFourPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFourPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.txt_descripcion)
+            .setSecondaryText("Agregue una descripcion si desea")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFivePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFivePrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.btnGuardarCategoria)
+            .setSecondaryText("Guarde su gasto")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
+            .setPromptFocal(RectanglePromptFocal())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_sheet", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_sheet", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
 
 }

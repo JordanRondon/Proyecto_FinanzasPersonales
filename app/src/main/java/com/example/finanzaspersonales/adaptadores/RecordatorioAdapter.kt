@@ -11,8 +11,14 @@ import com.example.finanzaspersonales.entidades.Recordatorio
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class RecordatorioAdapter(private val context: Context, private var recordatorios: List<Recordatorio>) : RecyclerView.Adapter<RecordatorioAdapter.ViewHolder>(){
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
+class RecordatorioAdapter(
+    private val context: Context,
+    private var recordatorios: List<Pair<String, Recordatorio>>,
+    private val onRecordatorioClick: (Recordatorio, String) -> Unit,
+    private val onRecordatorioLongClick: (String) -> Unit
+) : RecyclerView.Adapter<RecordatorioAdapter.ViewHolder>() {
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvFecha: TextView = view.findViewById(R.id.tvFecha)
         val tvDescripcion: TextView = view.findViewById(R.id.tvDescripcion)
     }
@@ -22,27 +28,35 @@ class RecordatorioAdapter(private val context: Context, private var recordatorio
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int){
-        val recordatorio = recordatorios[position]
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val (recordatorioId, recordatorio) = recordatorios[position]
 
         val formatoFecha = SimpleDateFormat("MMM dd", Locale.getDefault())
         val fechaItems = formatoFecha.format(recordatorio.fecha)
 
         holder.tvFecha.text = fechaItems
         holder.tvDescripcion.text = recordatorio.descripcion
+
+        holder.itemView.setOnClickListener {
+            onRecordatorioClick(recordatorio, recordatorioId)
+        }
+        holder.itemView.setOnLongClickListener {
+            onRecordatorioLongClick(recordatorioId)
+            true
+        }
     }
 
     override fun getItemCount(): Int {
         return recordatorios.size
     }
 
-    fun actualizarLista(nuevaLista: List<Recordatorio>){
+    fun actualizarLista(nuevaLista: List<Pair<String, Recordatorio>>) {
         recordatorios = nuevaLista
         notifyDataSetChanged()
     }
-    fun limpiarLista(){
+
+    fun limpiarLista() {
         this.recordatorios = emptyList()
         notifyDataSetChanged()
     }
-
 }

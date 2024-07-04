@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.Clases.isOnline
@@ -42,8 +43,6 @@ class Gastos : Fragment() {
     private lateinit var main: ConstraintLayout
     private lateinit var connection: ConstraintLayout
 
-
-    //private lateinit var card: MaterialCardView
 
     private val zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Lima"))
     val date = zonedDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
@@ -90,10 +89,20 @@ class Gastos : Fragment() {
                 )
             recycle_conteiner.adapter = gasto_adapter
 
+            recycle_conteiner.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (dy > 0 && floating_action_button.isShown) {
+                        hideFab()
+                    } else if (dy < 0 && !floating_action_button.isShown) {
+                        showFab()
+                    }
+                }
+            })
+
             getGasto()
 
             floating_action_button.setOnClickListener {
-                SheetGastos().show(requireActivity().supportFragmentManager, "newTaskGastos")
+                SheetGastos().show((requireContext() as FragmentActivity).supportFragmentManager, "newTaskGastos")
             }
         }
         return view
@@ -102,7 +111,7 @@ class Gastos : Fragment() {
     private fun getGasto() {
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                arrayListCategoria.clear()
+                val tempArrayList = ArrayList<EntidadGasto>()
                 if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
                     txtGastos.visibility = View.VISIBLE
                     for (ds: DataSnapshot in dataSnapshot.children) {
@@ -114,19 +123,23 @@ class Gastos : Fragment() {
                                 val presupuestoID = ds.child("presupuestoID").value.toString()
                                 val monto = ds.child("monto").getValue(Float::class.java) ?: 0.0f
                                 val horaRegistro = ds.child("horaRegistro").value.toString()
+                                val descripcion = ds.child("descripcion").value.toString()
 
-                                arrayListCategoria.add(
+                                tempArrayList.add(0,
                                     EntidadGasto(
                                         categoriaID,
                                         presupuestoID,
                                         monto,
                                         fechaRegistro,
-                                        horaRegistro
+                                        horaRegistro,
+                                        descripcion
                                     )
                                 )
                             }
                         }
                     }
+                    arrayListCategoria.clear()
+                    arrayListCategoria.addAll(tempArrayList)
                     gasto_adapter.notifyDataSetChanged()
                     showImages(arrayListCategoria)
                 } else {
@@ -156,6 +169,18 @@ class Gastos : Fragment() {
             txtMensaje1.visibility = View.VISIBLE
             txtMensaje2.visibility = View.VISIBLE
         }
+    }
+
+    private fun hideFab() {
+        val hideAnimation = android.view.animation.AnimationUtils.loadAnimation(context, R.anim.fab_hide)
+        floating_action_button.startAnimation(hideAnimation)
+        floating_action_button.visibility = View.GONE
+    }
+
+    private fun showFab() {
+        val showAnimation = android.view.animation.AnimationUtils.loadAnimation(context, R.anim.fab_show)
+        floating_action_button.startAnimation(showAnimation)
+        floating_action_button.visibility = View.VISIBLE
     }
 
 }

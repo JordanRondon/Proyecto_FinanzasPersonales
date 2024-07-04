@@ -65,5 +65,9 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.applandeo:material-calendar-view:1.9.2")
+
+    implementation("com.github.deano2390:MaterialShowcaseView:1.3.7")
+    implementation("uk.co.samuelwall:material-tap-target-prompt:3.3.2")
+    implementation("com.getkeepsafe.taptargetview:taptargetview:1.13.3")
 }
 

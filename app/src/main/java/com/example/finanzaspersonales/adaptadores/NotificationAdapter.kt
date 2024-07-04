@@ -7,7 +7,6 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.databinding.ItemNotificacionesBinding
@@ -36,7 +35,13 @@ class NotificationAdapter(private val notificationList: List<Notificacion>, priv
             val spannableString = BoldBudgetText(notificationModel.descripcion)
             binding.tvDescripcion.text = spannableString
             binding.tvFecha.text = notificationModel.fecha
-            binding.ivIcono.setImageResource(R.drawable.moneda)
+
+            val context = itemView.context
+            binding.ivIcono.setImageResource(context.resources.getIdentifier(
+                notificationModel.urlImagen,
+                "drawable",
+                context.packageName
+            ))
             itemView.setOnClickListener{ onClickListener(notificationModel)}
         }
     }

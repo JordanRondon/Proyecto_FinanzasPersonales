@@ -2,6 +2,8 @@ package com.example.finanzaspersonales
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,7 +13,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.entidades.EntidadGasto
@@ -22,10 +25,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 import java.util.Calendar
-import javax.annotation.Nullable
 
 class GastosFragment : Fragment() {
+    private lateinit var imageView_sinDatos: ImageView
+    private lateinit var textView_SinDatos: TextView
     private lateinit var tvBuscarGasto: TextInputEditText
     private lateinit var imageButton_filtroMontoGasto: ImageButton
     private lateinit var imageButton_filtroFecha: ImageButton
@@ -37,6 +44,10 @@ class GastosFragment : Fragment() {
     private lateinit var databaseCategoria: DatabaseReference
     private var fecha_filtro: String? = null
     private val gastoListaMonto = mutableListOf<String>()
+
+    private var filtroCategoria: String = ""
+    private var filtroFecha: String? = null
+    private var filtroMontosSeleccionados: MutableList<String> = mutableListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +66,10 @@ class GastosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        imageView_sinDatos = view.findViewById(R.id.imageView_sinDatos)
+        textView_SinDatos = view.findViewById(R.id.textView_SinDatos)
+        ocultar_mensajeSinDatos()
 
         tvBuscarGasto = view.findViewById(R.id.tvBuscarGasto)
         imageButton_filtroMontoGasto = view.findViewById(R.id.imageButton_filtroMontoGasto)
@@ -114,7 +129,7 @@ class GastosFragment : Fragment() {
             val anio = calendario.get(Calendar.YEAR)
             val mes = calendario.get(Calendar.MONTH)
             val dia = calendario.get(Calendar.DAY_OF_MONTH)
-            val recolectarFecha = DatePickerDialog(requireContext(), {_, year, month, dayOfMonth ->
+            val recolectarFecha = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
                 val mesActual = month + 1
                 val diaFormateado = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
                 val mesFormateado = if (mesActual < 10) "0$mesActual" else mesActual.toString()
@@ -131,6 +146,9 @@ class GastosFragment : Fragment() {
 
         obtenerDatosGastos(databaseGasto)
         obtenerDatosMontoGastos(databaseGasto)
+
+        tutorial()
+
     }
 
     private fun obtenerDatosGastos(gastosRef: DatabaseReference) {
@@ -184,47 +202,174 @@ class GastosFragment : Fragment() {
                     }
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Error al obtener los datos: ${error.message}")
             }
         })
     }
 
-    private fun filtrarPorCategoria(texto: String) {
+    private fun aplicarFiltros() {
         historialGastoFiltrado.clear()
         if (texto.isEmpty()) {
             historialGastoFiltrado.addAll(historialGasto)
         } else {
-            historialGastoFiltrado.addAll(historialGasto.filter { it.categoriaID.contains(texto, ignoreCase = true) })
+            historialGastoFiltrado.addAll(historialGasto.filter {
+                it.categoriaID.contains(
+                    texto,
+                    ignoreCase = true
+                )
+            })
         }
+
+        if (historialGastoFiltrado.isEmpty()) {
+            mostrar_mensajeSinDatos()
+        } else {
+            ocultar_mensajeSinDatos()
+        }
+
+        historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
+            val coincideCategoria = filtroCategoria.isEmpty() || gasto.categoriaID.contains(filtroCategoria, ignoreCase = true)
+            val coincideFecha = filtroFecha == null || gasto.fechaRegistro == filtroFecha
+            val coincideMonto = filtroMontosSeleccionados.isEmpty() || filtroMontosSeleccionados.contains(gasto.monto.toString())
+
+            coincideCategoria && coincideFecha && coincideMonto
+        })
+
+        if (historialGastoFiltrado.isEmpty()) {
+            mostrar_mensajeSinDatos()
+        } else {
+            ocultar_mensajeSinDatos()
+        }
+
         actualizarAdaptador()
+    }
+
+    private fun filtrarPorCategoria(texto: String) {
+        filtroCategoria = texto
+        aplicarFiltros()
     }
 
     private fun filtrarPorFecha(fecha: String?) {
-        historialGastoFiltrado.clear()
-        if (fecha != null) {
-            historialGastoFiltrado.addAll(historialGasto.filter { it.fechaRegistro == fecha })
-        } else {
-            historialGastoFiltrado.addAll(historialGasto)
-        }
-        actualizarAdaptador()
+        filtroFecha = fecha
+        aplicarFiltros()
     }
 
     private fun filtarPorMonto(montosSeleccionados: MutableList<String>) {
-        historialGastoFiltrado.clear()
-        if (montosSeleccionados.isNotEmpty()) {
-            historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
-                montosSeleccionados.contains(gasto.monto.toString())
-            })
-        } else {
-            historialGastoFiltrado.addAll(historialGasto)
-        }
-        actualizarAdaptador()
+        filtroMontosSeleccionados = montosSeleccionados
+        aplicarFiltros()
     }
 
     private fun actualizarAdaptador() {
-        adaptadorPersonalizado = GastoAdapter(requireContext(), historialGastoFiltrado, databaseCategoria)
+        adaptadorPersonalizado =
+            GastoAdapter(requireContext(), historialGastoFiltrado, databaseCategoria)
         RecyclerViewHistorial.layoutManager = LinearLayoutManager(requireContext())
         RecyclerViewHistorial.adapter = adaptadorPersonalizado
     }
+
+    private fun mostrar_mensajeSinDatos() {
+        imageView_sinDatos.visibility = View.VISIBLE
+        textView_SinDatos.visibility = View.VISIBLE
+    }
+
+    private fun ocultar_mensajeSinDatos() {
+        imageView_sinDatos.visibility = View.GONE
+        textView_SinDatos.visibility = View.GONE
+    }
+
+
+    private fun tutorial() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_gastos", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_historial", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.btnGastos)
+            .setSecondaryText("Busque sus gastos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.tvBuscarGasto)
+            .setSecondaryText("Busque sus gastos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showThreePrompt()
+                }
+            }
+            .show()
+
+    }
+
+    private fun showThreePrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.imageButton_filtroMontoGasto)
+            .setSecondaryText("Filtre sus gastos por montos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFourPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFourPrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.imageButton_filtroFecha)
+            .setSecondaryText("Filtre sus gastos por fecha")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFivePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFivePrompt() {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.BtnGraficos)
+            .setSecondaryText("Visualice sus gastos mediante graficos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_gastos", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_historial", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
+
 }

@@ -1,7 +1,11 @@
 package com.example.finanzaspersonales
 
+import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -23,6 +27,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -78,7 +86,8 @@ class Home : AppCompatActivity() {
 
         toggle.syncState()
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
 
@@ -86,12 +95,16 @@ class Home : AppCompatActivity() {
         navigationView.setupWithNavController(navController)
 
         //findViewById<NavigationView>(R.id.navigation_view).setupWithNavController(navController)
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(navController)
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setupWithNavController(
+            navController
+        )
 
         val header = navigationView.getHeaderView(0)
         val txtCorreo = header.findViewById<TextView>(R.id.txtCorreo)
+        val txtLetra = header.findViewById<TextView>(R.id.txtInicial)
 
         txtCorreo.text = user?.email
+        txtLetra.text = user?.email?.substring(0, 1)?.uppercase()
         val menu = navigationView.menu[4]
 
         menu.setOnMenuItemClickListener {
@@ -111,6 +124,8 @@ class Home : AppCompatActivity() {
                 }
             }
         })
+
+        tutorial()
 
 //        deleteUser()
     }
@@ -251,6 +266,98 @@ class Home : AppCompatActivity() {
         })
     }
     //
+
+    private fun tutorial() {
+        val sharedPreferences =
+            this.getSharedPreferences("tutorial_prefs_home", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_home", false)
+
+        if (!tutorialShown) {
+            showFirstPrompt()
+        }
+    }
+
+
+    private fun showFirstPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.gastos)
+            .setFocalColour(resources.getColor(R.color.piel))
+            .setSecondaryText("Visualice sus gastos diarios")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showSecondPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showSecondPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.presupuestos)
+            .setFocalColour(resources.getColor(R.color.piel))
+            .setSecondaryText("Registre presupuestos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showThreePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showThreePrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.recordatorio)
+            .setFocalColour(resources.getColor(R.color.piel))
+            .setSecondaryText("Establezca recordatorios")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFourPrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFourPrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(toolBar.getChildAt(0))
+            .setFocalColour(resources.getColor(R.color.piel))
+            .setSecondaryText("Conozca las demas opciones")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setFocalRadius(androidx.appcompat.R.dimen.abc_dialog_padding_material)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFivePrompt()
+                }
+            }
+            .show()
+    }
+
+    private fun showFivePrompt() {
+        MaterialTapTargetPrompt.Builder(this)
+            .setTarget(R.id.floating_action_button)
+            .setSecondaryText("Agregue gastos")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setFocalRadius(androidx.appcompat.R.dimen.abc_dropdownitem_icon_width)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = this.getSharedPreferences("tutorial_prefs_home", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_home", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
+
 
 }
 
