@@ -16,59 +16,123 @@ import androidx.lifecycle.ViewModelStoreOwner
 import com.example.finanzaspersonales.Home
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.RecordatorioViewModelFactory
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class RecordatorioNotification : BroadcastReceiver() {
     companion object {
 //        const val CHANNEL_ID = "recordatorio_channel"
 //        const val CHANNEL_HIGH_PRIORITY_ID = "recordatorio_channel_high_priority"
-        const val NOTI_ID3 = 9
-        const val NOTI_ID4 = 10
+        const val NOTI_ID_VENCIDOS = 9
+        const val NOTI_ID_PROXIMOS = 10
+        const val CANAL_ID = "CanalRecordatorio"
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("RecordatorioNotification", "onReceive called with action: ${intent.action}")
-        if (intent.action == "CHECK_VENCIDOS") {
-            Log.d("RecordatorioNotification", "Processing CHECK_VENCIDOS action")
+        val tipoNotificacion = intent.getStringExtra("tipoNotificacion")
+        val id = if (intent.action == "CHECK_VENCIDOS") {
+            NOTI_ID_VENCIDOS
+        } else {
+            NOTI_ID_PROXIMOS
+        }
 
-            val application = context.applicationContext as Application
-            val viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(RecordatorioViewModel::class.java)
+        when (intent.action) {
+            "CHECK_VENCIDOS" -> {
+                obtenerRecordatoriosVencidos(context) { recordatorios ->
+                    val mensajes = recordatorios.joinToString(separator = "\n") { it.descripcion }
+                    createNotification(context, tipoNotificacion, mensajes, id)
+                }
 
-            viewModel.obtenerRecordatoriosVencidos { recordatoriosVencidos ->
-                Log.d("RecordatorioNotification", "Recordatorios vencidos: ${recordatoriosVencidos.size}")
-                if (recordatoriosVencidos.isNotEmpty()) {
-                    createNotification(context, recordatoriosVencidos)
-                } else {
-                    Log.d("RecordatorioNotification", "No hay recordatorios vencidos")
+            }
+            "CHECK_PROXIMOS" -> {
+                obtenerRecordatoriosProximos(context) { recordatorios ->
+                    val mensajes = recordatorios.joinToString(separator = "\n") { it.descripcion }
+                    createNotification(context, tipoNotificacion, mensajes, id)
+
                 }
             }
-        } else {
-            Log.d("RecordatorioNotification", "Action did not match CHECK_VENCIDOS")
         }
     }
+    private fun obtenerRecordatoriosVencidos(context: Context, callback: (List<com.example.finanzaspersonales.entidades.Recordatorio>) -> Unit) {
+        val userName = FirebaseAuth.getInstance().currentUser!!.uid
+        val database = FirebaseDatabase.getInstance().reference.child("NotificacionPago").child(userName)
+        val fechaActual = Calendar.getInstance().time
 
-    private fun createNotification(context: Context, recordatoriosVencidos: List<com.example.finanzaspersonales.entidades.Recordatorio>) {
-        Log.d("RecordatorioNotification", "Creating notification")
-        val notificationTitle = "Recordatorios vencidos"
-        val notificationText = recordatoriosVencidos.joinToString(separator = "\n") { it.descripcion }
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val recordatoriosVencidos = mutableListOf<com.example.finanzaspersonales.entidades.Recordatorio>()
+                for (recordatorioSnapshot in snapshot.children) {
+                    if (recordatorioSnapshot.key != "contador") {
+                        val recordatorio = recordatorioSnapshot.getValue(com.example.finanzaspersonales.entidades.Recordatorio::class.java)
+                        if (recordatorio != null && recordatorio.fecha.before(fechaActual)) {
+                            recordatoriosVencidos.add(recordatorio)
+                        }
+                    }
+                }
+                Log.d("RecordatorioNotification", "Recordatorios vencidos: ${recordatoriosVencidos.size}")
+                callback(recordatoriosVencidos)
+            }
 
-        val intent = Intent(context, Home::class.java).apply {
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("RecordatorioNotification", "Error al obtener recordatorios vencidos", error.toException())
+            }
+        })
+    }
+    private fun obtenerRecordatoriosProximos(context: Context, callback: (List<com.example.finanzaspersonales.entidades.Recordatorio>) -> Unit) {
+        val userName = FirebaseAuth.getInstance().currentUser!!.uid
+        val database = FirebaseDatabase.getInstance().reference.child("NotificacionPago").child(userName)
+        val fechaActual = Calendar.getInstance()
+
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val recordatoriosProximos = mutableListOf<com.example.finanzaspersonales.entidades.Recordatorio>()
+                for (recordatorioSnapshot in snapshot.children) {
+                    if (recordatorioSnapshot.key != "contador") {
+                        val recordatorio = recordatorioSnapshot.getValue(com.example.finanzaspersonales.entidades.Recordatorio::class.java)
+                        if (recordatorio != null) {
+                            val recordatorioFecha = Calendar.getInstance().apply { time = recordatorio.fecha }
+                            val diff = recordatorioFecha.timeInMillis - fechaActual.timeInMillis
+                            val daysDiff = TimeUnit.MILLISECONDS.toDays(diff)
+                            if (daysDiff in 1..2) {
+                                recordatoriosProximos.add(recordatorio)
+                            }
+                        }
+                    }
+                }
+                Log.d("RecordatorioNotification", "Recordatorios próximos a vencer: ${recordatoriosProximos.size}")
+                callback(recordatoriosProximos)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("RecordatorioNotification", "Error al obtener recordatorios próximos a vencer", error.toException())
+            }
+        })
+    }
+
+
+
+    private fun createNotification(context: Context, tipoNotificacion: String?, mensajes: String?, id: Int) {
+        val intent = Intent(context, Recordatorio::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-
         val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, flag)
 
         val notification = NotificationCompat.Builder(context, Recordatorio.CANAL_ID)
             .setSmallIcon(R.drawable.logo)
-            .setContentTitle(notificationTitle)
-            .setContentText(notificationText)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(notificationText))
+            .setContentTitle("Recordatorio")
+            .setContentText(tipoNotificacion)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(mensajes))
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(NOTI_ID3, notification)
-        Log.d("RecordatorioNotification", "Notificación creada con éxito")
+        manager.notify(id, notification)
     }
 }

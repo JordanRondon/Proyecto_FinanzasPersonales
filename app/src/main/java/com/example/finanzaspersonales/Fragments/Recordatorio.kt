@@ -27,7 +27,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
-import com.example.finanzaspersonales.Fragments.RecordatorioNotification.Companion.NOTI_ID3
+import com.example.finanzaspersonales.Fragments.RecordatorioNotification.Companion.NOTI_ID_PROXIMOS
+import com.example.finanzaspersonales.Fragments.RecordatorioNotification.Companion.NOTI_ID_VENCIDOS
 import com.example.finanzaspersonales.Listeners.CustomDayClickListener
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.RecordatorioViewModelFactory
@@ -117,11 +118,11 @@ class Recordatorio : Fragment() {
                 )
             }else {
                 // Programar alarma diaria si los permisos ya están concedidos
-                programarAlarmaDiaria()
+                programarAlarmas()
             }
         }else {
             // Programar alarma diaria para versiones anteriores a Android TIRAMISU
-            programarAlarmaDiaria()
+            programarAlarmas()
         }
     }
 
@@ -177,24 +178,25 @@ class Recordatorio : Fragment() {
         )
         Log.d("Alarma", "Programada notificación de recordatorio")
     }
-    private fun programarAlarmaDiaria() {
+    private fun programarAlarmas() {
+        programarAlarmaDiariaVencidos()
+        programarAlarmaDiariaProximos()
+    }
+    private fun programarAlarmaDiariaVencidos() {
         val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 21)  // Ajusta la hora según tu necesidad
-            set(Calendar.MINUTE, 20)
+            set(Calendar.HOUR_OF_DAY, 2)  // Ajusta la hora según tu necesidad
+            set(Calendar.MINUTE, 26)
         }
-
-//        if (calendar.timeInMillis <= System.currentTimeMillis()) {
-//            calendar.add(Calendar.DAY_OF_MONTH, 1)
-//        }
 
         val intent = Intent(requireContext(), RecordatorioNotification::class.java).apply {
             action = "CHECK_VENCIDOS"
+            putExtra("tipoNotificacion", "Recordatorio vencido: ")
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             requireContext(),
-            NOTI_ID3,
+            NOTI_ID_VENCIDOS,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -203,10 +205,38 @@ class Recordatorio : Fragment() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            6000,  // Repite diariamente
+            10000,  // Repite diariamente
             pendingIntent
         )
-        Log.d("Alarma", "Programada alarma diaria para ${calendar.time}")
+        Log.d("Alarma", "Programada alarma diaria para vencidos a las ${calendar.time}")
+    }
+    private fun programarAlarmaDiariaProximos() {
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 2)  // Ajusta la hora según tu necesidad
+            set(Calendar.MINUTE, 26)
+        }
+
+        val intent = Intent(requireContext(), RecordatorioNotification::class.java).apply {
+            action = "CHECK_PROXIMOS"
+            putExtra("tipoNotificacion", "Recordatorio próximo a vencer: ")
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            NOTI_ID_PROXIMOS,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            10000,  // Repite diariamente
+            pendingIntent
+        )
+        Log.d("Alarma", "Programada alarma diaria para próximos a vencer a las ${calendar.time}")
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -214,7 +244,7 @@ class Recordatorio : Fragment() {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 Toast.makeText(requireContext(), "Permisos de notificación concedidos", Toast.LENGTH_SHORT).show()
-                programarAlarmaDiaria()
+                programarAlarmas()
             } else {
                 Toast.makeText(requireContext(), "Permisos de notificación denegados", Toast.LENGTH_SHORT).show()
             }
