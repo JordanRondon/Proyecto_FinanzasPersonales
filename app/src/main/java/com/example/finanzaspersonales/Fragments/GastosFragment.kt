@@ -348,7 +348,9 @@ class GastosFragment : Fragment() {
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
             .setPromptStateChangeListener { _, state ->
-                showFivePrompt()
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    showFivePrompt()
+                }
             }
             .show()
     }
@@ -356,7 +358,7 @@ class GastosFragment : Fragment() {
     private fun showFivePrompt() {
         MaterialTapTargetPrompt.Builder(requireActivity())
             .setTarget(R.id.BtnGraficos)
-            .setSecondaryText("Filtre sus gastos por fecha")
+            .setSecondaryText("Visualice sus gastos mediante graficos")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())

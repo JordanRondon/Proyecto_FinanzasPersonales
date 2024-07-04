@@ -1,5 +1,6 @@
 package com.example.finanzaspersonales.Fragments
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
@@ -215,6 +216,10 @@ class Presupuestos : Fragment() {
             loadCategories()
             loadPresupuesto()
 
+            if (presupuestos_firebase.isNotEmpty()) {
+                tutorialDetalle()
+            }
+
             tutorial()
         }
 
@@ -396,5 +401,40 @@ class Presupuestos : Fragment() {
             .show()
     }
 
+    private fun tutorialDetalle() {
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_detalle_presupuesto", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_detalle_presupuesto", false)
+
+        if (!tutorialShown) {
+            if (adapterPresupuesto.itemCount > 0) {
+                recycler.post {
+                    val holder = recycler.findViewHolderForAdapterPosition(0) as? PresupuestoAdapter.PresupuestoViewHolder
+                    holder?.let {
+                        showFirstPromptDetalle(it.textViewDetalles)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showFirstPromptDetalle(targetView: View) {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(targetView)
+            .setSecondaryText("Mire los detalles de su presupuesto")
+            .setPromptBackground(RectanglePromptBackground())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
+            .setPromptBackground(RectanglePromptBackground())
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_detalle_presupuesto", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("tutorial_detalle_presupuesto", true)
+                        apply()
+                    }
+                }
+            }
+            .show()
+    }
 
 }
