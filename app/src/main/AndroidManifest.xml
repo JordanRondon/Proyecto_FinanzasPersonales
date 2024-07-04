@@ -27,7 +27,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="CHECK_VENCIDOS" />
-
+                <action android:name="CHECK_PROXIMOS" />
                 <action android:name="com.example.finanzaspersonales.RECORDATORIO_NOTIFICATION"/>
             </intent-filter>
         </receiver>
