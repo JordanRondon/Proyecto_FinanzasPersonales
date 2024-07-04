@@ -509,7 +509,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
             .setTarget(R.id.recyclerViewCategoriaGastos)
             .setSecondaryText("Agregue y visualice sus categorias")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setPromptBackground(RectanglePromptBackground())
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
             .setPromptFocal(RectanglePromptFocal())
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptStateChangeListener { _, state ->
@@ -525,7 +529,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
             .setTarget(R.id.etMonto)
             .setSecondaryText("Ingrese un monto")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setPromptBackground(RectanglePromptBackground())
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
             .setPromptFocal(RectanglePromptFocal())
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptStateChangeListener { _, state ->
@@ -541,7 +549,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
             .setTarget(R.id.recyclerViewPresupuestos)
             .setSecondaryText("Visualice y agregue sus presupuestos")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setPromptBackground(RectanglePromptBackground())
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
             .setPromptFocal(RectanglePromptFocal())
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptStateChangeListener { _, state ->
@@ -557,7 +569,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
             .setTarget(R.id.txt_descripcion)
             .setSecondaryText("Agregue una descripcion si desea")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setPromptBackground(RectanglePromptBackground())
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
             .setPromptFocal(RectanglePromptFocal())
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptStateChangeListener { _, state ->
@@ -573,7 +589,11 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
             .setTarget(R.id.btnGuardarCategoria)
             .setSecondaryText("Guarde su gasto")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
-            .setPromptBackground(RectanglePromptBackground())
+            .setPromptBackground(object : RectanglePromptBackground(){
+                override fun setColour(colour: Int) {
+                    super.setColour(resources.getColor(R.color.piel))
+                }
+            })
             .setPromptFocal(RectanglePromptFocal())
             .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptStateChangeListener { _, state ->
