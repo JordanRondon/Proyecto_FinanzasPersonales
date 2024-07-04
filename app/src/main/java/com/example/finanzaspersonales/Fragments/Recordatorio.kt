@@ -185,8 +185,8 @@ class Recordatorio : Fragment() {
     private fun programarAlarmaDiariaVencidos() {
         val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 1)  // Ajusta la hora según tu necesidad
-            set(Calendar.MINUTE, 39)
+            set(Calendar.HOUR_OF_DAY, 2)  // Ajusta la hora según tu necesidad
+            set(Calendar.MINUTE, 26)
         }
 
         val intent = Intent(requireContext(), RecordatorioNotification::class.java).apply {
@@ -205,7 +205,7 @@ class Recordatorio : Fragment() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            20000,  // Repite diariamente
+            10000,  // Repite diariamente
             pendingIntent
         )
         Log.d("Alarma", "Programada alarma diaria para vencidos a las ${calendar.time}")
@@ -213,8 +213,8 @@ class Recordatorio : Fragment() {
     private fun programarAlarmaDiariaProximos() {
         val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 1)  // Ajusta la hora según tu necesidad
-            set(Calendar.MINUTE, 39)
+            set(Calendar.HOUR_OF_DAY, 2)  // Ajusta la hora según tu necesidad
+            set(Calendar.MINUTE, 26)
         }
 
         val intent = Intent(requireContext(), RecordatorioNotification::class.java).apply {
@@ -233,7 +233,7 @@ class Recordatorio : Fragment() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            20000,  // Repite diariamente
+            10000,  // Repite diariamente
             pendingIntent
         )
         Log.d("Alarma", "Programada alarma diaria para próximos a vencer a las ${calendar.time}")

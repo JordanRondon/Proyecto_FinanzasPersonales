@@ -106,19 +106,11 @@ class RecordatorioViewModel(application: Application) : AndroidViewModel(applica
     fun obtenerRecordatoriosVencidos(callback: (List<Recordatorio>) -> Unit) {
         obtenerRecordatorios { recordatorios ->
             val fechaActual = Calendar.getInstance().time
-            Log.d("RecordatorioViewModel", "Fecha actual: $fechaActual")
-            Log.d("RecordatorioViewModel", "Iniciando verificación de recordatorios vencidos")
-
             val vencidos = recordatorios.filter {
                 val recordatorioFecha = it.second.fecha
-                Log.d("RecordatorioViewModel", "Verificando recordatorio: ${it.second.descripcion} con fecha ${recordatorioFecha} (timestamp: ${recordatorioFecha.time})")
-                recordatorioFecha.time < fechaActual.time
-            }.map {
-                Log.d("RecordatorioViewModel", "Recordatorio vencido: ${it.second.descripcion} con fecha ${it.second.fecha} (timestamp: ${it.second.fecha.time})")
-                it.second
-            }
+                recordatorioFecha.before(fechaActual)
+            }.map { it.second }
 
-            Log.d("RecordatorioViewModel", "Total de recordatorios vencidos: ${vencidos.size}")
             callback(vencidos)
         }
     }
