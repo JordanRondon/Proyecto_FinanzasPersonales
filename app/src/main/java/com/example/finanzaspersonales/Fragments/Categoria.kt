@@ -117,6 +117,7 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
             .setTarget(recyclerView)
             .setSecondaryText("En este apartado podrá visualizar sus categorías")
             .setPromptBackground(RectanglePromptBackground())
+            .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptFocal(RectanglePromptFocal())
             .setPromptStateChangeListener { _, state ->
                 if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
@@ -130,6 +131,8 @@ class Categoria : Fragment(), CrudCategoriaAdapter.OnItemClickListener {
         MaterialTapTargetPrompt.Builder(requireActivity())
             .setTarget(btnAgregar)
             .setSecondaryText("Aquí podrá agregar más categorías")
+            .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptStateChangeListener { _, state ->
                 if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
                     val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)

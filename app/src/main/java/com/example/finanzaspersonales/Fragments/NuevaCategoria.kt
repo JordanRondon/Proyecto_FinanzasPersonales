@@ -169,8 +169,8 @@ class NuevaCategoria : Fragment() {
 
 
     private fun tutorial() {
-        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
-        val tutorialShown = sharedPreferences.getBoolean("tutorial_shown", false)
+        val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_nueva", Context.MODE_PRIVATE)
+        val tutorialShown = sharedPreferences.getBoolean("tutorial_nueva_categoria", false)
 
         if (!tutorialShown) {
             showFirstPrompt()
@@ -182,6 +182,7 @@ class NuevaCategoria : Fragment() {
             .setTarget(txtnombre)
             .setSecondaryText("Coloca un nombre a la categoria")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
             .setPromptStateChangeListener { _, state ->
@@ -197,6 +198,7 @@ class NuevaCategoria : Fragment() {
             .setTarget(linearIconos)
             .setSecondaryText("Elige el icono para tu categoria")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
             .setPromptStateChangeListener { _, state ->
@@ -212,6 +214,7 @@ class NuevaCategoria : Fragment() {
             .setTarget(txtdescripcion)
             .setSecondaryText("Coloca una descripcion a tu categoria")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
             .setPromptStateChangeListener { _, state ->
@@ -227,13 +230,14 @@ class NuevaCategoria : Fragment() {
             .setTarget(btnguardarcategoria)
             .setSecondaryText("Guarda tu categoria")
             .setSecondaryTextTypeface(Typeface.SANS_SERIF)
+            .setSecondaryTextColour(resources.getColor(R.color.white))
             .setPromptBackground(RectanglePromptBackground())
             .setPromptFocal(RectanglePromptFocal())
             .setPromptStateChangeListener { _, state ->
                 if (state == MaterialTapTargetPrompt.STATE_DISMISSED || state == MaterialTapTargetPrompt.STATE_FINISHED) {
-                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+                    val sharedPreferences = requireActivity().getSharedPreferences("tutorial_prefs_nueva", Context.MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
-                        putBoolean("tutorial_shown", true)
+                        putBoolean("tutorial_nueva_categoria", true)
                         apply()
                     }
                 }
