@@ -2,6 +2,7 @@
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,7 @@ class RecordatorioDialogFragment(
 ) : DialogFragment() {
 
     private lateinit var etDescripcion: EditText
-    private lateinit var tvFechaSeleccionada: TextView
+    private lateinit var tvFechaSeleccionadaNew: TextView
     private lateinit var ivCalendario: ImageView
     private lateinit var tvCancelar: TextView
     private lateinit var tvGuardar: TextView
@@ -37,14 +38,14 @@ class RecordatorioDialogFragment(
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.dialog_recordatorio, container, false)
-        etDescripcion = view.findViewById(R.id.etDescripcion)
-        tvFechaSeleccionada = view.findViewById(R.id.tvFechaSeleccionada)
+        etDescripcion = view.findViewById(R.id.etDescripcionNew)
+        tvFechaSeleccionadaNew = view.findViewById(R.id.tvFechaSeleccionadaNew)
         ivCalendario = view.findViewById(R.id.ivCalendario)
         tvCancelar = view.findViewById(R.id.tvCancelar)
         tvGuardar = view.findViewById(R.id.tvGuardar)
 
         etDescripcion.setText(recordatorio.descripcion)
-        tvFechaSeleccionada.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(recordatorio.fecha)
+        tvFechaSeleccionadaNew.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(recordatorio.fecha)
 
         ivCalendario.setOnClickListener {
             mostrarDatePickerDialog()
@@ -55,16 +56,42 @@ class RecordatorioDialogFragment(
         }
 
         tvGuardar.setOnClickListener {
-            guardarRecordatorio()
+            val descripcionActualizada = etDescripcion.text.toString()
+            Log.d("RecordatorioDialogFragment", "Texto del EditText al guardar: $descripcionActualizada")
+            guardarRecordatorio(descripcionActualizada)
         }
 
         return view
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = onCreateView(LayoutInflater.from(context), null, savedInstanceState)
+        val dialogView = activity?.layoutInflater?.inflate(R.layout.dialog_recordatorio, null)
+
+        if (dialogView != null) {
+            etDescripcion = dialogView.findViewById(R.id.etDescripcionNew)
+            tvFechaSeleccionadaNew = dialogView.findViewById(R.id.tvFechaSeleccionadaNew)
+            ivCalendario = dialogView.findViewById(R.id.ivCalendario)
+            tvCancelar = dialogView.findViewById(R.id.tvCancelar)
+            tvGuardar = dialogView.findViewById(R.id.tvGuardar)
+
+            etDescripcion.setText(recordatorio.descripcion)
+            tvFechaSeleccionadaNew.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(recordatorio.fecha)
+
+            ivCalendario.setOnClickListener {
+                mostrarDatePickerDialog()
+            }
+
+            tvCancelar.setOnClickListener {
+                dismiss()
+            }
+
+            tvGuardar.setOnClickListener {
+                val descripcionActualizada = etDescripcion.text.toString().trim()
+                guardarRecordatorio(descripcionActualizada)
+            }
+        }
 
         return MaterialAlertDialogBuilder(requireContext())
-            .setView(view)
+            .setView(dialogView)
             .create()
     }
 
@@ -75,14 +102,16 @@ class RecordatorioDialogFragment(
                 set(year, month, dayOfMonth)
             }.time
             fechaSeleccionada = fecha
-            tvFechaSeleccionada.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(fecha)
+            tvFechaSeleccionadaNew.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(fecha)
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    private fun guardarRecordatorio() {
-        val descripcion = etDescripcion.text.toString()
+    private fun guardarRecordatorio(descripcion:String) {
+
+        Log.d("RecordatorioDialogFragment", "Texto del EditText: $descripcion")
         if (descripcion.isNotEmpty()) {
             val recordatorioActualizado = Recordatorio(fechaSeleccionada, descripcion, recordatorio.estado)
+            Log.d("RecordatorioDialogFragment", "Guardando recordatorio con nueva descripción: $descripcion")
             onRecordatorioActualizado(recordatorioActualizado, recordatorioId)
             dismiss()
         } else {

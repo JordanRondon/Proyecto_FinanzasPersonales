@@ -12,20 +12,17 @@
         android:layout_marginTop="20dp"
         android:text="Descripción:"
         android:textSize="17sp" />
+
     <EditText
-        android:id="@+id/etDescripcion"
+        android:id="@+id/etDescripcionNew"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="15dp"
         android:background="@android:color/transparent"
-        android:imeOptions="actionDone"
-        android:text=""
+
         android:hint="Descripción del recordatorio"
         android:inputType="text" />
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +35,7 @@
         <TextView
             style="@style/TextAppearance.AppCompat.Title"
 
-            android:id="@+id/tvFechaSeleccionada"
+            android:id="@+id/tvFechaSeleccionadaNew"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -103,7 +103,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
     fun createSimpleNotification(presupuestoId: String, context: Context) {
         val builder = NotificationCompat.Builder(context, MI_CANAL_ID)
             .setSmallIcon(R.drawable.logo)
-            .setContentTitle("Notificación de LooKash")
+            .setContentTitle("Notificación de LooKCash")
             .setContentText("Se notifica que $presupuestoId ha excedido el monto límite")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
@@ -390,7 +390,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
             calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
         val intent = Intent(context, AlarmNotification::class.java)
-            .putExtra("asunto","LooKash")
+            .putExtra("asunto","LookCash")
             .putExtra("descripcion",descripcion)
             .putExtra("id",id)
         val pendingIntent = PendingIntent.getBroadcast(
