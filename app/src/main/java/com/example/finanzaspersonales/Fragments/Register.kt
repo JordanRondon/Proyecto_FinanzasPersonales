@@ -38,6 +38,49 @@ class Register : Fragment() {
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
+    private val categoriasPredeterminadas = mapOf(
+        "Categoria Alimentación" to mapOf(
+            "descripcion" to "Gastos relacionados con la compra de alimentos y comidas fuera de casa.",
+            "urlicono" to "icono_comida"
+        ),
+        "Categoria Entretenimiento" to mapOf(
+            "descripcion" to "Gastos destinados a actividades recreativas y de ocio, como cine, teatro y eventos, etc.",
+            "urlicono" to "icono_computadora"
+        ),
+        "Categoria Transporte" to mapOf(
+            "descripcion" to "Gastos asociados con pasajes de transporte público, taxis y otros medios de transporte, etc.",
+            "urlicono" to "icono_bus"
+        ),
+        "Categoria Financiero" to mapOf(
+            "descripcion" to "Gastos relacionados con productos y servicios financieros, como comisiones bancarias y seguros, etc.",
+            "urlicono" to "icono_reloj"
+        ),
+        "Categoria Moda y Belleza" to mapOf(
+            "descripcion" to "Gastos de ropa, accesorios, productos de belleza y cuidado personal, etc.",
+            "urlicono" to "icono_fuego"
+        ),
+        "Categoria Legales y Tributarios" to mapOf(
+            "descripcion" to "Gastos relacionados con servicios legales y pago de impuestos, etc.",
+            "urlicono" to "icono_graduacion"
+        ),
+        "Categoria Hogar" to mapOf(
+            "descripcion" to "Gastos destinados a la compra y mantenimiento de artículos para el hogar.",
+            "urlicono" to "icono_casa"
+        ),
+        "Categoria Viaje" to mapOf(
+            "descripcion" to "Gastos asociados con viajes, incluyendo pasajes, hospedaje y turismo, etc.",
+            "urlicono" to "icono_vuelo2"
+        ),
+        "Categoria Salud" to mapOf(
+            "descripcion" to "Gastos relacionados con servicios médicos, medicinas y bienestar.",
+            "urlicono" to "icono_salud"
+        ),
+        "Categoria Deporte" to mapOf(
+            "descripcion" to "Gastos en actividades deportivas, equipos y membresías a gimnasios.",
+            "urlicono" to "icono_ejercicio"
+        )
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -94,7 +137,7 @@ class Register : Fragment() {
                                 }
 
                             // Registrar userId en todas las tablas sin ningún valor adicional
-                            database.child("Categoria").child(userId).setValue("")
+                            database.child("Categoria").child(userId).setValue(categoriasPredeterminadas)
 
                             val gasto_Data = mapOf(
                                 "contador" to mapOf(
