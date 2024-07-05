@@ -1,0 +1,17 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado cuando el botón está presionado -->
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="#e0af91" />
+            <size android:width="56dp" android:height="56dp" />
+        </shape>
+    </item>
+
+    <!-- Estado cuando el botón no está presionado -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/piel" />
+            <size android:width="56dp" android:height="56dp" />
+        </shape>
+    </item>
+</selector>

@@ -18,6 +18,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finanzaspersonales.entidades.EntidadGasto
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -47,7 +49,8 @@ class GastosFragment : Fragment() {
 
     private var filtroCategoria: String = ""
     private var filtroFecha: String? = null
-    private var filtroMontosSeleccionados: MutableList<String> = mutableListOf()
+    private var filtroMonto: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -93,34 +96,40 @@ class GastosFragment : Fragment() {
         })
 
         imageButton_filtroMontoGasto.setOnClickListener {
+            val sliderView = layoutInflater.inflate(R.layout.dialog_filtro_monto, null)
+            val slider = sliderView.findViewById<Slider>(R.id.slider)
+            val textView_valor = sliderView.findViewById<TextView>(R.id.slider_valor)
+            var valorSilder = 1
+            val imageButton_restarSlider = sliderView.findViewById<ImageButton>(R.id.imageButton_restarSlider)
+            val imageButton_sumarSlider = sliderView.findViewById<ImageButton>(R.id.imageButton_sumarSlider)
 
-            // Convertir la lista de String a un array de Strings
-            val montoArray = gastoListaMonto.toTypedArray()
-            // Array para almacenar los ítems seleccionados
-            val checkedItems = BooleanArray(montoArray.size)
-            // Crea un Dialog para mostrar la lista de montos
-            val ListarMontoDialog: AlertDialog.Builder = AlertDialog.Builder(context)
-            ListarMontoDialog
-                .setTitle("Filtra tus gastos por Monto")
-                .setPositiveButton("Aceptar") { dialog, which ->
-                    val montosSeleccionados = mutableListOf<String>()
-                    for (i in montoArray.indices) {
-                        if (checkedItems[i]) {
-                            montosSeleccionados.add(montoArray[i])
-                        }
-                    }
-                    filtarPorMonto(montosSeleccionados)
-                }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Monto mayores a")
+                .setView(sliderView)
                 .setNegativeButton("Cancelar") { dialog, which ->
-                    filtarPorMonto(mutableListOf())
+                    filtroMonto = null
+                    aplicarFiltros()
+                    dialog.dismiss()
                 }
-                .setMultiChoiceItems(montoArray, checkedItems) { dialog, which, isChecked ->
-                    // Actualizar el estado del ítem seleccionado
-                    checkedItems[which] = isChecked
+                .setPositiveButton("Aceptar") { dialog, which ->
+                    filtroMonto = valorSilder
+                    aplicarFiltros()
+                    dialog.dismiss()
                 }
+                .show()
 
-            val dialog: AlertDialog = ListarMontoDialog.create()
-            dialog.show()
+            imageButton_restarSlider.setOnClickListener {
+                incrementarValor_Slider(slider, textView_valor, -1)
+            }
+
+            imageButton_sumarSlider.setOnClickListener {
+                incrementarValor_Slider(slider, textView_valor, 1)
+            }
+
+            slider.addOnChangeListener { _, value, _ ->
+                valorSilder = value.toInt()
+                textView_valor.text = "Valor: ${value.toInt()}"
+            }
         }
 
         imageButton_filtroFecha.setOnClickListener {
@@ -151,7 +160,14 @@ class GastosFragment : Fragment() {
 
     }
 
-    private fun obtenerDatosGastos(gastosRef: DatabaseReference) {
+    private fun incrementarValor_Slider(slider: Slider, textView_valor:TextView, cantidad: Int) {
+        val nuevoValor = slider.value + cantidad
+        if (nuevoValor in slider.valueFrom..slider.valueTo) {
+            slider.value = nuevoValor
+            textView_valor.text = "Valor: ${nuevoValor.toInt()}"
+        }
+    }
+        private fun obtenerDatosGastos(gastosRef: DatabaseReference) {
 
         gastosRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -215,7 +231,7 @@ class GastosFragment : Fragment() {
         historialGastoFiltrado.addAll(historialGasto.filter { gasto ->
             val coincideCategoria = filtroCategoria.isEmpty() || gasto.categoriaID.contains(filtroCategoria, ignoreCase = true)
             val coincideFecha = filtroFecha == null || gasto.fechaRegistro == filtroFecha
-            val coincideMonto = filtroMontosSeleccionados.isEmpty() || filtroMontosSeleccionados.contains(gasto.monto.toString())
+            val coincideMonto = filtroMonto == null || gasto.monto.toInt() >= filtroMonto!!
 
             coincideCategoria && coincideFecha && coincideMonto
         })
@@ -239,8 +255,8 @@ class GastosFragment : Fragment() {
         aplicarFiltros()
     }
 
-    private fun filtarPorMonto(montosSeleccionados: MutableList<String>) {
-        filtroMontosSeleccionados = montosSeleccionados
+    private fun filtarPorMonto(montoFiltrado: Int) {
+        filtroMonto= montoFiltrado
         aplicarFiltros()
     }
 
