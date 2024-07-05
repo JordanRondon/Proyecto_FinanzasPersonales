@@ -45,7 +45,6 @@ class GastosFragment : Fragment() {
     private lateinit var databaseGasto: DatabaseReference
     private lateinit var databaseCategoria: DatabaseReference
     private var fecha_filtro: String? = null
-    private val gastoListaMonto = mutableListOf<String>()
 
     private var filtroCategoria: String = ""
     private var filtroFecha: String? = null
@@ -154,8 +153,6 @@ class GastosFragment : Fragment() {
         }
 
         obtenerDatosGastos(databaseGasto)
-        obtenerDatosMontoGastos(databaseGasto)
-
         tutorial()
 
     }
@@ -195,28 +192,6 @@ class GastosFragment : Fragment() {
                 historialGasto.addAll(gastoList.asReversed())
                 gastoList.clear()
                 adaptadorPersonalizado.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("FirebaseError", "Error al obtener los datos: ${error.message}")
-            }
-        })
-    }
-
-    private fun obtenerDatosMontoGastos(gastosRef: DatabaseReference) {
-
-        gastosRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                gastoListaMonto.clear()
-                for (gastoSnapshot in snapshot.children) {
-                    if (gastoSnapshot.key != "contador") {
-                        val monto = gastoSnapshot.child("monto").getValue(Float::class.java) ?: 0.0f
-                        if (!gastoListaMonto.contains(monto.toString())) {
-                            // Si no existe el monto en la lista, se agrega
-                            gastoListaMonto.add(monto.toString())
-                        }
-                    }
-                }
             }
 
             override fun onCancelled(error: DatabaseError) {
