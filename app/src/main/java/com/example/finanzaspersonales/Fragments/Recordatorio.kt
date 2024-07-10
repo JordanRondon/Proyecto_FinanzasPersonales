@@ -205,7 +205,7 @@ class Recordatorio : Fragment() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            10000,  // Repite diariamente
+            60000,  // Repite diariamente
             pendingIntent
         )
         Log.d("Alarma", "Programada alarma diaria para vencidos a las ${calendar.time}")
@@ -233,7 +233,7 @@ class Recordatorio : Fragment() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            10000,  // Repite diariamente
+            60000,  // Repite diariamente
             pendingIntent
         )
         Log.d("Alarma", "Programada alarma diaria para próximos a vencer a las ${calendar.time}")
