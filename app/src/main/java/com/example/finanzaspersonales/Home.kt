@@ -1,6 +1,7 @@
 package com.example.finanzaspersonales
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -124,12 +125,23 @@ class Home : AppCompatActivity() {
                 }
             }
         })
-
+        handleIntent(intent)
         tutorial()
 
 //        deleteUser()
     }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent) // Handle the intent if the activity is already running
+    }
 
+    private fun handleIntent(intent: Intent) {
+        val openRecordatorio = intent.getBooleanExtra("openRecordatorio", false)
+        if (openRecordatorio) {
+            val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            bottomNavigationView.selectedItemId = R.id.recordatorio
+        }
+    }
     //USAR ESTA FUNCION PARA ELIMINAR EL USUARIO ACTUAL DE TODAS LAS TABLAS
     private fun deleteUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
