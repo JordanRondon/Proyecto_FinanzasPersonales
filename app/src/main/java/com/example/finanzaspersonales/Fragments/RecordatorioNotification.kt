@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.example.finanzaspersonales.Contenedor_Fragment
 import com.example.finanzaspersonales.Home
 import com.example.finanzaspersonales.R
 import com.example.finanzaspersonales.RecordatorioViewModelFactory
@@ -117,8 +118,9 @@ class RecordatorioNotification : BroadcastReceiver() {
 
 
     private fun createNotification(context: Context, tipoNotificacion: String?, mensajes: String?, id: Int) {
-        val intent = Intent(context, Recordatorio::class.java).apply {
+        val intent = Intent(context, Home::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("openRecordatorio", true)
         }
         val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, flag)
@@ -129,6 +131,7 @@ class RecordatorioNotification : BroadcastReceiver() {
             .setContentText(tipoNotificacion)
             .setStyle(NotificationCompat.BigTextStyle().bigText(mensajes))
             .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 
