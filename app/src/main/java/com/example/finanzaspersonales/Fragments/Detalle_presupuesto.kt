@@ -26,11 +26,28 @@ import androidx.core.content.ContextCompat
 
 
 class Detalle_presupuesto : Fragment() {
+    companion object {
+        private const val ARG_PRESUPUESTO_ID = "presupuesto_id"
 
-
+        fun newInstance(presupuestoId: String): Detalle_presupuesto {
+            val fragment = Detalle_presupuesto()
+            val args = Bundle()
+            args.putString(ARG_PRESUPUESTO_ID, presupuestoId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+    private lateinit var presupuestoId: String
     private lateinit var database: DatabaseReference
     private lateinit var database_categoria: DatabaseReference
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            presupuestoId = it.getString(Detalle_presupuesto.ARG_PRESUPUESTO_ID).toString()
+            println("ACAAAA PRESUPUESTO ID")
+            println(presupuestoId)
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,7 +75,7 @@ class Detalle_presupuesto : Fragment() {
         val username = FirebaseAuth.getInstance().currentUser!!.uid
         val imgDescartarDetallePresupuesto: ImageView = view.findViewById(R.id.img_descartar_detalle_presupuesto)
 
-        if (presupuesto_id != null) {
+        if (presupuesto_id != null && presupuestoId=="null") {
             txtPresupuestoDetalle?.text = presupuesto_id
             database = FirebaseDatabase.getInstance().getReference("Presupuesto/$username/$presupuesto_id")
 
@@ -137,7 +154,85 @@ class Detalle_presupuesto : Fragment() {
                 }
             })
         }
+        if (presupuesto_id == null && presupuestoId!="null"){
+            txtPresupuestoDetalle?.text = presupuestoId
+            database = FirebaseDatabase.getInstance().getReference("Presupuesto/$username/$presupuestoId")
 
+            database.addListenerForSingleValueEvent(object : ValueEventListener {
+                @SuppressLint("SetTextI18n")
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    val presupuesto = snapshot.getValue(Presupuesto_Firebase_insertar::class.java)
+
+                    if (presupuesto != null) {
+                        database_categoria= FirebaseDatabase.getInstance().getReference("Categoria/$username/${presupuesto.categoriaID}")
+
+                        database_categoria.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot2: DataSnapshot) {
+
+                                val categoria = snapshot2.getValue(Categoria_insertar::class.java)
+
+                                if (categoria != null) {
+
+                                    if (img_presupuesto != null) {
+                                        img_presupuesto.setImageResource(getIconResource(categoria.URLicono))
+                                    }
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                // Maneja el error
+                                Log.e("Firebase", "Error al obtener datos", error.toException())
+                            }
+                        })
+
+
+
+
+                        val porcentaje_barra=((presupuesto.monto_actual/presupuesto.monto_total)*100).toInt()
+                        txt_numero_barra?.text =porcentaje_barra.toString()+"%"
+                        progressBar?.progress = porcentaje_barra
+                        if(porcentaje_barra<=40){
+
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso)
+                        }
+                        else if(porcentaje_barra>50 && porcentaje_barra<=75){
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso2)
+                        }
+                        else{
+                            progressBar?.progressDrawable= ContextCompat.getDrawable(requireContext(), R.drawable.estilo_barra_progreso3)
+                        }
+                        txtmontototal?.text = "S/ "+presupuesto.monto_total.toString()
+                        txtmontoactual?.text = "S/ %.2f".format(presupuesto.monto_actual)
+
+                        txtcategoria?.text = presupuesto.categoriaID
+                        txtperiodo?.text = presupuesto.periodo
+                        txtfecharegistro?.text = presupuesto.fechaInicio
+                        txtfechavencimiento?.text = presupuesto.fechaCulminacion
+                        if(presupuesto.estado== true){
+                            txtestado?.text = "El periodo del presupuesto esta activo"
+                        }else{
+                            txtestado?.text = "El periodo del presupuesto esta vencido"
+                        }
+                        //txtestado?.text = presupuesto.estado.toString()
+                        imgDescartarDetallePresupuesto.setOnClickListener {
+                            try {
+                                MostrarAlertDialog(username, presupuestoId)
+                            } catch (e: NumberFormatException) {
+                                Toast.makeText(context, "ERROR: No se pudo eliminar el presupuesto", Toast.LENGTH_SHORT).show()
+                            }
+
+
+                        }
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("Firebase", "Error al obtener datos", error.toException())
+                }
+            })
+        }
 
 
 

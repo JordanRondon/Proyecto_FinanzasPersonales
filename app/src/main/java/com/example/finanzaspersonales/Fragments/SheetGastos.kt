@@ -39,6 +39,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID
 import com.example.finanzaspersonales.adaptadores.PresupuestoGastosAdapter
 import com.example.finanzaspersonales.Fragments.AlarmNotification.Companion.NOTI_ID2
+import com.example.finanzaspersonales.Home
+import com.example.finanzaspersonales.MainActivity
 import com.example.finanzaspersonales.entidades.EntidadGasto
 import com.example.finanzaspersonales.entidades.Notificacion
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -105,11 +107,21 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
     }
 
     fun createSimpleNotification(presupuestoId: String, context: Context) {
+        val intent = Intent(context, Home::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra("fragment", "Detalle_presupuesto")
+            putExtra("presupuesto_id", presupuestoId)
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         val builder = NotificationCompat.Builder(context, MI_CANAL_ID)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle("Notificación de LooKCash")
             .setContentText("Se notifica que $presupuestoId ha excedido el monto límite")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
 
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -128,7 +140,9 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         }
     }
 
-    private fun crearCanalDeNotificacion() {
+
+
+    private fun crearCanalDeNotificacion(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nombre = "Mi Canal"
             val descripcion = "Descripción de mi canal"
@@ -137,7 +151,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
                 description = descripcion
             }
             val notificationManager: NotificationManager =
-                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(canal)
         }
     }
@@ -162,7 +176,7 @@ class SheetGastos : BottomSheetDialogFragment(), CategoriaGastosAdapter.Categori
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetBehavior.isHideable = false
 
-        crearCanalDeNotificacion()
+        crearCanalDeNotificacion(requireContext())
         val activity = requireActivity()
         navController = findNavController()
 
