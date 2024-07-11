@@ -128,19 +128,18 @@ class Home : AppCompatActivity() {
                 }
             }
         })
-        handleIntent(intent)
+        //handleIntent(intent)
         tutorial()
-        handleIntent2(intent)
+        handleIntent(intent)
 //        deleteUser()
     }
-
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
         handleIntent(intent)
     }
 
-    private fun handleIntent2(intent: Intent?) {
+    private fun handleIntent(intent: Intent?) {
         intent?.let {
             val fragmentName = it.getStringExtra("fragment")
             val presupuestoId = it.getStringExtra("presupuesto_id")
@@ -156,20 +155,19 @@ class Home : AppCompatActivity() {
             putString("presupuesto_id", presupuestoId)
         }
         navControllercreado.navigate(R.id.detalle_presupuesto, bundle)
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        handleIntent(intent) // Handle the intent if the activity is already running
     }
+    //override fun onNewIntent(intent: Intent) {
+    //    super.onNewIntent(intent)
+    //    handleIntent(intent) // Handle the intent if the activity is already running
+    //}
 
-    private fun handleIntent(intent: Intent) {
-        val openRecordatorio = intent.getBooleanExtra("openRecordatorio", false)
-        if (openRecordatorio) {
-            val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-            bottomNavigationView.selectedItemId = R.id.recordatorio
-        }
-
-    }
+    //private fun handleIntent(intent: Intent?) {
+    //    val openRecordatorio = intent?.getBooleanExtra("openRecordatorio", false)
+    //    if (openRecordatorio == true) {
+    //        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+    //        bottomNavigationView.selectedItemId = R.id.recordatorio
+    //    }
+    //}
     //USAR ESTA FUNCION PARA ELIMINAR EL USUARIO ACTUAL DE TODAS LAS TABLAS
     private fun deleteUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid

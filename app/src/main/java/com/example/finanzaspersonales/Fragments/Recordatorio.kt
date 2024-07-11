@@ -185,8 +185,8 @@ class Recordatorio : Fragment() {
     private fun programarAlarmaDiariaVencidos() {
         val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 2)  // Ajusta la hora según tu necesidad
-            set(Calendar.MINUTE, 26)
+            set(Calendar.HOUR_OF_DAY, 9)  // Ajusta la hora según tu necesidad
+            set(Calendar.MINUTE, 0)
         }
 
         val intent = Intent(requireContext(), RecordatorioNotification::class.java).apply {
@@ -202,10 +202,10 @@ class Recordatorio : Fragment() {
         )
 
         val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(
+        alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            60000,  // Repite diariamente
+            AlarmManager.INTERVAL_DAY,  // Repite diariamente
             pendingIntent
         )
         Log.d("Alarma", "Programada alarma diaria para vencidos a las ${calendar.time}")
@@ -213,8 +213,8 @@ class Recordatorio : Fragment() {
     private fun programarAlarmaDiariaProximos() {
         val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 2)  // Ajusta la hora según tu necesidad
-            set(Calendar.MINUTE, 26)
+            set(Calendar.HOUR_OF_DAY, 9)  // Ajusta la hora según tu necesidad
+            set(Calendar.MINUTE, 0)
         }
 
         val intent = Intent(requireContext(), RecordatorioNotification::class.java).apply {
@@ -230,10 +230,10 @@ class Recordatorio : Fragment() {
         )
 
         val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(
+        alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            60000,  // Repite diariamente
+            AlarmManager.INTERVAL_DAY,  // Repite diariamente
             pendingIntent
         )
         Log.d("Alarma", "Programada alarma diaria para próximos a vencer a las ${calendar.time}")
