@@ -14,11 +14,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.finanzaspersonales.Clases.isOnline
+import com.example.finanzaspersonales.Fragments.Presupuestos
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -46,7 +48,7 @@ class Home : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolBar: MaterialToolbar
     private lateinit var custom_title: TextView
-
+    private lateinit var navControllercreado: NavController
     private val user = FirebaseAuth.getInstance().currentUser
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var database: DatabaseReference
@@ -90,6 +92,7 @@ class Home : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+        navControllercreado=navController
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
 
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
@@ -127,9 +130,33 @@ class Home : AppCompatActivity() {
         })
         handleIntent(intent)
         tutorial()
-
+        handleIntent2(intent)
 //        deleteUser()
     }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent2(intent: Intent?) {
+        intent?.let {
+            val fragmentName = it.getStringExtra("fragment")
+            val presupuestoId = it.getStringExtra("presupuesto_id")
+
+            if (fragmentName == "Detalle_presupuesto" && presupuestoId != null) {
+                reedirigirPresupuestoFragment(presupuestoId)
+            }
+        }
+    }
+
+    private fun reedirigirPresupuestoFragment(presupuestoId: String) {
+        val bundle = Bundle().apply {
+            putString("presupuesto_id", presupuestoId)
+        }
+        navControllercreado.navigate(R.id.detalle_presupuesto, bundle)
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent) // Handle the intent if the activity is already running
@@ -141,6 +168,7 @@ class Home : AppCompatActivity() {
             val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
             bottomNavigationView.selectedItemId = R.id.recordatorio
         }
+
     }
     //USAR ESTA FUNCION PARA ELIMINAR EL USUARIO ACTUAL DE TODAS LAS TABLAS
     private fun deleteUser() {

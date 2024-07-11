@@ -57,7 +57,17 @@ import com.google.android.material.textfield.TextInputLayout
 
 
 class Presupuestos : Fragment() {
+    companion object {
+        private const val ARG_PRESUPUESTO_ID = "presupuesto_id"
 
+        fun newInstance(presupuestoId: String): Presupuestos {
+            val fragment = Presupuestos()
+            val args = Bundle()
+            args.putString(ARG_PRESUPUESTO_ID, presupuestoId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
     private lateinit var recycler: RecyclerView
     private lateinit var spinner: Spinner
     private lateinit var btnAgregar: Button
@@ -75,7 +85,12 @@ class Presupuestos : Fragment() {
 
     private lateinit var main: ConstraintLayout
     private lateinit var connection: ConstraintLayout
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            val presupuestoId = it.getString(ARG_PRESUPUESTO_ID)
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
